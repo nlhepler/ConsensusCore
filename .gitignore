@@ -1,0 +1,26 @@
+attic
+build
+doc/API/html
+*.class
+*.o
+*~
+*.pyc
+.settings
+.cproject
+.project
+.pydevproject
+.DS_Store
+
+# ignore extras entirely, as we aren't really
+# modifying them, we're just bundling them for now
+extra/google-perftools-1.8.3
+extra/gmock-1.6.0
+
+
+# visual studio junk
+*.sdf
+*.suo
+*.opensdf
+vsproj/Debug
+vsproj/ipch
+*ReSharper*

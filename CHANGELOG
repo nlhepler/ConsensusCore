@@ -1,0 +1,8 @@
+
+
+* 0.1.0:  Initial version
+
+* 0.2.0 (8/23/2012): 
+  - Made Mutation constructor parameter order more logical.
+  - Added MultipleReadMutationScorer
+  - Requires SWIG >= 2.0.7

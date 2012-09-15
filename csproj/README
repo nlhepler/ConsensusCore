@@ -1,0 +1,2 @@
+This directrory is for staging builds of ConsensusCore and it's C# wrapper for use inside the PacBio P4-based build system.
+ConsensusCore builds outside of the PacBio P4 tree should use targets in the top-level Makefile.

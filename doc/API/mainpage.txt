@@ -1,0 +1,41 @@
+/// \mainpage ConsensusCore
+/// \section intro_sec Introduction
+/// 
+/// ConsensusCore is a C++ library containing several
+/// consensus-calling algorithms used in circular consensus sequencing
+/// (CCS) analysis.  Several of the algorithms are based on generic
+/// multiple sequence alignment methods; (currently) one method is
+/// based on a PacBio-specific error model.  ConsensusCore exposes
+/// language bindings to C# and Python, thereby enabling integration
+/// into the Pipeline and secondary analysis workflows.
+/// 
+/// ConsensusCore will be soon released as open source via our GitHub
+/// page.
+///
+///  \image html new_architecture_small.png
+/// 
+/// \section install_sec Installation
+///  
+/// \verbatim
+    .. build C++ library and test it
+    $ make  
+    $ make test
+    .. build Python bindings
+    $ make python
+    .. build CSharp bindings
+    $ make csharp
+\endverbatim
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+/// 
+///     
