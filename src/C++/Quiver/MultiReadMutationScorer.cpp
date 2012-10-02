@@ -189,6 +189,14 @@ namespace ConsensusCore
     }
 
     template<typename R>
+    float MultiReadMutationScorer<R>::Score(MutationType mutationType,
+                                            int position, char base) const
+    {
+        Mutation m(mutationType, position, base);
+        return Score(m);
+    }
+
+    template<typename R>
     float MultiReadMutationScorer<R>::FastScore(const Mutation& m) const
     {
         float sum = 0;

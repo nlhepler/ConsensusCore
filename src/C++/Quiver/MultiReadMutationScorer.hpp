@@ -74,6 +74,11 @@ namespace ConsensusCore {
         bool IsFavorable(const Mutation& m) const;
         bool FastIsFavorable(const Mutation& m) const;
 
+    public:
+        // Alternate entry point for C# code, not requiring zillions of object
+        // allocations.
+        float Score(MutationType mutationType, int position, char base) const;
+
     private:
         void CheckInvariants() const;
 
