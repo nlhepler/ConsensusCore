@@ -67,6 +67,8 @@ namespace ConsensusCore {
         void AddRead(const MappedRead& mappedRead);
 
         float Score(const Mutation& m) const;
+        float FastScore(const Mutation& m) const;
+
         std::vector<float> Scores(const Mutation& m) const;
 
         bool IsFavorable(const Mutation& m) const;

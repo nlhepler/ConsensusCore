@@ -189,6 +189,29 @@ namespace ConsensusCore
     }
 
     template<typename R>
+    float MultiReadMutationScorer<R>::FastScore(const Mutation& m) const
+    {
+        float sum = 0;
+        foreach (const item_t& kv, scorerForRead_)
+        {
+            if (readScoresPosition(kv.first, m.Position()))
+            {
+                Mutation orientedMut = orientedMutation(kv.first, m);
+                sum += (kv.second->ScoreMutation(orientedMut) -
+                        kv.second->Score());
+                // Hack alert: I need to replace this cut-out with
+                // something more justifiable.  I am just checking it in
+                // now to play with.
+                if (sum < -500)
+                {
+                    return sum;
+                }
+            }
+        }
+        return sum;
+    }
+
+    template<typename R>
     std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m) const
     {
         std::vector<float> scoreByRead;
