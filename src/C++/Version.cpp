@@ -65,7 +65,7 @@ namespace ConsensusCore
     bool Version::IsAtLeast(int major, int minor, int patch)
     {
         // lexicographical comparison using boost tuples
-        return make_tuple(major, minor, patch) >= make_tuple(API_MAJOR, API_MINOR, API_PATCH);
+        return make_tuple(API_MAJOR, API_MINOR, API_PATCH) >= make_tuple(major, minor, patch);
     }
 
     bool Version::HasFeature(const std::string& name)
