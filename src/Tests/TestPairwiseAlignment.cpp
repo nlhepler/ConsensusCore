@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 #include "PairwiseAlignment.hpp"
+#include "AffineAlignment.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAreArray;
@@ -119,4 +120,44 @@ TEST(PairwiseAlignmentTests, TargetPositionsInQueryTest)
         ASSERT_THAT(TargetToQueryPositions("MIDM"), ElementsAreArray(expected2));
     }
 }
+
+
+// ------------------ AffineAlignment tests ---------------------
+
+TEST(AffineAlignmentTests, GlobalAlignmentTests)
+{
+    // Start by checking that when the "affine" penalty is really just
+    // linear, we get the same results we would have gotten using the
+    // ordinary aligner.
+    AffineAlignmentParams nonAffineParams(0, -1, -1, -1);
+
+    PairwiseAlignment* a = AlignWithAffineGapPenalty("ATT", "ATT", nonAffineParams);
+    EXPECT_EQ("ATT", a->Target());
+    EXPECT_EQ("ATT", a->Query());
+
+    a = AlignWithAffineGapPenalty("AT", "ATT", nonAffineParams);
+    EXPECT_EQ("A-T", a->Target());
+    EXPECT_EQ("ATT", a->Query());
+
+    a = AlignWithAffineGapPenalty("GA", "GAT", nonAffineParams);
+    EXPECT_EQ("GA-", a->Target());
+    EXPECT_EQ("GAT", a->Query());
+
+    a = AlignWithAffineGapPenalty("GAT", "GA", nonAffineParams);
+    EXPECT_EQ("GAT", a->Target());
+    EXPECT_EQ("GA-", a->Query());
+
+    a = AlignWithAffineGapPenalty("GA", "TGA", nonAffineParams);
+    EXPECT_EQ("-GA", a->Target());
+    EXPECT_EQ("TGA", a->Query());
+
+    a = AlignWithAffineGapPenalty("TGA", "GA", nonAffineParams);
+    EXPECT_EQ("TGA", a->Target());
+    EXPECT_EQ("-GA", a->Query());
+
+    a = AlignWithAffineGapPenalty("GATTACA", "GATTTACA", nonAffineParams);
+    EXPECT_EQ("GA-TTACA", a->Target());
+    EXPECT_EQ("GATTTACA", a->Query());
+}
+
 
