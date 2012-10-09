@@ -11,3 +11,6 @@
   MultipleReadMutationScorer gains:
     - Additional "Score" method to put less strain on Mono GC
     - Experimental "FastScore" method
+
+* 0.3.0 (10/9/2012)
+ - Added a pairwise aligner with affine gap penalty
