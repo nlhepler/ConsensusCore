@@ -25,6 +25,7 @@
 
 // Author: David Alexander
 
+#include <cfloat>
 #include <map>
 #include <string>
 #include <vector>
@@ -237,6 +238,10 @@ namespace ConsensusCore
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 scoreByRead.push_back(kv.second->ScoreMutation(orientedMut) -
                                       kv.second->Score());
+            }
+            else
+            {
+                scoreByRead.push_back(-FLT_MAX);
             }
         }
         return scoreByRead;

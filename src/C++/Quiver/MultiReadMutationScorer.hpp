@@ -71,6 +71,12 @@ namespace ConsensusCore {
         float Score(const Mutation& m) const;
         float FastScore(const Mutation& m) const;
 
+        // Return a vector (of length NumReads) of the difference in
+        // the score of each read caused by the template mutation.  In
+        // the case where the mutation cannot be scored for a read
+        // (i.e., it is too close to the end of the template, or the
+        // read does not span the mutation site) that entry in the
+        // vector is -FLT_MAX, which is to be interpreted as NA.
         std::vector<float> Scores(const Mutation& m) const;
 
         bool IsFavorable(const Mutation& m) const;
