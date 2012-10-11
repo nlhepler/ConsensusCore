@@ -54,6 +54,8 @@ namespace ConsensusCore {
         ~MultiReadMutationScorer();
 
         int TemplateLength() const;
+        int NumReads() const;
+
         std::string Template(StrandEnum strand = FORWARD_STRAND) const;
         std::string Template(StrandEnum strand, int templateStart, int templateEnd) const;
         void ApplyMutations(const std::vector<Mutation*>& mutations);

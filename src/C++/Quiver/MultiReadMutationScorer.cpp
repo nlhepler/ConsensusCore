@@ -75,6 +75,13 @@ namespace ConsensusCore
     }
 
     template<typename R>
+    int
+    MultiReadMutationScorer<R>::NumReads() const
+    {
+        return scorerForRead_.size();
+    }
+
+    template<typename R>
     std::string
     MultiReadMutationScorer<R>::Template(StrandEnum strand) const
     {
