@@ -1,4 +1,4 @@
-#+TITLE: Quiver in summary
+#+TITLE: Quiver technical summary
 #+AUTHOR: David Alexander \and Patrick Marks
 #+DESCRIPTION:
 #+KEYWORDS:
@@ -12,6 +12,7 @@
 #+LINK_HOME:
 #+XSLT:
 #+LaTeX_HEADER: \usepackage{fourier}
+#+LaTeX_HEADER: \newcommand{\R}{\textsuperscript{\textregistered}}
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_OPTIONS: [serif,11pt]
 #+STARTUP: beamer
@@ -21,7 +22,8 @@
 * High-level view
 
 ** What is Quiver?
-   - A multiple-read consensus calling algorithm for PacBio reads
+   - A multiple-read consensus calling algorithm for PacBio\R /RS/
+     reads
    - Takes multiple reads of a given DNA template, outputs best guess
      of template's identity
    - QV-aware conditional random field model to model our sequencing
@@ -50,7 +52,7 @@
 
 
 ** Where to get Quiver
-   - Quiver will be integrated in the 1.4 SMRTanalysis release
+   - Quiver will be integrated in the 1.4 SMRT\R analysis release
    - Until then, you can install it from GitHub, using instructions
      here: http://git.io/AERlEA
    - Quiver is open source, under the BSD license, so feel free to
@@ -59,7 +61,7 @@
 
 * The mechanics, in more detail
 
-** Overview of PacBio data
+** Overview of PacBio\R /RS/ data
    \begin{figure}
    \centering
      \includegraphics[width=3.5in]{img/traces}
