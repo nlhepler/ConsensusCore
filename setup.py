@@ -18,13 +18,12 @@ def find_boost():
     Look for boost in some standard filesystem places.
     """
     boosts_found = \
-        glob("/usr/include/boost/version.hpp")               + \
-        glob("/usr/include/boost*/boost/version.hpp")        + \
-        glob("/usr/local/boost/version.hpp")                 + \
-        glob("/usr/local/boost*/boost/version.hpp")          + \
-        glob("/opt/local/include/boost/version.hpp")         + \
-        glob("../../ThirdParty/boost/boost_1_47_0/boost/version.hpp")
-    #blame mhsieh for boost_1_47_0 hack.
+        glob("/usr/include/boost/version.hpp")                                    + \
+        glob("/usr/include/boost*/boost/version.hpp")                             + \
+        glob("/usr/local/boost/version.hpp")                                      + \
+        glob("/usr/local/boost*/boost/version.hpp")                               + \
+        glob("/opt/local/include/boost/version.hpp")                              + \
+        glob("/home/UNIXHOME/dalexander/Packages/boost_1_47_0/boost/version.hpp")
 
     best_boost_found = (None, None)
 
