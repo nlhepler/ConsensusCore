@@ -46,11 +46,10 @@ namespace ConsensusCore {
     public:
         typedef R                                         RecursorType;
         typedef typename R::EvaluatorType                 EvaluatorType;
-        typedef typename R::EvaluatorType::ParamsType     ParamsType;
         typedef typename ConsensusCore::MutationScorer<R> ScorerType;
 
     public:
-        MultiReadMutationScorer(const R& recursor, const ParamsType& params, std::string tpl);
+        MultiReadMutationScorer(const R& recursor, const QuiverConfig& params, std::string tpl);
         ~MultiReadMutationScorer();
 
         int TemplateLength() const;
@@ -92,7 +91,7 @@ namespace ConsensusCore {
 
     private:
         R recursor_;
-        ParamsType params_;
+        QuiverConfig quiverConfig_;
         std::string fwdTemplate_;
         std::string revTemplate_;
         std::map<MappedRead*, ScorerType*> scorerForRead_;

@@ -136,14 +136,14 @@ public:
 protected:
     MultiReadMutationScorerTest()
         : recursor_(ALL_MOVES, BandingOptions(4, 200)),
-          testingParams_(TestingParams<typename MMS::EvaluatorType::ParamsType>())
+          testingConfig_(TestingParams<typename MMS::EvaluatorType::ParamsType>(), -500)
     {}
 
     virtual ~MultiReadMutationScorerTest() {}
 
 protected:
     typename MMS::RecursorType recursor_;
-    typename MMS::EvaluatorType::ParamsType testingParams_;
+    QuiverConfig testingConfig_;
 };
 
 
@@ -157,7 +157,7 @@ TYPED_TEST(MultiReadMutationScorerTest, Template)
     std::string rev = ReverseComplement(fwd);
 
     // Make sure the Template function works right
-    MMS mScorer(this->recursor_, this->testingParams_, fwd);
+    MMS mScorer(this->recursor_, this->testingConfig_, fwd);
     ASSERT_EQ(fwd, mScorer.Template());
     ASSERT_EQ(fwd, mScorer.Template(FORWARD_STRAND));
     ASSERT_EQ(rev, mScorer.Template(REVERSE_STRAND));
@@ -174,7 +174,7 @@ TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
     std::string tpl = "TTGATTACATT";
     std::string revTpl = ReverseComplement(tpl);
 
-    MMS mScorer(this->recursor_, this->testingParams_, tpl);
+    MMS mScorer(this->recursor_, this->testingConfig_, tpl);
     mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
 
     Mutation noOpMutation(SUBSTITUTION, 6, 'A');
@@ -217,7 +217,7 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
     // Just make sure if we reverse complemented the universe,
     // everything would come out the same.
     std::string tpl = "AATGTAATCAA";
-    MMS mScorer(this->recursor_, this->testingParams_, tpl);
+    MMS mScorer(this->recursor_, this->testingConfig_, tpl);
     mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND);
 
     Mutation noOpMutation(SUBSTITUTION, 4, 'T');
@@ -261,7 +261,7 @@ TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)
     // read2:          <<<<<<<<<<<
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
-    MMS mScorer(this->recursor_, this->testingParams_, tpl);
+    MMS mScorer(this->recursor_, this->testingConfig_, tpl);
 
     // mutations in the latter half
     Mutation noOpMutation1(SUBSTITUTION, 17, 'A');

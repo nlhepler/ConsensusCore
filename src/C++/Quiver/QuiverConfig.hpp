@@ -115,14 +115,11 @@ namespace ConsensusCore
     };
 
 
-    class QuiverConfig
+    struct QuiverConfig
     {
-    private:
-        const QvModelParams qvParams_;
+        const QvModelParams QvParams;
+        const float FastScoreThreshold;
 
-    public:
-        QuiverConfig();
-        explicit QuiverConfig(const QvModelParams& qvParams);
+        QuiverConfig(const QvModelParams& qvParams, float fastScoreThreshold_);
     };
 }
-

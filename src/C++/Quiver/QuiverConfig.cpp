@@ -74,12 +74,10 @@ namespace ConsensusCore {
         return C2_130();
     }
 
-    QuiverConfig::QuiverConfig()
-        : qvParams_(QvModelParams::Default())
-    {}
 
-
-    QuiverConfig::QuiverConfig(const QvModelParams& qvParams)
-        : qvParams_(qvParams)
+    QuiverConfig::QuiverConfig(const QvModelParams& qvParams,
+                               const float fastScoreThreshold)
+        : QvParams(qvParams),
+          FastScoreThreshold(fastScoreThreshold)
     {}
 }

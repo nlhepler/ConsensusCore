@@ -30,7 +30,7 @@
 #pragma once
 
 #define API_MAJOR 0
-#define API_MINOR 3
+#define API_MINOR 4
 #define API_PATCH 0
 
 namespace ConsensusCore

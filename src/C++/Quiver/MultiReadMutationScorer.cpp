@@ -47,10 +47,10 @@ namespace ConsensusCore
 
     template<typename R>
     MultiReadMutationScorer<R>::MultiReadMutationScorer(const R& recursor,
-                                                        const typename R::EvaluatorType::ParamsType& params,  // NOLINT
+                                                        const QuiverConfig& quiverConfig,
                                                         std::string tpl)
         : recursor_(recursor),
-          params_(params),
+          quiverConfig_(quiverConfig),
           fwdTemplate_(tpl),
           revTemplate_(ReverseComplement(tpl)),
           scorerForRead_()
@@ -143,7 +143,7 @@ namespace ConsensusCore
     {
         DEBUG_ONLY(CheckInvariants());
         MappedRead* mr = new MappedRead(features, strand, templateStart, templateEnd);
-        EvaluatorType ev(features, Template(strand, templateStart, templateEnd), params_);
+        EvaluatorType ev(features, Template(strand, templateStart, templateEnd), quiverConfig_.QvParams);
         scorerForRead_[mr] = new MutationScorer<R>(ev, recursor_);
         DEBUG_ONLY(CheckInvariants());
     }
@@ -154,7 +154,7 @@ namespace ConsensusCore
         DEBUG_ONLY(CheckInvariants());
         EvaluatorType ev(mr.Features,
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
-                         params_);
+                         quiverConfig_.QvParams);
         scorerForRead_[new MappedRead(mr)] = new MutationScorer<R>(ev, recursor_);
         DEBUG_ONLY(CheckInvariants());
     }
@@ -218,7 +218,7 @@ namespace ConsensusCore
                 // Hack alert: I need to replace this cut-out with
                 // something more justifiable.  I am just checking it in
                 // now to play with.
-                if (sum < -500)
+                if (sum < quiverConfig_.FastScoreThreshold)
                 {
                     return sum;
                 }
@@ -277,7 +277,7 @@ namespace ConsensusCore
                 // Hack alert: I need to replace this cut-out with
                 // something more justifiable.  I am just checking it in
                 // now to play with.
-                if (sum < -500)
+                if (sum < quiverConfig_.FastScoreThreshold)
                 {
                     return false;
                 }
