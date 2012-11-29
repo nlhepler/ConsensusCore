@@ -103,7 +103,6 @@ namespace ConsensusCore {
 
 
         RecursorBase(int movesAvailable, const BandingOptions& banding);
-        RecursorBase();
         virtual ~RecursorBase();
 
     protected:

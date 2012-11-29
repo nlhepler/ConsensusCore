@@ -261,12 +261,6 @@ namespace detail {
     }
 
     template<typename M, typename E, typename C>
-    RecursorBase<M, E, C>::RecursorBase()
-        : movesAvailable_(ALL_MOVES),
-          bandingOptions_(4, 200)
-    {}
-
-    template<typename M, typename E, typename C>
     RecursorBase<M, E, C>::RecursorBase(int movesAvailable, const BandingOptions& bandingOptions)
         : movesAvailable_(movesAvailable),
           bandingOptions_(bandingOptions)

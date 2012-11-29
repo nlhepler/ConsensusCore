@@ -59,7 +59,6 @@ namespace ConsensusCore {
         // Constructors
         //
         SseRecursor(int movesAvailable, const BandingOptions& banding);
-        SseRecursor();
     };
 
     typedef SseRecursor<DenseMatrix,

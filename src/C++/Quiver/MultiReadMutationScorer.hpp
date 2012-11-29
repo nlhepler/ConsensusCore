@@ -49,7 +49,7 @@ namespace ConsensusCore {
         typedef typename ConsensusCore::MutationScorer<R> ScorerType;
 
     public:
-        MultiReadMutationScorer(const R& recursor, const QuiverConfig& params, std::string tpl);
+        MultiReadMutationScorer(const QuiverConfig& params, std::string tpl);
         ~MultiReadMutationScorer();
 
         int TemplateLength() const;

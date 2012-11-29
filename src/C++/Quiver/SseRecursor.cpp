@@ -500,13 +500,6 @@ namespace ConsensusCore {
         }
     }
 
-
-    template<typename M, typename E, typename C>
-    SseRecursor<M, E, C>::SseRecursor()
-        : detail::RecursorBase<M, E, C>()
-    {}
-
-
     template<typename M, typename E, typename C>
     SseRecursor<M, E, C>::SseRecursor(int movesAvailable, const BandingOptions& banding)
         : detail::RecursorBase<M, E, C>(movesAvailable, banding)

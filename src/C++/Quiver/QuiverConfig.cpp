@@ -76,8 +76,12 @@ namespace ConsensusCore {
 
 
     QuiverConfig::QuiverConfig(const QvModelParams& qvParams,
-                               const float fastScoreThreshold)
+                               int movesAvailable,
+                               const BandingOptions& bandingOptions,
+                               float fastScoreThreshold)
         : QvParams(qvParams),
+          Banding(bandingOptions),
+          MovesAvailable(movesAvailable),
           FastScoreThreshold(fastScoreThreshold)
     {}
 }

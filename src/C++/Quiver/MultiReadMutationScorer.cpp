@@ -46,10 +46,9 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    MultiReadMutationScorer<R>::MultiReadMutationScorer(const R& recursor,
-                                                        const QuiverConfig& quiverConfig,
+    MultiReadMutationScorer<R>::MultiReadMutationScorer(const QuiverConfig& quiverConfig,
                                                         std::string tpl)
-        : recursor_(recursor),
+        : recursor_(quiverConfig.MovesAvailable, quiverConfig.Banding),
           quiverConfig_(quiverConfig),
           fwdTemplate_(tpl),
           revTemplate_(ReverseComplement(tpl)),

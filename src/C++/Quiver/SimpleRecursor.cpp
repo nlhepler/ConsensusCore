@@ -401,13 +401,6 @@ namespace ConsensusCore {
         }
     }
 
-
-    template<typename M, typename E, typename C>
-    SimpleRecursor<M, E, C>::SimpleRecursor()
-        : detail::RecursorBase<M, E, C>()
-    {}
-
-
     template<typename M, typename E, typename C>
     SimpleRecursor<M, E, C>::SimpleRecursor(int movesAvailable, const BandingOptions& banding)
         : detail::RecursorBase<M, E, C>(movesAvailable, banding)

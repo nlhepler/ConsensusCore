@@ -118,8 +118,13 @@ namespace ConsensusCore
     struct QuiverConfig
     {
         const QvModelParams QvParams;
+        const int MovesAvailable;
+        const BandingOptions Banding;
         const float FastScoreThreshold;
 
-        QuiverConfig(const QvModelParams& qvParams, float fastScoreThreshold_);
+        QuiverConfig(const QvModelParams& qvParams,
+                     int movesAvailable,
+                     const BandingOptions& bandingOptions,
+                     float fastScoreThreshold);
     };
 }
