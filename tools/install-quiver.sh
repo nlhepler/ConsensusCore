@@ -67,7 +67,7 @@ virtualenv -q -p python2.7 VE-QUIVER || die "Failed to build virtualenv"
 source ~/VE-QUIVER/bin/activate
 
 echo "* Installing NumPy and h5py (may take a minute)"
-pip install -q numpy==1.6.1 || die "Failed to install NumPy"
+pip install -q numpy==1.6.0 || die "Failed to install NumPy"
 pip install -q h5py==2.0.1  || die "Failed to install h5py"
 
 echo "* Installing pbcore"
