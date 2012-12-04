@@ -86,6 +86,12 @@ namespace ConsensusCore {
         // allocations.
         float Score(MutationType mutationType, int position, char base) const;
 
+    public:
+        // Return the actual sum of scores for the current template.
+        // TODO: need to refactor to make the semantics of the various "Score" functions
+        // clearer.
+        float BaselineScore() const;
+
     private:
         void CheckInvariants() const;
 

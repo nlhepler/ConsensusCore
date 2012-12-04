@@ -286,6 +286,17 @@ namespace ConsensusCore
     }
 
     template<typename R>
+    float MultiReadMutationScorer<R>::BaselineScore() const
+    {
+        float sum = 0;
+        foreach (const item_t& kv, scorerForRead_)
+        {
+            sum += kv.second->Score();
+        }
+        return sum;
+    }
+
+    template<typename R>
     void MultiReadMutationScorer<R>::CheckInvariants() const
     {
 #ifndef NDEBUG
