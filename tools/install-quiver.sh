@@ -39,9 +39,16 @@
 ##   - Python virtualenv
 ##
 ## Running:
-##   You can download and run directly via:
+##   You can download and run this script directly via:
 ##
-##     $ curl https://raw.github.com/PacificBiosciences/ConsensusCore/master/tools/install-quiver.sh | bash
+##     $ bash <(curl http://git.io/JR7TnQ)
+##
+##   You can choose the git branch that will be installed from and the
+##   virtualenv install directory, using the shell variables BRANCH
+##   and INSTALLDIR:
+##
+##     $ BRANCH=dinucleotide_repeats INSTALLDIR=/home/dave/VE-dinuc \
+##         bash <(curl http://git.io/JR7TnQ)
 ##
 ## Uninstall:
 ##
@@ -53,37 +60,53 @@ function die(){
  exit 1
 }
 
+
+if [ -z $BRANCH ]; then
+    BRANCH=master;
+fi
+
+if [ -z $INSTALLDIR ]; then
+    INSTALLDIR=$HOME/VE-QUIVER
+fi
+
+echo "* Will install Quiver (branch=$BRANCH) into $INSTALLDIR"
+
 echo "* Checking basic requirements"
 git --version         || die "git not found"
 python2.7 --version   || die "Python2.7 not found"
 virtualenv --version  || die "Python virtualenv not found"
 
-echo "* Building virtualenv"
-cd
 
-# If the virtualenv already exists, we clobber it and start afresh.
-test -e VE-QUIVER && rm -rf VE-QUIVER
-virtualenv -q -p python2.7 VE-QUIVER || die "Failed to build virtualenv"
-source ~/VE-QUIVER/bin/activate
+if [ -e $INSTALLDIR ]; then
+    echo "* Using preexisting virtualenv $INSTALLDIR"
+else
+    echo "* Building virtualenv $INSTALLDIR"
+    virtualenv -q -p python2.7 $INSTALLDIR || die "Failed to build virtualenv"
+fi
+
+source $INSTALLDIR/bin/activate || die "Could not activate virtualenv"
 
 echo "* Installing NumPy and h5py (may take a minute)"
-pip install -q numpy==1.6.0 || die "Failed to install NumPy"
-pip install -q h5py==2.0.1  || die "Failed to install h5py"
+# pip install -q numpy==1.6.0 || die "Failed to install NumPy"
+# pip install -q h5py==2.0.1  || die "Failed to install h5py"
 
 echo "* Installing pbcore"
-pip install -q git+https://github.com/PacificBiosciences/pbcore || die "Failed to install pbcore"
+pip install -q git+https://github.com/PacificBiosciences/pbcore \
+    || die "Failed to install pbcore"
 
 echo "* Installing ConsensusCore"
 TMPDIR=`mktemp -d /tmp/QuiverInstall-XXXXX`
 pushd $TMPDIR
-git clone https://github.com/PacificBiosciences/ConsensusCore || die "Failed to download ConsensusCore"
+git clone https://github.com/PacificBiosciences/ConsensusCore \
+    || die "Failed to download ConsensusCore"
 pushd ConsensusCore
 python setup.py -q install || die "Failed to install ConsensusCore"
 popd
 popd
 
-echo "* Installing GenomicConsensus"
-pip install -q git+https://github.com/PacificBiosciences/GenomicConsensus || die "Failed to install GenomicConsensus"
+echo "* Installing GenomicConsensus (branch=${BRANCH})"
+pip install -q git+https://github.com/PacificBiosciences/GenomicConsensus@${BRANCH} \
+    || die "Failed to install GenomicConsensus"
 
 echo
 echo "*****************************************************"
@@ -91,7 +114,7 @@ echo "Successful installation!  To use the variantCaller.py"
 echo "script (quiver driver), first enable the virtualenv  "
 echo "by running                                           "
 echo
-echo "    $ source ~/VE-QUIVER/bin/activate                "
+echo "    $ source ${INSTALLDIR}/bin/activate              "
 echo
 echo "*****************************************************"
 echo
