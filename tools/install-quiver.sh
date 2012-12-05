@@ -41,14 +41,14 @@
 ## Running:
 ##   You can download and run this script directly via:
 ##
-##     $ bash <(curl http://git.io/JR7TnQ)
+##     $ curl -L http://git.io/JR7TnQ | bash
 ##
 ##   You can choose the git branch that will be installed from and the
 ##   virtualenv install directory, using the shell variables BRANCH
 ##   and INSTALLDIR:
 ##
-##     $ BRANCH=dinucleotide_repeats INSTALLDIR=/home/dave/VE-dinuc \
-##         bash <(curl http://git.io/JR7TnQ)
+##     $ curl -L http://git.io/JR7TnQ | \
+##        BRANCH=dinucleotide_repeats INSTALLDIR=/home/dave/VE-dinuc bash
 ##
 ## Uninstall:
 ##
@@ -87,8 +87,8 @@ fi
 source $INSTALLDIR/bin/activate || die "Could not activate virtualenv"
 
 echo "* Installing NumPy and h5py (may take a minute)"
-# pip install -q numpy==1.6.0 || die "Failed to install NumPy"
-# pip install -q h5py==2.0.1  || die "Failed to install h5py"
+pip install -q numpy==1.6.0 || die "Failed to install NumPy"
+pip install -q h5py==2.0.1  || die "Failed to install h5py"
 
 echo "* Installing pbcore"
 pip install -q git+https://github.com/PacificBiosciences/pbcore \
