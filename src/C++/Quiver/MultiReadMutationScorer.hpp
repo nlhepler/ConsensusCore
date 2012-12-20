@@ -64,7 +64,8 @@ namespace ConsensusCore {
         // must be provided with (0-based) template start/end coordinates.
         void AddRead(const QvSequenceFeatures& features, StrandEnum strand);
         void AddRead(const QvSequenceFeatures& features, StrandEnum strand,
-                     int templateStart, int templateEnd);
+                     int templateStart, int templateEnd,
+					 bool pinStart = true, bool pinEnd = true);
         void AddRead(const MappedRead& mappedRead);
 
         float Score(const Mutation& m) const;

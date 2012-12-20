@@ -134,15 +134,17 @@ namespace ConsensusCore
         AddRead(features, strand, 0, TemplateLength());
     }
 
-    template<typename R>
+	template<typename R>
     void MultiReadMutationScorer<R>::AddRead(const QvSequenceFeatures & features,
                                              StrandEnum strand,
                                              int templateStart,
-                                             int templateEnd)
+                                             int templateEnd, 
+											 bool pinStart,
+											 bool pinEnd)
     {
         DEBUG_ONLY(CheckInvariants());
         MappedRead* mr = new MappedRead(features, strand, templateStart, templateEnd);
-        EvaluatorType ev(features, Template(strand, templateStart, templateEnd), quiverConfig_.QvParams);
+        EvaluatorType ev(features, Template(strand, templateStart, templateEnd), quiverConfig_.QvParams, pinStart, pinEnd);
         scorerForRead_[mr] = new MutationScorer<R>(ev, recursor_);
         DEBUG_ONLY(CheckInvariants());
     }
