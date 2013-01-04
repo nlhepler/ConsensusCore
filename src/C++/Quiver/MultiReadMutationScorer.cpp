@@ -52,7 +52,7 @@ namespace ConsensusCore
           quiverConfig_(quiverConfig),
           fwdTemplate_(tpl),
           revTemplate_(ReverseComplement(tpl)),
-          scorerForRead_()
+          readsAndScorers_()
     {
         DEBUG_ONLY(CheckInvariants());
     }
@@ -60,7 +60,7 @@ namespace ConsensusCore
     template<typename R>
     MultiReadMutationScorer<R>::~MultiReadMutationScorer()
     {
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             delete kv.first;
             delete kv.second;
@@ -78,7 +78,7 @@ namespace ConsensusCore
     int
     MultiReadMutationScorer<R>::NumReads() const
     {
-        return scorerForRead_.size();
+        return readsAndScorers_.size();
     }
 
     template<typename R>
@@ -114,7 +114,7 @@ namespace ConsensusCore
         fwdTemplate_ = ConsensusCore::ApplyMutations(mutations, fwdTemplate_);
         revTemplate_ = ReverseComplement(fwdTemplate_);
 
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             int newTemplateStart = mtp[kv.first->TemplateStart];
             int newTemplateEnd   = mtp[kv.first->TemplateEnd];
@@ -145,7 +145,7 @@ namespace ConsensusCore
         DEBUG_ONLY(CheckInvariants());
         MappedRead* mr = new MappedRead(features, strand, templateStart, templateEnd);
         EvaluatorType ev(features, Template(strand, templateStart, templateEnd), quiverConfig_.QvParams, pinStart, pinEnd);
-        scorerForRead_[mr] = new MutationScorer<R>(ev, recursor_);
+        readsAndScorers_.push_back(std::make_pair(mr, new MutationScorer<R>(ev, recursor_)));
         DEBUG_ONLY(CheckInvariants());
     }
 
@@ -156,7 +156,7 @@ namespace ConsensusCore
         EvaluatorType ev(mr.Features,
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
                          quiverConfig_.QvParams);
-        scorerForRead_[new MappedRead(mr)] = new MutationScorer<R>(ev, recursor_);
+        readsAndScorers_.push_back(std::make_pair(new MappedRead(mr), new MutationScorer<R>(ev, recursor_)));
         DEBUG_ONLY(CheckInvariants());
     }
 
@@ -185,7 +185,7 @@ namespace ConsensusCore
     float MultiReadMutationScorer<R>::Score(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             if (readScoresPosition(kv.first, m.Position()))
             {
@@ -209,7 +209,7 @@ namespace ConsensusCore
     float MultiReadMutationScorer<R>::FastScore(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             if (readScoresPosition(kv.first, m.Position()))
             {
@@ -232,7 +232,7 @@ namespace ConsensusCore
     std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m) const
     {
         std::vector<float> scoreByRead;
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             if (readScoresPosition(kv.first, m.Position()))
             {
@@ -252,7 +252,7 @@ namespace ConsensusCore
     bool MultiReadMutationScorer<R>::IsFavorable(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             if (readScoresPosition(kv.first, m.Position()))
             {
@@ -268,7 +268,7 @@ namespace ConsensusCore
     bool MultiReadMutationScorer<R>::FastIsFavorable(const Mutation& m) const
     {
         float sum = 0;
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             if (readScoresPosition(kv.first, m.Position()))
             {
@@ -291,7 +291,7 @@ namespace ConsensusCore
     float MultiReadMutationScorer<R>::BaselineScore() const
     {
         float sum = 0;
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             sum += kv.second->Score();
         }
@@ -303,7 +303,7 @@ namespace ConsensusCore
     {
 #ifndef NDEBUG
         assert(revTemplate_ == ReverseComplement(fwdTemplate_));
-        foreach (const item_t& kv, scorerForRead_)
+        foreach (const item_t& kv, readsAndScorers_)
         {
             assert((int)kv.second->Template().length() ==
                    kv.first->TemplateEnd - kv.first->TemplateStart);

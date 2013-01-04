@@ -101,10 +101,9 @@ namespace ConsensusCore {
         QuiverConfig quiverConfig_;
         std::string fwdTemplate_;
         std::string revTemplate_;
-        std::map<MappedRead*, ScorerType*> scorerForRead_;
+        std::vector<std::pair<MappedRead*, ScorerType*> > readsAndScorers_;
 
-        typedef std::map<MappedRead*, ScorerType*> map_t;
-        typedef typename map_t::value_type         item_t;
+        typedef typename std::pair<MappedRead*, ScorerType*>  item_t;
     };
 
     typedef MultiReadMutationScorer<SparseSseQvRecursor> SparseSseQvMultiReadMutationScorer;
