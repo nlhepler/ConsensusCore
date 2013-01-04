@@ -158,6 +158,7 @@ if "install" in sys.argv and not "build" in sys.argv:
 setup(name="ConsensusCore",
       version="0.4.0",
       author="Pacific Biosciences",
+      author_email="devnet@pacificbiosciences.com",
       url="http://www.github.com/PacificBiosciences/ConsensusCore",
       description= \
           """A library for genomic consensus and variant calling""",
