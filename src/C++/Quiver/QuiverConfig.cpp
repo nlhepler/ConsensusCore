@@ -90,8 +90,8 @@ namespace ConsensusCore {
                                const BandingOptions& bandingOptions,
                                float fastScoreThreshold)
         : QvParams(qvParams),
-          Banding(bandingOptions),
           MovesAvailable(movesAvailable),
+          Banding(bandingOptions),
           FastScoreThreshold(fastScoreThreshold)
     {}
 }
