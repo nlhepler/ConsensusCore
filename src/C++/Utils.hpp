@@ -45,11 +45,18 @@
 
 #include "Types.hpp"
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define LOCATION __FILE__ ":" TOSTRING(__LINE__)
+
 // Floating point comparison
 bool AlmostEqual(float A, float B, int maxUlps = 4);
 
-#define ShouldNotReachHere()    throw ::ConsensusCore::InternalError("Should not reach here!")
-#define NotYetImplemented()     throw ::ConsensusCore::NotYetImplementedException()
+#define ShouldNotReachHere()                                       \
+    fprintf(stderr, "Should not reach here! at " LOCATION "\n");   \
+    throw InternalError("Should not reach here!")
+
+#define NotYetImplemented()     throw NotYetImplementedException()
 
 #ifdef NDEBUG
 #   define DEBUG_ONLY(stmt)
