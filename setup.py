@@ -1,4 +1,5 @@
 from distutils.command.build import build as _build
+from distutils.errors import CompileError
 from distutils import sysconfig
 from setuptools import setup
 
@@ -135,7 +136,9 @@ class build(_build):
     most of the horrors of Python packaging.
     """
     def run(self):
-        os.system(_configuration + "make python")
+        error = os.system(_configuration + "make python")
+        if error:
+            raise CompileError, "Failed to compile or link ConsensusCore C++ code"
 
     @staticmethod
     def pythonBuildDirectory():
