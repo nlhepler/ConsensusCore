@@ -77,13 +77,19 @@ def configure():
         print "Requires numpy >= 1.6.0"
         sys.exit(1)
 
+    debug = ""
     boost_inc = None
     swig_executable = "swig"
 
     for arg in sys.argv[:]:
+        # Debug build?
+        if (arg=="-g") or (arg=="--debug"):
+            debug = "1"
+            sys.argv.remove(arg)
+
         # user can supply --boost=<path>, otherwise we look
         # in some common places for it.
-        if arg.find("--boost=") == 0:
+        elif arg.find("--boost=") == 0:
             boost_inc = arg.split("=")[1]
             # validate!
             version = parse_boost_version(os.path.join(boost_inc, "boost", "version.hpp"))
@@ -124,7 +130,8 @@ def configure():
                "PYTHON_SYS_LIB=%s "          % python_lib      + \
                "NUMPY_INCLUDE_PATH=%s "      % numpy_inc       + \
                "BOOST_INCLUDE_PATH=%s "      % boost_inc       + \
-               "SWIG=%s "                    % swig_executable
+               "SWIG=%s "                    % swig_executable + \
+               "DEBUG=%s "                   % debug
 
     return env_vars
 

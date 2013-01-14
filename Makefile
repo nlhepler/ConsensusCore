@@ -24,14 +24,7 @@ CXX_SRCS	:= $(notdir $(shell find src/C++/ -name "*.cpp" | grep -v '\#'))
 CXX_OBJS	:= $(addprefix $(OBJDIR)/, $(CXX_SRCS:.cpp=.o))
 SWIG_SRCS	:= $(shell find src/SWIG/ -name "*.i")
 
-all: release
-
-# Manage configurations using target-specific variables
-debug: CXX_OPT_FLAGS := $(CXX_OPT_FLAGS_DEBUG)
-release:
-
-debug: $(CXX_LIB)
-release: $(CXX_LIB)
+all: $(CXX_LIB)
 
 $(OBJDIR): 
 	mkdir -p $(OBJDIR)
