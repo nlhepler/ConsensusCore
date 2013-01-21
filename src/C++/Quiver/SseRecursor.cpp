@@ -167,21 +167,28 @@ namespace ConsensusCore {
                     score4 = C::Combine4(score4, alpha.Get4(i, j - 1) + e.Del4(i, j - 1));
                 }
 
+                //
+                // Extra (non-SSE cascade)
+                //
+                float insScores4_[4], score5_[5];
+
+                __m128 insScores4 = e.Extra4(i - 1, j);
+                _mm_storeu_ps(insScores4_, insScores4);
+
+                score5_[0] = alpha.Get(i - 1, j);
+                _mm_storeu_ps(&score5_[1], score4);
+
+                for (int ii = 1; ii < 5; ii++)
+                {
+                    float v = C::Combine(score5_[ii], score5_[ii - 1] + insScores4_[ii - 1]);
+                    score5_[ii] = v;
+                }
+                score4 = _mm_loadu_ps(&score5_[1]);
                 alpha.Set4(i, j, score4);
 
-                // Extra (non-SSE cascade)
-                // (Meanwhile, set score to the minimum of score4, which will be used
-                // to check for termination.)
-                score = POS_INF;
-                float potentialNewMax = NEG_INF;
-                for (int ii = 0; ii < 4; ii++)
-                {
-                    float v = C::Combine(alpha(i + ii, j), alpha(i + ii - 1, j) +
-                                                           e.Extra(i + ii - 1, j));
-                    alpha.Set(i + ii, j, v);
-                    score = min(score, v);
-                    potentialNewMax = max(potentialNewMax, v);
-                }
+                // Update score, potentialNewMax
+                float potentialNewMax = *std::max_element(score5_ + 1, score5_ + 5);
+                score = std::min(score, *std::min_element(score5_ + 1, score5_ + 5));
 
                 if (potentialNewMax > maxScore)
                 {
@@ -304,20 +311,28 @@ namespace ConsensusCore {
                     score4 = C::Combine4(score4, beta.Get4(i, j + 1) + e.Del4(i, j));
                 }
 
-                beta.Set4(i, j, score4);
-
+                //
                 // Extra (non-SSE cascade)
-                // (... and calculate min and max of score4)
-                score = POS_INF;
-                float potentialNewMax = NEG_INF;
+                //
+                float insScores4_[4], score5_[5];
+
+                __m128 insScores4 = e.Extra4(i, j);
+                _mm_storeu_ps(insScores4_, insScores4);
+
+                score5_[4] = beta.Get(i + 4, j);
+                _mm_storeu_ps(score5_, score4);
+
                 for (int ii = 3; ii >= 0; ii--)
                 {
-                    float v = C::Combine(beta(i + ii, j), beta(i + ii + 1, j) +
-                                                          e.Extra(i + ii, j));
-                    beta.Set(i + ii, j, v);
-                    score = min(score, v);
-                    potentialNewMax = max(potentialNewMax, v);
+                    float v = C::Combine(score5_[ii], score5_[ii + 1] + insScores4_[ii]);
+                    score5_[ii] = v;
                 }
+                score4 = _mm_loadu_ps(score5_);
+                beta.Set4(i, j, score4);
+
+                // Update score, potentialNewMax
+                float potentialNewMax = *std::max_element(score5_, score5_ + 4);
+                score = std::min(score, *std::min_element(score5_, score5_ + 4));
 
                 if (potentialNewMax > maxScore)
                 {
@@ -457,6 +472,11 @@ namespace ConsensusCore {
                                 alpha(i - 1, j - 1) :
                                 ext(i - 1, extCol - 1));
                     score = C::Combine(score, prev + e.Inc(i - 1, j - 1));
+
+                    // Extra
+                    prev = ext(i - 1, extCol);
+                    score = C::Combine(score, prev + e.Extra(i - 1, j));
+
                     // Merge
                     if (this->movesAvailable_ & MERGE)
                     {
@@ -494,17 +514,24 @@ namespace ConsensusCore {
                             ext.Get4(i, extCol - 1));
                 score4 = C::Combine4(score4, prev4 + e.Del4(i, j - 1));
 
+                // Extras:
+                float insScores4_[4], score5_[5];
+
+                __m128 insScores4 = e.Extra4(i - 1, j);
+                _mm_storeu_ps(insScores4_, insScores4);
+
+                score5_[0] = ext.Get(i - 1, extCol);
+                _mm_storeu_ps(&score5_[1], score4);
+
+                for (int ii = 1; ii < 5; ii++)
+                {
+                    float v = C::Combine(score5_[ii], score5_[ii - 1] + insScores4_[ii - 1]);
+                    score5_[ii] = v;
+                }
+                score4 = _mm_loadu_ps(&score5_[1]);
                 ext.Set4(i, extCol, score4);
             }
             assert (i == endRow);
-
-            // Run back down the column and get the extras
-            for (i = max(1, beginRow); i < endRow; i++)
-            {
-                float score = C::Combine(ext(i, extCol),
-                                         ext(i - 1, extCol) + e.Extra(i - 1, j));
-                ext.Set(i, extCol, score);
-            }
 
             ext.FinishEditingColumn(extCol, beginRow, endRow);
         }

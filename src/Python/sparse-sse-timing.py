@@ -17,13 +17,13 @@ params = QvModelParams.Default()
 
 e = QvEvaluator(features, tpl, params)
 
-simple_recursor = SimpleQvRecursor(BASIC_MOVES | MERGE, BandingOptions(4, 200))
-sse_recursor    = SseQvRecursor(BASIC_MOVES | MERGE, BandingOptions(4, 200))
+simple_recursor = SparseSimpleQvRecursor(BASIC_MOVES | MERGE, BandingOptions(4, 200))
+sse_recursor    = SparseSseQvRecursor(BASIC_MOVES | MERGE, BandingOptions(4, 200))
 
-null_guide = DenseMatrix.Null()
-alpha = DenseMatrix(I + 1, J + 1)
-beta = DenseMatrix(I + 1, J + 1)
-ext = DenseMatrix(I + 1, 2)
+null_guide = SparseMatrix.Null()
+alpha = SparseMatrix(I + 1, J + 1)
+beta = SparseMatrix(I + 1, J + 1) 
+ext = SparseMatrix(I + 1, 2)
 
 
 ITERS = 100
@@ -78,8 +78,8 @@ simple_link_time_per = simple_link_t.timeit(number = ITERS) / ITERS
 
 sse_link_t = Timer("link_alpha_beta(sse_recursor)", "from __main__ import link_alpha_beta, sse_recursor")
 sse_link_time_per = sse_link_t.timeit(number = ITERS) / ITERS
-
-
+    
+    
 print "Summary: (problem size = %d x %d;  %d iterations)" % (I, J, ITERS)
 print "  FillAlpha:"
 print "    Simple: %f sec/iter" % simple_fill_alpha_time_per
@@ -95,12 +95,12 @@ print "    Simple: %f sec/iter" % simple_link_time_per
 print "    SSE:    %f sec/iter" % sse_link_time_per
 
 print
-print "FillAlpha,Dense,Simple,%f" % simple_fill_alpha_time_per
-print "FillAlpha,Dense,SSE,%f" % sse_fill_alpha_time_per
-print "FillBeta,Dense,Simple,%f" % simple_fill_beta_time_per
-print "FillBeta,Dense,SSE,%f" % sse_fill_beta_time_per
-print "ExtendAlpha,Dense,Simple,%f" % simple_extend_time_per
-print "ExtendAlpha,Dense,SSE,%f" % sse_extend_time_per
-print "LinkAlphaBeta,Dense,Simple,%f" % simple_link_time_per
-print "LinkAlphaBeta,Dense,SSE,%f" % sse_link_time_per
+print "FillAlpha,Sparse,Simple,%f" % simple_fill_alpha_time_per
+print "FillAlpha,Sparse,SSE,%f" % sse_fill_alpha_time_per
+print "FillBeta,Sparse,Simple,%f" % simple_fill_beta_time_per
+print "FillBeta,Sparse,SSE,%f" % sse_fill_beta_time_per
+print "ExtendAlpha,Sparse,Simple,%f" % simple_extend_time_per
+print "ExtendAlpha,Sparse,SSE,%f" % sse_extend_time_per
+print "LinkAlphaBeta,Sparse,Simple,%f" % simple_link_time_per
+print "LinkAlphaBeta,Sparse,SSE,%f" % sse_link_time_per
 print

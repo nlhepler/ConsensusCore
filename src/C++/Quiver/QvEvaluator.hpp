@@ -235,12 +235,27 @@ namespace ConsensusCore
 
         __m128 Extra4(int i, int j) const
         {
-            __m128 res = _mm_setr_ps(Extra(i + 0, j),
-                                     Extra(i + 1, j),
-                                     Extra(i + 2, j),
-                                     Extra(i + 3, j));
-            return res;
+            assert (0 <= i && i <= ReadLength() - 4);
+            assert (0 <= j && j <= TemplateLength());
+            if (i != 0 && i + 3 != ReadLength())
+            {
+                float tplBase = tpl_[j];
+                __m128 branch = AFFINE4(params_.Branch, params_.BranchS, &features_.InsQv[i]);
+                __m128 nce    = AFFINE4(params_.Nce,    params_.NceS,    &features_.InsQv[i]);
+
+                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.SequenceAsFloat[i]), _mm_set_ps1(tplBase));
+                return MUX4(mask, branch, nce);
+            }
+            else
+            {
+                __m128 res = _mm_setr_ps(Extra(i + 0, j),
+                                         Extra(i + 1, j),
+                                         Extra(i + 2, j),
+                                         Extra(i + 3, j));
+                return res;
+            }
         }
+
 
         __m128 Merge4(int i, int j) const
         {
