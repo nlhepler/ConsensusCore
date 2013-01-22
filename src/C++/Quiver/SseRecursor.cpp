@@ -188,7 +188,7 @@ namespace ConsensusCore {
 
                 // Update score, potentialNewMax
                 float potentialNewMax = *std::max_element(score5_ + 1, score5_ + 5);
-                score = std::min(score, *std::min_element(score5_ + 1, score5_ + 5));
+                score = *std::min_element(score5_ + 1, score5_ + 5);
 
                 if (potentialNewMax > maxScore)
                 {
@@ -332,7 +332,7 @@ namespace ConsensusCore {
 
                 // Update score, potentialNewMax
                 float potentialNewMax = *std::max_element(score5_, score5_ + 4);
-                score = std::min(score, *std::min_element(score5_, score5_ + 4));
+                score = *std::min_element(score5_, score5_ + 4);
 
                 if (potentialNewMax > maxScore)
                 {
