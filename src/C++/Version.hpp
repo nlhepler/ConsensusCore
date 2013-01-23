@@ -36,6 +36,7 @@
 // Author: David Alexander
 
 #include <string>
+#include <boost/tuple/tuple.hpp>
 
 #pragma once
 
@@ -51,8 +52,10 @@ namespace ConsensusCore
         static int Major();
         static int Minor();
         static int Patch();
+
+        // Sadly SWIG doesn't support boost::tuple
+        static std::vector<int> VersionTuple();
+
         static std::string VersionString();
-        static bool IsAtLeast(int major, int minor, int patch);
-        static bool HasFeature(const std::string& name);
     };
 }

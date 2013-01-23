@@ -44,10 +44,6 @@
 
 namespace ConsensusCore
 {
-    using boost::make_tuple;
-    using boost::format;
-    using boost::str;
-
     int Version::Major()
     {
         return API_MAJOR;
@@ -63,23 +59,21 @@ namespace ConsensusCore
         return API_PATCH;
     }
 
+    std::vector<int> Version::VersionTuple()
+    {
+        int version[3] = { API_MAJOR, API_MINOR, API_PATCH };
+        return std::vector<int>(version, version + 3);
+    }
+
     std::string Version::VersionString()
     {
+        using boost::format;
+        using boost::str;
+
         std::string version = str(format("%d.%d.%d") % API_MAJOR % API_MINOR % API_PATCH);
 #ifndef NDEBUG
         version += "-DEBUG";
 #endif  // !NDEBUG
         return version;
-    }
-
-    bool Version::IsAtLeast(int major, int minor, int patch)
-    {
-        // lexicographical comparison using boost tuples
-        return make_tuple(API_MAJOR, API_MINOR, API_PATCH) >= make_tuple(major, minor, patch);
-    }
-
-    bool Version::HasFeature(const std::string& name)
-    {
-        return false;
     }
 }
