@@ -12,7 +12,7 @@ $(PYTHON_LIB): $(CXX_LIB) $(SWIG_SRCS)
 	mkdir -p $(BUILD_ROOT)/Python
 	$(SWIG) -builtin -python -c++ -Isrc/C++ -outdir $(BUILD_ROOT)/Python -o $(BUILD_ROOT)/Python/ConsensusCore_wrap.cxx src/SWIG/ConsensusCore.i 
 	$(CXX) $(PYTHON_SYS_INCLUDES) -c $(BUILD_ROOT)/Python/ConsensusCore_wrap.cxx -o $(BUILD_ROOT)/Python/ConsensusCore_wrap.o 
-	$(CXX) -shared $(BUILD_ROOT)/Python/ConsensusCore_wrap.o $(CXX_LIB) $(PYTHON_SYS_LIBS) -o $@
+	$(CXX) $(PYTHON_SHLIB_FLAGS) $(BUILD_ROOT)/Python/ConsensusCore_wrap.o $(CXX_LIB) -o $@
 
 python-shell:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) --c="from ConsensusCore import *" -i

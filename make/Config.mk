@@ -26,6 +26,5 @@ LCOV            := lcov
 GENHTML         := genhtml
 
 PYTHON_SYS_INCLUDES := -I$(PYTHON_SYS_INCLUDE_PATH) -I$(NUMPY_INCLUDE_PATH)
-PYTHON_SYS_LIBS     := -L$(PYTHON_SYS_LIBDIR) -l$(PYTHON_SYS_LIB)
 PYTHON          ?= ipython --no-banner
 PYTHONPATH      := src/Python:$(BUILD_ROOT)/Python:$(PYTHONPATH)

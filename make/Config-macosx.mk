@@ -14,5 +14,4 @@ BOOST_INCLUDE_PATH  ?= /usr/local/boost_1_47_0
 NUMPY_INCLUDE_PATH  ?= /opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/
 
 PYTHON_SYS_INCLUDE_PATH ?= /opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
-PYTHON_SYS_LIBDIR       ?= /opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config
-PYTHON_SYS_LIB          ?= python2.7
+PYTHON_SHLIB_FLAGS ?= -shared -undefined dynamic_lookup

@@ -12,7 +12,6 @@ export SWIG_LIB
 
 BOOST_INCLUDE_PATH  ?=  $(PROJECT_ROOT)/../../ThirdParty/boost/boost_1_47_0/
 NUMPY_INCLUDE_PATH  ?=  /usr/include/python2.6
-
 PYTHON_SYS_INCLUDE_PATH ?= /usr/include/python2.6
-PYTHON_SYS_LIBDIR       ?= /usr/lib
-PYTHON_SYS_LIB          ?= python2.6
+
+PYTHON_SHLIB_FLAGS      ?= -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions
