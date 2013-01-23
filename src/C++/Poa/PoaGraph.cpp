@@ -113,7 +113,7 @@ namespace ConsensusCore
         }
     };
 
-    typedef adjacency_list < hash_setS, vecS, bidirectionalS,
+    typedef adjacency_list < setS, vecS, bidirectionalS,
                              property<vertex_info_t, PoaNode*> > BoostGraph;
     typedef graph_traits<BoostGraph>::edge_descriptor Edge;
     typedef graph_traits<BoostGraph>::vertex_descriptor Vertex;
