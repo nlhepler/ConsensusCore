@@ -39,6 +39,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <string>
+#include <utility>
 #include <vector>
 #include <map>
 
@@ -75,7 +76,7 @@ namespace ConsensusCore {
         void AddRead(const QvSequenceFeatures& features, StrandEnum strand);
         void AddRead(const QvSequenceFeatures& features, StrandEnum strand,
                      int templateStart, int templateEnd,
-					 bool pinStart = true, bool pinEnd = true);
+                     bool pinStart = true, bool pinEnd = true);
         void AddRead(const MappedRead& mappedRead);
 
         float Score(const Mutation& m) const;
@@ -99,7 +100,7 @@ namespace ConsensusCore {
 
     public:
         // Return the actual sum of scores for the current template.
-        // TODO: need to refactor to make the semantics of the various "Score" functions
+        // TODO(dalexander): need to refactor to make the semantics of the various "Score" functions
         // clearer.
         float BaselineScore() const;
 

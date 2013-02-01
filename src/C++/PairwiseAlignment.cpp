@@ -116,7 +116,7 @@ namespace ConsensusCore {
             else if (t == q)          { tr = 'M'; }
             else if (t == '-')        { tr = 'I'; }
             else if (q == '-')        { tr = 'D'; }
-            else                      { tr = 'R'; }
+            else                      { tr = 'R'; } // NOLINT
 
             transcript_[i] = tr;
         }
@@ -250,7 +250,7 @@ namespace ConsensusCore {
     {
         return std::count_if(alignmentTranscript.begin(), alignmentTranscript.end(), addsToQuery);
     }
-#endif // !NDEBUG
+#endif  // !NDEBUG
 
 
     // TargetPositionsInQuery:

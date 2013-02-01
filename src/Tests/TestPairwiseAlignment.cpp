@@ -35,9 +35,9 @@
 
 // Author: David Alexander
 
-#include <boost/shared_ptr.hpp>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <boost/shared_ptr.hpp>
 
 #include "PairwiseAlignment.hpp"
 #include "AffineAlignment.hpp"

@@ -36,6 +36,7 @@
 // Author: David Alexander
 
 #include <string>
+#include <vector>
 #include <boost/format.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>

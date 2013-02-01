@@ -243,7 +243,8 @@ namespace ConsensusCore
                 __m128 branch = AFFINE4(params_.Branch, params_.BranchS, &features_.InsQv[i]);
                 __m128 nce    = AFFINE4(params_.Nce,    params_.NceS,    &features_.InsQv[i]);
 
-                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.SequenceAsFloat[i]), _mm_set_ps1(tplBase));
+                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.SequenceAsFloat[i]),
+                                           _mm_set_ps1(tplBase));
                 return MUX4(mask, branch, nce);
             }
             else

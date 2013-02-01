@@ -37,12 +37,13 @@
 
 #include "AffineAlignment.hpp"
 
+#include <algorithm>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <cassert>
 #include <cfloat>
 #include <string>
 #include <vector>
-#include <assert.h>
 
 #include "PairwiseAlignment.hpp"
 #include "Sequence.hpp"
@@ -78,7 +79,7 @@ namespace ConsensusCore {
     {
         // Implementation follows the textbook "two-state" affine gap model
         // description from Durbin et. al
-        using namespace boost::numeric::ublas;
+        using boost::numeric::ublas::matrix;
 
         int I = query.length();
         int J = target.length();
@@ -169,5 +170,4 @@ namespace ConsensusCore {
         assert (raQuery.length() == raTarget.length());
         return new PairwiseAlignment(Reverse(raTarget), Reverse(raQuery));
     }
-
 }
