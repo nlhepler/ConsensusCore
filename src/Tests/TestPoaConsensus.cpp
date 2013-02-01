@@ -226,17 +226,17 @@ TEST(PoaGraph, SmallMismatchTests)
     // Mismatch in middle
     {
         vector<std::string> reads;
-        reads += "GGG", "GTG";
+        reads += "GGG", "GTG", "GTG";
         const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
         string dot = pc->Graph()->ToGraphViz();
         string expectedDot = \
                              "digraph G {"
                              "0[shape=Mrecord, label=\"{ ^ | 0 }\"];"
                              "1[shape=Mrecord, label=\"{ $ | 0 }\"];"
-                             "2[shape=Mrecord, label=\"{ G | 2 }\"];"
+                             "2[shape=Mrecord, label=\"{ G | 3 }\"];"
                              "3[shape=Mrecord, label=\"{ G | 1 }\"];"
-                             "4[shape=Mrecord, label=\"{ G | 2 }\"];"
-                             "5[shape=Mrecord, label=\"{ T | 1 }\"];"
+                             "4[shape=Mrecord, label=\"{ G | 3 }\"];"
+                             "5[shape=Mrecord, label=\"{ T | 2 }\"];"
                              "0->2 ;"
                              "2->3 ;"
                              "3->4 ;"
