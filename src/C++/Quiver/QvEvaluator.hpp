@@ -184,11 +184,6 @@ namespace ConsensusCore
             }
         }
 
-        float Burst(int i, int j, int hpLength) const
-        {
-            NotYetImplemented();
-        }
-
         //
         // SSE
         //
@@ -280,10 +275,6 @@ namespace ConsensusCore
             }
         }
 
-        __m128 Burst4(int i, int j, int hpLength) const
-        {
-            NotYetImplemented();
-        }
 
     protected:
         QvSequenceFeatures features_;

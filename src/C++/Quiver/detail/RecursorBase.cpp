@@ -134,25 +134,6 @@ namespace detail {
             float bestScore = lfloat();
             float bestMoveScore = lfloat();
 
-            if ((movesAvailable_ & BURST) && i > 0)
-            {
-                // Burst
-                for (int hpLength = 1;
-                     hpLength <= i && (moveScore = e.Burst(i - hpLength, j, hpLength)) > -FLT_MAX;
-                     hpLength++)
-                {
-                    prevScore = a(i - hpLength, j);
-                    float totalScore = prevScore + moveScore;
-                    if (totalScore > bestScore)
-                    {
-                        MoveSpec burstMove = { BURST, hpLength, 0 };
-                        bestMove = burstMove;
-                        bestScore = totalScore;
-                        bestMoveScore = moveScore;
-                    }
-                }
-            }
-
             if (i > 0 && j > 0)
             {
                 prevScore = a(i - 1, j - 1);
@@ -248,13 +229,6 @@ namespace detail {
                 target     += e.Template()[j+1];
                 query      += '-';
                 query      += e.Read()[i];
-                break;
-            case BURST:
-                for (int z = 0; z < move.ReadDelta; z++)
-                {
-                    target     += '-';
-                    query      += e.Read()[i + z];
-                }
                 break;
             case INVALID_MOVE:
                 ShouldNotReachHere();

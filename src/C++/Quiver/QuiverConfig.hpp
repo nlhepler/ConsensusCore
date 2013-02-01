@@ -48,7 +48,6 @@ namespace ConsensusCore
         EXTRA        = 0x2,
         DELETE       = 0x4,
         MERGE        = 0x8,
-        BURST        = 0x10,
         BASIC_MOVES  = (INCORPORATE | EXTRA | DELETE),
         ALL_MOVES    = (BASIC_MOVES | MERGE)
     };

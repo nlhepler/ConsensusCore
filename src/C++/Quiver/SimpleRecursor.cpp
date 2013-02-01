@@ -131,12 +131,6 @@ namespace ConsensusCore {
                     score = C::Combine(score, thisMoveScore);
                 }
 
-                // Burst:
-                if (this->movesAvailable_ & BURST)
-                {
-                    NotYetImplemented();
-                }
-
                 //  Save score
                 alpha.Set(i, j, score);
 
@@ -231,12 +225,6 @@ namespace ConsensusCore {
                 {
                     thisMoveScore = beta(i + 1, j + 2) + e.Merge(i, j);
                     score = C::Combine(score, thisMoveScore);
-                }
-
-                // Burst:
-                if (this->movesAvailable_ & BURST)
-                {
-                    NotYetImplemented();
                 }
 
                 //  Save score
@@ -396,12 +384,6 @@ namespace ConsensusCore {
                     float prev = alpha(i - 1, j - 2);
                     thisMoveScore = prev + e.Merge(i - 1, j - 2);
                     score = C::Combine(score, thisMoveScore);
-                }
-
-                // Burst:
-                if (this->movesAvailable_ & BURST)
-                {
-                    NotYetImplemented();
                 }
 
                 ext.Set(i, extCol, score);
