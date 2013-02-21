@@ -40,7 +40,6 @@ $(CXX_OBJS): $(OBJDIR)/%.o: %.cpp
 -include $(CXX_OBJS:.o=.d)
 
 
-
 #
 # SWIG client languages
 #
@@ -48,9 +47,6 @@ include make/R.mk
 include make/Python.mk
 include make/Java.mk
 include make/CSharp.mk
-
-
-
 
 
 #
@@ -88,6 +84,9 @@ tests: debug
 	  BUILD_ROOT=$(BUILD_ROOT)        \
 	  make -f $(PROJECT_ROOT)/make/Tests.mk run-tests)
 
+test: tests
+check: tests
+
 coverage:
 	make COVERAGE=--coverage
 	mkdir -p $(BUILD_ROOT)/Tests/Coverage && \
@@ -99,4 +98,4 @@ coverage:
 install: python-install
 
 .PHONY: all debug release demo shell docs astyle lint pre-commit-hook \
-	clean clean-lib clobber tests coverage
+	clean clean-lib clobber tests coverage test check
