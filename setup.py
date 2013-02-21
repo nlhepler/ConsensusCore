@@ -202,6 +202,7 @@ setup(name="ConsensusCore",
           """A library for genomic consensus and variant calling""",
       license=open("LICENSES").read(),
       py_modules=["ConsensusCore"],
+      packages = [""],
       package_dir={"": build.pythonBuildDirectory() },
 
       # Smuggle the native library in as a data file
