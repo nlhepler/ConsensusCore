@@ -76,14 +76,14 @@ def command_line_arguments():
       --debug/-g
     Return as a dict
     """
-    arguments = { "debug" : False,
+    arguments = { "debug" : "",
                   "boost" : None,
                   "swig"  : None  }
 
     for arg in sys.argv[:]:
         # Debug build?
         if (arg=="-g") or (arg=="--debug"):
-            arguments["debug"] = True
+            arguments["debug"] = "1"
             sys.argv.remove(arg)
 
         # --boost=...
