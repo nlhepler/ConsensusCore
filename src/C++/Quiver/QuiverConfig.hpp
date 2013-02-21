@@ -78,30 +78,24 @@ namespace ConsensusCore
         float DeletionWithTagS;
         float Nce;
         float NceS;
-        float Merge;
-        float MergeS;
-        float Burst;
-        float BurstS;
+        float Merge[4];
+        float MergeS[4];
 
-        // By providing a single constructor with default arguments,
-        // we allow Python and other SWIG client languages to use
-        // named parameters. However if the user forgets to set one of
-        // the parameters, trouble!
-
-        QvModelParams(float Match            = 0,
-                      float Mismatch         = 0,
-                      float MismatchS        = 0,
-                      float Branch           = 0,
-                      float BranchS          = 0,
-                      float DeletionN        = 0,
-                      float DeletionWithTag  = 0,
-                      float DeletionWithTagS = 0,
-                      float Nce              = 0,
-                      float NceS             = 0,
-                      float Merge            = 0,
-                      float MergeS           = 0,
-                      float Burst            = 0,
-                      float BurstS           = 0)
+        //
+        // Constructor for single merge rate and merge rate slope
+        //
+        QvModelParams(float Match,
+                      float Mismatch,
+                      float MismatchS,
+                      float Branch,
+                      float BranchS,
+                      float DeletionN,
+                      float DeletionWithTag,
+                      float DeletionWithTagS,
+                      float Nce,
+                      float NceS,
+                      float Merge,
+                      float MergeS)
             : Match(Match)
             , Mismatch(Mismatch)
             , MismatchS(MismatchS)
@@ -112,11 +106,56 @@ namespace ConsensusCore
             , DeletionWithTagS(DeletionWithTagS)
             , Nce(Nce)
             , NceS(NceS)
-            , Merge(Merge)
-            , MergeS(MergeS)
-            , Burst(Burst)
-            , BurstS(BurstS)
-        {}
+        {
+            for (int base = 0; base < 4; base++)
+            {
+                this->Merge[base]  = Merge;
+                this->MergeS[base] = MergeS;
+            }
+        }
+
+        //
+        // Constructor for per-channel merge rate and merge rate slope
+        //
+        QvModelParams(float Match,
+                      float Mismatch,
+                      float MismatchS,
+                      float Branch,
+                      float BranchS,
+                      float DeletionN,
+                      float DeletionWithTag,
+                      float DeletionWithTagS,
+                      float Nce,
+                      float NceS,
+                      float Merge_A,
+                      float Merge_C,
+                      float Merge_G,
+                      float Merge_T,
+                      float MergeS_A,
+                      float MergeS_C,
+                      float MergeS_G,
+                      float MergeS_T)
+            : Match(Match)
+            , Mismatch(Mismatch)
+            , MismatchS(MismatchS)
+            , Branch(Branch)
+            , BranchS(BranchS)
+            , DeletionN(DeletionN)
+            , DeletionWithTag(DeletionWithTag)
+            , DeletionWithTagS(DeletionWithTagS)
+            , Nce(Nce)
+            , NceS(NceS)
+        {
+            this->Merge[0] = Merge_A;
+            this->Merge[1] = Merge_C;
+            this->Merge[2] = Merge_G;
+            this->Merge[3] = Merge_T;
+            this->MergeS[0] = MergeS_A;
+            this->MergeS[1] = MergeS_C;
+            this->MergeS[2] = MergeS_G;
+            this->MergeS[3] = MergeS_T;
+        }
+
 
         static const QvModelParams Untrained();
         static const QvModelParams C2_130();

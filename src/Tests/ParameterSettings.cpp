@@ -44,19 +44,16 @@ using ConsensusCore::QvModelParams;
 template<>
 QvModelParams TestingParams<QvModelParams>()
 {
-    QvModelParams p;
-    p.Match             =   0;
-    p.Mismatch          = -10;
-    p.MismatchS         =  -0.1;
-    p.Branch            =  -5;
-    p.BranchS           =  -0.1;
-    p.DeletionN         =  -4;
-    p.DeletionWithTag   =  -6;
-    p.DeletionWithTagS  =  -0.1;
-    p.Nce               =  -8;
-    p.NceS              =  -0.1;
-    p.Merge             =  -2;
-    p.Burst             =  -6;
-    p.BurstS            =  -0.1;
-    return p;
+    return QvModelParams(0.f,
+                         -10.f,
+                         -0.1f,
+                         -5.f,
+                         -0.1f,
+                         -4.f,
+                         -6.f,
+                         -0.1f,
+                         -8.f,
+                         -0.1f,
+                         -2.f,
+                         0.f);
 }

@@ -66,6 +66,20 @@ using std::max;
 namespace ConsensusCore
 {
     //
+    // Utility functions
+    //
+    static inline int encodeTplBase(char base)
+    {
+        switch (base) {
+            case 'A': return 0;
+            case 'C': return 1;
+            case 'G': return 2;
+            case 'T': return 3;
+            default:  ShouldNotReachHere();
+        }
+    }
+
+    //
     // Evaluator classes
     //
 
@@ -179,8 +193,8 @@ namespace ConsensusCore
                 return -FLT_MAX;
             }
             else
-            {
-                return params_.Merge + params_.MergeS * features_.MergeQv[i];
+            {   int tplBase = encodeTplBase(tpl_[j]);
+                return params_.Merge[tplBase] + params_.MergeS[tplBase] * features_.MergeQv[i];
             }
         }
 
@@ -257,12 +271,16 @@ namespace ConsensusCore
         {
             assert(0 <= i && i <= ReadLength() - 4);
             assert(0 <= j && j < TemplateLength() - 1);
-            __m128 merge =  AFFINE4(params_.Merge,
-                                    params_.MergeS,
-                                    &features_.MergeQv[i]);
-            __m128 noMerge = _mm_set_ps1(-FLT_MAX);
+
             float tplBase     = tpl_[j];
             float tplBaseNext = tpl_[j + 1];
+            int tplBase_ = encodeTplBase(tpl_[j]);
+
+            __m128 merge =  AFFINE4(params_.Merge[tplBase_],
+                                    params_.MergeS[tplBase_],
+                                    &features_.MergeQv[i]);
+            __m128 noMerge = _mm_set_ps1(-FLT_MAX);
+
             if (tplBase == tplBaseNext)
             {
                 __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&features_.SequenceAsFloat[i]),

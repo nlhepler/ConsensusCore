@@ -41,42 +41,34 @@ namespace ConsensusCore {
 
     const QvModelParams QvModelParams::Untrained()
     {
-        QvModelParams p;
-        p.Match            =  -1.280691;
-        p.Mismatch         = -31.42568;
-        p.MismatchS        =  -0.4476061;
-        p.Branch           = -15.58668;
-        p.BranchS          = -0.4832615;
-        p.DeletionN        = -25.06574;
-        p.DeletionWithTag  =  -3.101073;
-        p.DeletionWithTagS =  -0.7184672;
-        p.Nce              = -18;
-        p.NceS             =  -1.707493;
-        p.Merge            = -44.34149;
-        p.MergeS           = 0.0;
-        p.Burst            = -30;
-        p.BurstS           =  -4;
-        return p;
+        return QvModelParams(-1.280691f,
+                             -31.42568f,
+                             -0.4476061f,
+                             -15.58668f,
+                             -0.4832615f,
+                             -25.06574f,
+                             -3.101073f,
+                             -0.7184672f,
+                             -18.f,
+                             -1.707493f,
+                             -44.34149f,
+                             0.0f);
     }
 
     const QvModelParams QvModelParams::C2_130()
     {
-        QvModelParams p;
-        p.Match            = -1.41882;
-        p.Mismatch         = -6.58979;
-        p.MismatchS        = -0.366356;
-        p.Branch           = -1.22393;
-        p.BranchS          = -0.30647;
-        p.DeletionN        = -3.26889;
-        p.DeletionWithTag  = -0.899265;
-        p.DeletionWithTagS =  0.0403404;
-        p.Nce              = -0.377961;
-        p.NceS             = -0.328803;
-        p.Merge            = -2.65419;
-        p.MergeS           = -0.28016;
-        p.Burst            =  0;
-        p.BurstS           =  0;
-        return p;
+        return QvModelParams(-1.41882f,
+                             -6.58979f,
+                             -0.366356f,
+                             -1.22393f,
+                             -0.30647f,
+                             -3.26889f,
+                             -0.899265f,
+                             0.0403404f,
+                             -0.377961f,
+                             -0.328803f,
+                             -2.65419f,
+                             -0.28016f);
     }
 
     const QvModelParams QvModelParams::Default()
