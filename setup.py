@@ -200,7 +200,7 @@ setup(name="ConsensusCore",
       url="http://www.github.com/PacificBiosciences/ConsensusCore",
       description= \
           """A library for genomic consensus and variant calling""",
-      license="BSD",
+      license=open("LICENSES").read(),
       py_modules=["ConsensusCore"],
       package_dir={"": build.pythonBuildDirectory() },
 
