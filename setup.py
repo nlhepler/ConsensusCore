@@ -7,55 +7,106 @@ import os, re, sys
 from glob import glob
 from os.path import join, dirname as up
 
-def parse_boost_version(versionFile):
+BOOST_MINIMUM_VERSION = (1,47,0)
+SWIG_MINIMUM_VERSION  = (2,0,7)
+
+def die(msg):
+    print msg
+    sys.exit(1)
+
+def str_version(tpl):
+    return ".".join(map(str, tpl))
+
+def boost_version(boostDir):
+    versionFile = join(boostDir, "boost/version.hpp")
     try:
-        return re.search("#define BOOST_LIB_VERSION \"(.*)\"",
-                         open(versionFile).read()).group(1)
+        m = re.search("#define BOOST_VERSION (.*)", open(versionFile).read())
+        if m:
+            versionInt = int(m.group(1))
+            versionTuple = (versionInt // 100000,
+                            (versionInt// 100) % 1000,
+                            versionInt % 100)
+            return versionTuple
     except:
-        return None
+        pass
+    return None
 
 def find_boost():
     """
     Look for boost in some standard filesystem places.
+    Return the one with the highest version, or None if can't find any.
     """
-    boosts_found = \
-        glob("/usr/include/boost/version.hpp")                                    + \
-        glob("/usr/include/boost*/boost/version.hpp")                             + \
-        glob("/usr/local/boost/version.hpp")                                      + \
-        glob("/usr/local/boost*/boost/version.hpp")                               + \
-        glob("/opt/local/include/boost/version.hpp")                              + \
+    boost_candidates = \
+        glob("/usr/include/boost")         + \
+        glob("/usr/include/boost*/")       + \
+        glob("/usr/local/boost/")          + \
+        glob("/usr/local/boost*/")         + \
+        glob("/opt/local/include/boost/")  + \
+        glob("/opt/local/include/boost*/") + \
         glob("/home/UNIXHOME/dalexander/Packages/boost_1_47_0/boost/version.hpp")
 
-    best_boost_found = (None, None)
+    boosts_found = [ (boost, boost_version(boost))
+                     for boost in boost_candidates ]
+    if boosts_found:
+        best_boost = max(boosts_found, key=lambda t: t[1])[0]
+        return best_boost
+    else:
+        return None
 
-    # pick the boost with the largest version number
-    for boost in boosts_found:
-        version = parse_boost_version(boost)
-        boost_root = up(up(boost))
-        print "Boost located: %s : version %s" % (boost_root, version)
-        if version > best_boost_found[1]:
-            best_boost_found = (boost_root, version)
-    return best_boost_found[0]
-
-
-def check_swig_version(swigExecutablePath):
+def swig_version(swigExecutablePath):
     """
-    Verify that the swig specified is at least version 2.0.7
-    Returns True if the version is OK, else False.
+    Return the version of the swig provided, or None if it is not a
+    valid SWIG.
     """
     swig_version_pipe = os.popen(swigExecutablePath + " -version")
     swig_version_output = swig_version_pipe.read()
     swig_version_status = swig_version_pipe.close()
     if swig_version_status == None:
-        swig_version_string = \
-            re.search("SWIG Version (.*)\n", swig_version_output).group(1)
-        print "SWIG version: %s" % (swig_version_string,)
-        # lexicographic comparison
-        return swig_version_string.split(".") >= ["2","0","7"]
-    else:
-        return False
+        m = re.search("SWIG Version (.*)\n", swig_version_output)
+        if m:
+            swig_version_string = m.group(1)
+            return tuple(map(int, swig_version_string.split(".")))
+    return None
 
-def configure():
+def command_line_arguments():
+    """
+    Pull out from the command line:
+      --boost=...
+      --swig=...
+      --debug/-g
+    Return as a dict
+    """
+    arguments = { "debug" : False,
+                  "boost" : None,
+                  "swig"  : None  }
+
+    for arg in sys.argv[:]:
+        # Debug build?
+        if (arg=="-g") or (arg=="--debug"):
+            arguments["debug"] = True
+            sys.argv.remove(arg)
+
+        # --boost=...
+        elif arg.find("--boost=") == 0:
+            boost_inc = arg.split("=")[1]
+            version = boost_version(boost_inc)
+            if not version:
+                die("Invalid boost directory specified.")
+            sys.argv.remove(arg)
+            arguments["boost"] = boost_inc
+
+        # --swig==...
+        elif arg.find("--swig=") == 0:
+            swig_executable = arg.split("=")[1]
+            version = swig_version(swig_executable)
+            if not version:
+                die("Invalid SWIG binary specified")
+            sys.argv.remove(arg)
+            arguments["swig"] = swig_executable
+
+    return arguments
+
+def configure(arguments):
     """
     Look up the dependencies
      - Python.h
@@ -74,55 +125,31 @@ def configure():
         import numpy
         numpy_inc = numpy.get_include()
     except ImportError:
-        print "Requires numpy >= 1.6.0"
-        sys.exit(1)
+        die("Requires numpy >= 1.6.0")
 
-    debug = ""
-    boost_inc = None
-    swig_executable = "swig"
-
-    for arg in sys.argv[:]:
-        # Debug build?
-        if (arg=="-g") or (arg=="--debug"):
-            debug = "1"
-            sys.argv.remove(arg)
-
-        # user can supply --boost=<path>, otherwise we look
-        # in some common places for it.
-        elif arg.find("--boost=") == 0:
-            boost_inc = arg.split("=")[1]
-            # validate!
-            version = parse_boost_version(os.path.join(boost_inc, "boost", "version.hpp"))
-            if not version:
-                print "Invalid boost directory specified."
-                sys.exit(1)
-            sys.argv.remove(arg)
-
-        ## user can point at swig using --swig=<path>, otherwise we just use
-        ## "swig"
-        elif arg.find("--swig=") == 0:
-            swig_executable = arg.split("=")[1]
-            sys.argv.remove(arg)
-
+    boost_inc = arguments["boost"] or find_boost()
     if not boost_inc:
-        # Try to find boost in a standard location.
-        boost_inc = find_boost()
-        if not boost_inc:
-            print "Path to boost must be specified using --boost=<path>"
-            sys.exit(1)
+        die("Path to boost must be specified using --boost=<path>")
 
-    # verify that the boost directory is sane
-    if not os.path.isfile(os.path.join(boost_inc, "boost", "version.hpp")):
-        print "Invalid boost location specified."
+    # verify that the boost directory is valid and has a good boost version
+    if boost_version(boost_inc) < BOOST_MINIMUM_VERSION:
+        print "Boost version at least %s required!" \
+            % str_version(BOOST_MINIMUM_VERSION)
+        print "Use --boost=<path> to specify boost location."
         sys.exit(1)
-    print "Using boost from %s" % boost_inc
+    print "boost=%s" % boost_inc
 
     # Verify that the swig version is adequate
-    if not check_swig_version(swig_executable):
-        print \
-            "SWIG (version >= 2.0.7) must be in your $PATH," + \
-            "or specified using --swig=<path/to/swig>.     "
+    swig_executable = arguments["swig"] or "swig"
+    if swig_version(swig_executable) < SWIG_MINIMUM_VERSION:
+        print "SWIG (version >= %s) must be in your $PATH," \
+            % str_version(SWIG_MINIMUM_VERSION)
+        print "or specified using --swig=<path/to/swig>."
         sys.exit(1)
+    print "swig=%s" % swig_executable
+
+
+    debug = arguments["debug"]
 
     # handshake with the makefile is through these
     env_vars = "PYTHON_SYS_INCLUDE_PATH=%s " % python_inc      + \
@@ -135,6 +162,9 @@ def configure():
 
     return env_vars
 
+# This always has to be run, to remove extra arguments that will
+# confuse setuptools otherwise
+arguments = command_line_arguments()
 
 class build(_build):
     """
@@ -142,7 +172,7 @@ class build(_build):
     most of the horrors of Python packaging.
     """
     def run(self):
-        configuration = configure()
+        configuration = configure(arguments)
         error = os.system(configuration + "make python")
         if error:
             raise CompileError, "Failed to compile or link ConsensusCore C++ code"
