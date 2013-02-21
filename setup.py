@@ -135,7 +135,6 @@ def configure():
 
     return env_vars
 
-_configuration = configure()
 
 class build(_build):
     """
@@ -143,7 +142,8 @@ class build(_build):
     most of the horrors of Python packaging.
     """
     def run(self):
-        error = os.system(_configuration + "make python")
+        configuration = configure()
+        error = os.system(configuration + "make python")
         if error:
             raise CompileError, "Failed to compile or link ConsensusCore C++ code"
 
@@ -174,7 +174,6 @@ setup(name="ConsensusCore",
           """A library for genomic consensus and variant calling""",
       license="BSD",
       py_modules=["ConsensusCore"],
-      packages=[""],
       package_dir={"": build.pythonBuildDirectory() },
 
       # Smuggle the native library in as a data file
