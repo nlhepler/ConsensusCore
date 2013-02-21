@@ -153,8 +153,6 @@ def configure(arguments):
 
     # handshake with the makefile is through these
     env_vars = "PYTHON_SYS_INCLUDE_PATH=%s " % python_inc      + \
-               "PYTHON_SYS_LIBDIR=%s "       % python_libdir   + \
-               "PYTHON_SYS_LIB=%s "          % python_lib      + \
                "NUMPY_INCLUDE_PATH=%s "      % numpy_inc       + \
                "BOOST_INCLUDE_PATH=%s "      % boost_inc       + \
                "SWIG=%s "                    % swig_executable + \
