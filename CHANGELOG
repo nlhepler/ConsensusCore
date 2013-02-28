@@ -32,3 +32,6 @@
   - Now compiles with boost 1.48
   - python setup.py [-g | --debug] now builds a debug-mode library
   - Added Version::VersionTuple
+
+* 0.6.0 (2/28/2013)
+  - QuiverConfig: support for merge rates per-channel
