@@ -37,6 +37,10 @@
 
 #pragma once
 #include <string>
+#include <utility>
+
+#include <stdint.h>
+
 
 //
 // Forward declarations
@@ -140,3 +144,5 @@ namespace ConsensusCore {
     };
 }
 
+
+typedef std::pair<uint32_t, uint32_t> Interval;
