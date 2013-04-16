@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Print out a BED file of k-covered intervals for data in a cmp.h5
 #
 # % coverage.py filename [k]
@@ -8,11 +9,7 @@
 import numpy as np
 from pbcore.io import (CmpH5Reader,
                        rangeQueries as RQ)
-
 from ConsensusCore import CoveredIntervals
-
-#c = CmpH5Reader("~/Data/fluidigm_amplicons/57147.cmp.h5")
-#c = CmpH5Reader("~/Data/fluidigm_amplicons/56640-hg19.cmp.h5")
 
 import sys
 c = CmpH5Reader(sys.argv[1])
@@ -32,11 +29,9 @@ def intervalToBed(name, interval):
     s, e = interval
     return "%s\t%d\t%d" % (name, s, e)
 
-
 for refName in c.referenceInfoTable.FullName:
     startRow = c.referenceInfo(refName).StartRow
     endRow   = c.referenceInfo(refName).EndRow
-    #print startRow, endRow
 
     goodMapQVs = (c.MapQV[startRow:endRow] >= 10)
     intervals = kCoveredIntervals(k,
