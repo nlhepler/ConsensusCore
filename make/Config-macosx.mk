@@ -6,7 +6,7 @@ DYLIB           :=so
 # Default locations for things that can be overriden by environment
 # variables
 SWIG                ?= swig
-SWIG_LIB	    ?= $(shell $(SWIG) -swiglib)
+SWIG_LIB	    ?= $(shell which $(SWIG) && $(SWIG) -swiglib)
 export SWIG_LIB
 
 
