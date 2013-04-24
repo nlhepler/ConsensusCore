@@ -69,6 +69,9 @@ namespace ConsensusCore
         float ScoreMutation(const Mutation& m) const;
         float ScoreMutation(MutationType mutationType, int position, char base) const;
 
+        // experimental... if this works, we need to replan the Mutation type
+        float ScoreMultibaseMutation(MutationType mutationType, int start, int end, std::string newBases);
+
     public:
         // Accessors that are handy for debugging.
         const MatrixType* Alpha() const;

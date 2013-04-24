@@ -437,18 +437,20 @@ namespace ConsensusCore {
     template<typename M, typename E, typename C>
     void
     SseRecursor<M, E, C>::ExtendAlpha(const E& e,
-                                      const M& alpha,
-                                      int beginColumn,
-                                      M& ext) const
+                                      const M& alpha, int beginColumn,
+                                      M& ext, int numExtColumns) const
     {
-        assert(alpha.Rows() == e.ReadLength() + 1);
+        assert(numExtColumns >= 2);
+        assert(alpha.Rows() == e.ReadLength() + 1 &&
+               ext.Rows() == e.ReadLength() + 1 );
+
         // The new template may not be the same length as the old template.
         // Just make sure that we have anough room to fill out the extend buffer
         assert(beginColumn + 1 < e.TemplateLength() + 1);
-        assert(ext.Rows() == e.ReadLength() + 1 && ext.Columns() == 2);
-        assert (beginColumn >= 2);
+        assert(ext.Columns() >= numExtColumns);
+        assert(beginColumn >= 2);
 
-        for (int extCol = 0; extCol < 2; extCol++)
+        for (int extCol = 0; extCol < numExtColumns; extCol++)
         {
             int j = beginColumn + extCol;
             int beginRow, endRow;

@@ -38,8 +38,6 @@
 #pragma once
 
 #include <string>
-using std::string;
-
 #include "Quiver/QuiverConfig.hpp"
 
 namespace ConsensusCore
@@ -51,12 +49,9 @@ namespace ConsensusCore
     {
     public:
         ReadScorer(QuiverConfig& config);
-        float Score(const string& tpl, const QvSequenceFeatures& read) const;
+        float Score(const std::string& tpl, const QvSequenceFeatures& read) const;
 
     private:
         QuiverConfig _quiverConfig;
     };
-
-
-
 }

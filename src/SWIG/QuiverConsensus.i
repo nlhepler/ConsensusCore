@@ -7,6 +7,7 @@
 #include "Quiver/QuiverConfig.hpp"    
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
+#include "Quiver/ReadScorer.hpp"
 #include "Sequence.hpp"
 using namespace ConsensusCore;
 %}
@@ -21,7 +22,7 @@ using namespace ConsensusCore;
 %include "Quiver/QuiverConfig.hpp"
 %include "Quiver/SimpleRecursor.hpp"
 %include "Quiver/SseRecursor.hpp"
-
+%include "Quiver/ReadScorer.hpp"
 
 namespace ConsensusCore {
     //

@@ -38,8 +38,6 @@
 #include <iostream>
 #include <string>
 
-#include "Matrix/MatrixPrinting.hpp"
-
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Quiver/ReadScorer.hpp"
@@ -57,7 +55,6 @@ namespace ConsensusCore
         : _quiverConfig(config)
     {}
 
-
     float ReadScorer::Score(const string& tpl, const QvSequenceFeatures & read) const
     {
         int I, J;
@@ -68,10 +65,6 @@ namespace ConsensusCore
         J = tpl.length();
         SparseMatrix alpha(I+1, J+1), beta(I+1, J+1);
         r.FillAlphaBeta(e, alpha, beta);
-
-//        cout << endl;
-//        cout << PrintMatrix(alpha) << endl;
-//        cout << endl;
 
         return beta(0,0);
     }

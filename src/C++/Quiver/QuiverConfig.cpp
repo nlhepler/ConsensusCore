@@ -38,45 +38,6 @@
 #include "Quiver/QuiverConfig.hpp"
 
 namespace ConsensusCore {
-
-    const QvModelParams QvModelParams::Untrained()
-    {
-        return QvModelParams(-1.280691f,
-                             -31.42568f,
-                             -0.4476061f,
-                             -15.58668f,
-                             -0.4832615f,
-                             -25.06574f,
-                             -3.101073f,
-                             -0.7184672f,
-                             -18.f,
-                             -1.707493f,
-                             -44.34149f,
-                             0.0f);
-    }
-
-    const QvModelParams QvModelParams::C2_130()
-    {
-        return QvModelParams(-1.41882f,
-                             -6.58979f,
-                             -0.366356f,
-                             -1.22393f,
-                             -0.30647f,
-                             -3.26889f,
-                             -0.899265f,
-                             0.0403404f,
-                             -0.377961f,
-                             -0.328803f,
-                             -2.65419f,
-                             -0.28016f);
-    }
-
-    const QvModelParams QvModelParams::Default()
-    {
-        return C2_130();
-    }
-
-
     QuiverConfig::QuiverConfig(const QvModelParams& qvParams,
                                int movesAvailable,
                                const BandingOptions& bandingOptions,

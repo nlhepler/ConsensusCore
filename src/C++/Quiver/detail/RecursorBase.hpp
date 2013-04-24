@@ -105,7 +105,9 @@ namespace ConsensusCore {
 
         /// \brief Compute two columns of the alpha matrix starting at columnBegin,
         ///        storing the output in ext.
-        virtual void ExtendAlpha(const E& e, const M& alphaIn, int columnBegin, M& ext) const = 0;
+        virtual void ExtendAlpha(const E& e,
+                                 const M& alphaIn, int columnBegin,
+                                 M& ext, int numExtColumns=2) const = 0;
 
 
         /// \brief Read out the alignment from the computed alpha matrix.

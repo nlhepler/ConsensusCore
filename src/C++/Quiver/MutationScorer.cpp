@@ -60,7 +60,7 @@ namespace ConsensusCore
         beta_ = new MatrixType(evaluator.ReadLength() + 1,
                                evaluator.TemplateLength() + 1);
         // Buffer where we extend into
-        extendBuffer_ = new MatrixType(evaluator.Read().size() + 1, 2);
+        extendBuffer_ = new MatrixType(evaluator.Read().size() + 1, 8);
         // Initial alpha and beta
         recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
     }
@@ -85,9 +85,9 @@ namespace ConsensusCore
         delete beta_;
         evaluator_->Template(tpl);
         alpha_ = new MatrixType(evaluator_->ReadLength() + 1,
-                       evaluator_->TemplateLength() + 1);
+                                evaluator_->TemplateLength() + 1);
         beta_  = new MatrixType(evaluator_->ReadLength() + 1,
-                       evaluator_->TemplateLength() + 1);
+                                evaluator_->TemplateLength() + 1);
         recursor_->FillAlphaBeta(*evaluator_, *alpha_, *beta_);
     }
 
@@ -135,15 +135,14 @@ namespace ConsensusCore
             evaluator_->Template(newTpl);
 
             int startCol = m.Position() - 1;
-            int templateCol = m.Position();
-            int betaCol = templateCol + 1 - m.LengthDiff();
+            int betaCol = m.Position() + 1 - m.LengthDiff();
             int alphaLinkCol = 2;
 
             recursor_->ExtendAlpha(*evaluator_, *alpha_, startCol, *extendBuffer_);
             float score = recursor_->LinkAlphaBeta(*evaluator_,
                                                    *extendBuffer_, alphaLinkCol,
                                                    *beta_, betaCol,
-                                                   templateCol + 1);
+                                                   m.Position() + 1);
 
             // Restore the original template.
             evaluator_->Template(oldTpl);
@@ -163,6 +162,105 @@ namespace ConsensusCore
         return ScoreMutation(v);
     }
 
+
+
+    static std::string ApplyMultibaseMutation(std::string tpl, MutationType mutationType,
+                                              int start, int end, std::string newBases)
+    {
+        std::string newTpl(tpl);
+        if (mutationType == INSERTION)
+        {
+            assert(start == end);
+            newTpl.insert(start, newBases);
+        }
+        else if (mutationType == SUBSTITUTION)
+        {
+            assert(start < end);
+            assert(end - start == newBases.length());
+            newTpl.replace(start, end - start, newBases);
+        }
+        else if (mutationType == DELETION)
+        {
+            assert(start < end);
+            newTpl.erase(start, end - start);
+        }
+        else
+        {
+            ShouldNotReachHere();
+        }
+        return newTpl;
+    }
+
+
+
+    template<typename R>
+    float
+    MutationScorer<R>::ScoreMultibaseMutation(MutationType mutationType,
+                                              int start, int end, std::string newBases)
+    {
+        // handle subsitution at a later time
+        assert((mutationType == INSERTION && (start == end) && newBases.length() > 0) ||
+               (mutationType == DELETION  && (start < end)  && newBases.length() == 0));
+
+        int lengthDiff;
+        switch (mutationType)
+        {
+            case INSERTION:    lengthDiff = newBases.length(); break;
+            case SUBSTITUTION: lengthDiff = 0; break;
+            case DELETION:     lengthDiff = start - end; break;
+            default: ShouldNotReachHere();
+        }
+
+        int betaLinkCol = 1 + end;
+        int absoluteLinkColumn = 1 + end + lengthDiff;
+
+        if (start >= 3 && end <= (int)(Template().length()) - 3)
+        {
+            // Install mutated template
+            std::string oldTpl = evaluator_->Template();
+            std::string newTpl = ApplyMultibaseMutation(oldTpl, mutationType, start, end, newBases);
+            evaluator_->Template(newTpl);
+
+            float score;
+            if (mutationType == DELETION)
+            {
+                // This doesn't work at present because of the Extra move.
+                // Potentially revisit after discussion with Pat.
+                //    score =  recursor_->LinkAlphaBeta(*evaluator_,
+                //                                      *alpha_, 1 + start,
+                //                                      *beta_, betaLinkCol,
+                //                                      absoluteLinkColumn);
+                int extendStartCol = start - 1;
+                int extendLength = 2;
+                recursor_->ExtendAlpha(*evaluator_, *alpha_, extendStartCol, *extendBuffer_, extendLength);
+                score = recursor_->LinkAlphaBeta(*evaluator_,
+                                                 *extendBuffer_, extendLength,
+                                                 *beta_, betaLinkCol,
+                                                 absoluteLinkColumn);
+            }
+            else
+            {
+                int extendStartCol = start;
+                int extendLength   = 1 + newBases.length();
+                assert(extendLength <= 8);
+
+                recursor_->ExtendAlpha(*evaluator_, *alpha_, extendStartCol, *extendBuffer_, extendLength);
+                score = recursor_->LinkAlphaBeta(*evaluator_,
+                                                 *extendBuffer_, extendLength,
+                                                 *beta_, betaLinkCol,
+                                                 absoluteLinkColumn);
+            }
+            // Restore the original template.
+            evaluator_->Template(oldTpl);
+            return score;
+        }
+        else
+        {
+            return Score();
+        }
+    }
+
+
     template<typename R>
     MutationScorer<R>::~MutationScorer()
     {
@@ -179,4 +277,3 @@ namespace ConsensusCore
     template class MutationScorer<SparseSseQvRecursor>;
     template class MutationScorer<SparseSseEdnaRecursor>;
 }
-

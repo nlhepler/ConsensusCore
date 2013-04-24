@@ -36,24 +36,33 @@
 // Author: David Alexander
 
 #include "ParameterSettings.hpp"
-
 #include "Quiver/QuiverConfig.hpp"
 
-using ConsensusCore::QvModelParams;
+using namespace ConsensusCore;
+
 
 template<>
 QvModelParams TestingParams<QvModelParams>()
 {
-    return QvModelParams(0.f,
-                         -10.f,
-                         -0.1f,
-                         -5.f,
-                         -0.1f,
-                         -4.f,
-                         -6.f,
-                         -0.1f,
-                         -8.f,
-                         -0.1f,
-                         -2.f,
-                         0.f);
+    return QvModelParams(0.f,   // Match
+                         -10.f, // Mismatch
+                         -0.1f, // MismatchS
+                         -5.f,  // Branch
+                         -0.1f, // BranchS
+                         -4.f,  // DeletionN
+                         -6.f,  // DeletionWithTag
+                         -0.1f, // DeletionWithTagS
+                         -8.f,  // Nce
+                         -0.1f, // NceS
+                         -2.f,  // Merge
+                         0.f);  // MergeS
+}
+
+template<>
+QuiverConfig TestingConfig<QuiverConfig>()
+{
+    return QuiverConfig(TestingParams<QvModelParams>(),
+                        ALL_MOVES,
+                        BandingOptions(4, 200),
+                        -12.5);
 }

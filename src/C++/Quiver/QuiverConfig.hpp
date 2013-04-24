@@ -155,11 +155,6 @@ namespace ConsensusCore
             this->MergeS[2] = MergeS_G;
             this->MergeS[3] = MergeS_T;
         }
-
-
-        static const QvModelParams Untrained();
-        static const QvModelParams C2_130();
-        static const QvModelParams Default();
     };
 
 
