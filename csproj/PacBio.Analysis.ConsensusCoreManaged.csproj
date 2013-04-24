@@ -54,10 +54,76 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="build\CSharp\*.cs" />
+    <Compile Include="build\CSharp\AffineAlignmentParams.cs" />
+    <Compile Include="build\CSharp\AlphaBetaMismatchException.cs" />
+    <Compile Include="build\CSharp\BandingOptions.cs" />
+    <Compile Include="build\CSharp\ChannelSequenceFeatures.cs" />
+    <Compile Include="build\CSharp\CharFeature.cs" />
+    <Compile Include="build\CSharp\ConsensusCore.cs" />
+    <Compile Include="build\CSharp\ConsensusCorePINVOKE.cs" />
+    <Compile Include="build\CSharp\DenseMatrix.cs" />
+    <Compile Include="build\CSharp\EdnaCounts.cs" />
+    <Compile Include="build\CSharp\EdnaEvaluator.cs" />
+    <Compile Include="build\CSharp\EdnaModelParams.cs" />
+    <Compile Include="build\CSharp\ErrorBase.cs" />
+    <Compile Include="build\CSharp\ExceptionBase.cs" />
+    <Compile Include="build\CSharp\FeaturesVector.cs" />
+    <Compile Include="build\CSharp\FloatArray.cs" />
+    <Compile Include="build\CSharp\FloatFeature.cs" />
+    <Compile Include="build\CSharp\FloatVector.cs" />
+    <Compile Include="build\CSharp\IntArray.cs" />
+    <Compile Include="build\CSharp\InternalError.cs" />
+    <Compile Include="build\CSharp\IntFeature.cs" />
+    <Compile Include="build\CSharp\IntVector.cs" />
+    <Compile Include="build\CSharp\InvalidInputError.cs" />
+    <Compile Include="build\CSharp\MappedRead.cs" />
+    <Compile Include="build\CSharp\Move.cs" />
+    <Compile Include="build\CSharp\Mutation.cs" />
+    <Compile Include="build\CSharp\MutationType.cs" />
+    <Compile Include="build\CSharp\MutationVector.cs" />
+    <Compile Include="build\CSharp\NeedlemanWunschParams.cs" />
+    <Compile Include="build\CSharp\NotYetImplementedException.cs" />
+    <Compile Include="build\CSharp\PairwiseAlignment.cs" />
+    <Compile Include="build\CSharp\PoaConfig.cs" />
+    <Compile Include="build\CSharp\PoaConsensus.cs" />
+    <Compile Include="build\CSharp\PoaGraph.cs" />
+    <Compile Include="build\CSharp\PoaParameterSet.cs" />
+    <Compile Include="build\CSharp\QuiverConfig.cs" />
+    <Compile Include="build\CSharp\QvEvaluator.cs" />
+    <Compile Include="build\CSharp\QvModelParams.cs" />
+    <Compile Include="build\CSharp\QvRecursorBase.cs" />
+    <Compile Include="build\CSharp\QvSequenceFeatures.cs" />
+    <Compile Include="build\CSharp\ScoredMutation.cs" />
+    <Compile Include="build\CSharp\ScoredMutationVector.cs" />
+    <Compile Include="build\CSharp\SequenceFeatures.cs" />
+    <Compile Include="build\CSharp\SimpleQvMutationScorer.cs" />
+    <Compile Include="build\CSharp\SimpleQvRecursor.cs" />
+    <Compile Include="build\CSharp\SparseEdnaRecursorBase.cs" />
+    <Compile Include="build\CSharp\SparseMatrix.cs" />
+    <Compile Include="build\CSharp\SparseQvRecursorBase.cs" />
+    <Compile Include="build\CSharp\SparseSimpleQvMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSimpleQvRecursor.cs" />
+    <Compile Include="build\CSharp\SparseSseEdnaMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSseEdnaRecursor.cs" />
+    <Compile Include="build\CSharp\SparseSseQvMultiReadMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSseQvMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSseQvRecursor.cs" />
+    <Compile Include="build\CSharp\SseQvMutationScorer.cs" />
+    <Compile Include="build\CSharp\SseQvRecursor.cs" />
+    <Compile Include="build\CSharp\StrandEnum.cs" />
+    <Compile Include="build\CSharp\StringVector.cs" />
+    <Compile Include="build\CSharp\SumProductCombiner.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_float.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_int.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_p_float.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_std__pairT_int_int_t.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p___m128.cs" />
+    <Compile Include="build\CSharp\Version.cs" />
+    <Compile Include="build\CSharp\ViterbiCombiner.cs" />
     <Compile Include="src\CSharp\Demo.cs" />
     <Compile Include="src\CSharp\Test.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>cd $(ProjectDir)/..
