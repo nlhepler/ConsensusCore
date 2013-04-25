@@ -9,6 +9,20 @@ from matplotlib.cm import binary
 from ConsensusCore import *
 from example_data import *
 
+def modelParams():
+    return QvModelParams(-1.41882,
+                         -6.58979,
+                         -0.366356,
+                         -1.22393,
+                         -0.30647,
+                         -3.26889,
+                         -0.899265,
+                         0.0403404,
+                         -0.377961,
+                         -0.328803,
+                         -2.65419,
+                         -0.28016)
+
 def main(hasDisplay):
     # Poa Consensus stuff
     seqv = ["GATTACA",
@@ -37,7 +51,7 @@ def main(hasDisplay):
     ext = DenseMatrix(I+1, 2)
     extSSE = DenseMatrix(I+1, 2)
 
-    spec = QvModelParams.Default()
+    spec = modelParams()
     e = QvEvaluator(features, tpl, spec)
 
     r = SimpleQvRecursor(ALL_MOVES, BandingOptions(4, 200.))
