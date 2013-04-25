@@ -25,6 +25,23 @@ namespace PacBio.Analysis.ConsensusCoreManaged.src.CSharp
             Assert.AreEqual("TTTACAGGATAGTCCAGT", r);
         }
 
+        public static QvModelParams ModelParams()
+        {
+            return new QvModelParams(-1.41882f,
+                                     -6.58979f,
+                                     -0.366356f,
+                                     -1.22393f,
+                                     -0.30647f,
+                                     -3.26889f,
+                                     -0.899265f,
+                                     0.0403404f,
+                                     -0.377961f,
+                                     -0.328803f,
+                                     -2.65419f,
+                                     -0.28016f);
+        }
+
+
         [Test]
         public void Recursion()
         {
@@ -33,7 +50,7 @@ namespace PacBio.Analysis.ConsensusCoreManaged.src.CSharp
 
             var strandTpl = "ACGTACGTACGTACGT";
 
-            QvModelParams modelParams = QvModelParams.Default();
+            QvModelParams modelParams = ModelParams();
             QvSequenceFeatures features = new QvSequenceFeatures("ACGTACGTCGT");
 
             var evaluator = new QvEvaluator(features, strandTpl, modelParams);
