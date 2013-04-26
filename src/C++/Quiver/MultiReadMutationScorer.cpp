@@ -55,7 +55,7 @@ namespace ConsensusCore
     static bool readScoresMutation(const MappedRead* read, const Mutation& mut)
     {
         return (read->TemplateStart + MARGIN <= mut.Start() &&
-                read->TemplateEnd   - MARGIN >  mut.End());
+                read->TemplateEnd   - MARGIN >= mut.End());
     }
 
 
