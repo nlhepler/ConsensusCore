@@ -35,3 +35,6 @@
 
 * 0.6.0 (2/28/2013)
   - QuiverConfig: support for merge rates per-channel
+
+* 0.6.1 (4/26/2013)
+  - Support for fast testing of multi-base template mutations
