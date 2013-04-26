@@ -49,11 +49,15 @@
 
 namespace ConsensusCore
 {
-    static bool readScoresPosition(const MappedRead* read, int position)
+    //
+    // Is the mutation within the bounds of the read?
+    //
+    static bool readScoresMutation(const MappedRead* read, const Mutation& mut)
     {
-        return (read->TemplateStart + MARGIN <= position &&
-                read->TemplateEnd   - MARGIN > position);
+        return (read->TemplateStart + MARGIN <= mut.Start() &&
+                read->TemplateEnd   - MARGIN >  mut.End());
     }
+
 
     template<typename R>
     MultiReadMutationScorer<R>::MultiReadMutationScorer(const QuiverConfig& quiverConfig,
@@ -179,18 +183,17 @@ namespace ConsensusCore
         if (mr->Strand == FORWARD_STRAND)
         {
             return Mutation(mut.Type(),
-                            mut.Position() - mr->TemplateStart,
-                            mut.Base());
+                            mut.Start() - mr->TemplateStart,
+                            mut.End() - mr->TemplateStart,
+                            mut.NewBases());
         }
         else
         {
-            // This is tricky business.  Insertions require an
-            // adjustment to maintain the pre-base semantic.
-            int pos = mr->TemplateEnd- 1 - mut.Position() \
-                    + (mut.IsInsertion() ? 1 : 0);
-            return Mutation(mut.Type(),
-                            pos,
-                            ComplementaryBase(mut.Base()));
+            // This is tricky business.  Would be good to write a
+            // focused unit test for this.
+            int end   = mr->TemplateEnd - mut.Start();
+            int start = mr->TemplateEnd - mut.End();
+            return Mutation(mut.Type(), start, end, ReverseComplement(mut.NewBases()));
         }
     }
 
@@ -200,7 +203,7 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresPosition(kv.first, m.Position()))
+            if (readScoresMutation(kv.first, m))
             {
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
@@ -224,7 +227,7 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresPosition(kv.first, m.Position()))
+            if (readScoresMutation(kv.first, m))
             {
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
@@ -247,7 +250,7 @@ namespace ConsensusCore
         std::vector<float> scoreByRead;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresPosition(kv.first, m.Position()))
+            if (readScoresMutation(kv.first, m))
             {
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 scoreByRead.push_back(kv.second->ScoreMutation(orientedMut) -
@@ -267,7 +270,7 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresPosition(kv.first, m.Position()))
+            if (readScoresMutation(kv.first, m))
             {
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
@@ -283,7 +286,7 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresPosition(kv.first, m.Position()))
+            if (readScoresMutation(kv.first, m))
             {
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -

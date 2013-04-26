@@ -524,9 +524,9 @@ TEST(PoaConsensus, TestMutations)
         variantDescriptions.push_back(variant->ToString());
     }
     sort(variantDescriptions.begin(), variantDescriptions.end());
-    const char* expectedDescriptions[] = { "Deletion @5",
+    const char* expectedDescriptions[] = { "Deletion @5:6",
                                            "Insertion (G) @5",
-                                           "Substitution (T) @6" };
+                                           "Substitution (T) @6:7" };
     ASSERT_THAT(variantDescriptions, ElementsAreArray(expectedDescriptions));
 }
 

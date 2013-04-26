@@ -54,24 +54,30 @@ namespace ConsensusCore
     {
     private:
         MutationType type_;
-        int position_;
-        char base_;
+        int start_;
+        int end_;
+        std::string newBases_;
+
+        bool CheckInvariants() const;
 
     public:
+        Mutation(MutationType type, int start, int end, std::string newBases);
         Mutation(MutationType type, int position, char base);
 
         MutationType Type() const;
+
         bool IsSubstitution() const;
         bool IsInsertion() const;
         bool IsDeletion() const;
 
-        /// \brief Template position of the mutation.
-        /// If the mutation is an insertion, the understanding
-        /// is that the new base is inserted before Position().
-        int Position() const;
+        /// \brief Template positions of the mutation.
+        /// Convention: the bases of the template changed by the mutation are [ Start, End ).
+        //  For a substitution, tpl[Start..End) are mutated; for a deletion, tpl[Start..End) are removed.
+        /// In the case of an insertion, Start=End= template position before the new bases are inserted.
+        int Start() const;
+        int End() const;
 
-        char Base() const;
-
+        std::string NewBases() const;
         int LengthDiff() const;
         std::string ToString() const;
 

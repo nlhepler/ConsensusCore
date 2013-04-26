@@ -60,7 +60,7 @@ namespace ConsensusCore
         beta_ = new MatrixType(evaluator.ReadLength() + 1,
                                evaluator.TemplateLength() + 1);
         // Buffer where we extend into
-        extendBuffer_ = new MatrixType(evaluator.Read().size() + 1, 8);
+        extendBuffer_ = new MatrixType(evaluator.ReadLength() + 1, 8);
         // Initial alpha and beta
         recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
     }
@@ -116,121 +116,41 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    float MutationScorer<R>::ScoreMutation(const Mutation& m) const
-    {
-        // For now, we cannot score mutations too close to the
-        // boundaries of the template. For mutations by the bounds,
-        // we will just return the unmutated score.
-        if (m.Position() >= 3 && m.Position() <= (int)(Template().length()) - 3)
-        {
-            std::string oldTpl = evaluator_->Template();
-            std::string newTpl = ApplyMutation(m, oldTpl);
-
-            // The evaluator class needs to be rethought.  It is a bit
-            // awkward the way we use it.  As Pat has pointed out, it
-            // probably makes more sense to break out the template string
-            // from the read data, as the way we operate is: change
-            // template, check score, repeat---the read data is never
-            // modified.
-            evaluator_->Template(newTpl);
-
-            int startCol = m.Position() - 1;
-            int betaCol = m.Position() + 1 - m.LengthDiff();
-            int alphaLinkCol = 2;
-
-            recursor_->ExtendAlpha(*evaluator_, *alpha_, startCol, *extendBuffer_);
-            float score = recursor_->LinkAlphaBeta(*evaluator_,
-                                                   *extendBuffer_, alphaLinkCol,
-                                                   *beta_, betaCol,
-                                                   m.Position() + 1);
-
-            // Restore the original template.
-            evaluator_->Template(oldTpl);
-            return score;
-        }
-        else
-        {
-            return Score();
-        }
-    }
-
-    template<typename R>
     float
     MutationScorer<R>::ScoreMutation(MutationType mutationType, int position, char base) const
     {
-        Mutation v(mutationType, position, base);
-        return ScoreMutation(v);
+        Mutation m(mutationType, position, base);
+        return ScoreMutation(m);
     }
-
-
-
-    static std::string ApplyMultibaseMutation(std::string tpl, MutationType mutationType,
-                                              int start, int end, std::string newBases)
-    {
-        std::string newTpl(tpl);
-        if (mutationType == INSERTION)
-        {
-            assert(start == end);
-            newTpl.insert(start, newBases);
-        }
-        else if (mutationType == SUBSTITUTION)
-        {
-            assert(start < end);
-            assert(end - start == newBases.length());
-            newTpl.replace(start, end - start, newBases);
-        }
-        else if (mutationType == DELETION)
-        {
-            assert(start < end);
-            newTpl.erase(start, end - start);
-        }
-        else
-        {
-            ShouldNotReachHere();
-        }
-        return newTpl;
-    }
-
-
 
     template<typename R>
     float
-    MutationScorer<R>::ScoreMultibaseMutation(MutationType mutationType,
-                                              int start, int end, std::string newBases)
+    MutationScorer<R>::ScoreMutation(MutationType mutationType, int start, int end, std::string newBases) const
     {
-        // handle subsitution at a later time
-        assert((mutationType == INSERTION && (start == end) && newBases.length() > 0) ||
-               (mutationType == DELETION  && (start < end)  && newBases.length() == 0));
+        Mutation m(mutationType, start, end, newBases);
+        return ScoreMutation(m);
+    }
 
-        int lengthDiff;
-        switch (mutationType)
-        {
-            case INSERTION:    lengthDiff = newBases.length(); break;
-            case SUBSTITUTION: lengthDiff = 0; break;
-            case DELETION:     lengthDiff = start - end; break;
-            default: ShouldNotReachHere();
-        }
+    template<typename R>
+    float
+    MutationScorer<R>::ScoreMutation(const Mutation& m) const
+    {
+        int betaLinkCol = 1 + m.End();
+        int absoluteLinkColumn = 1 + m.End() + m.LengthDiff();
 
-        int betaLinkCol = 1 + end;
-        int absoluteLinkColumn = 1 + end + lengthDiff;
-
-        if (start >= 3 && end <= (int)(Template().length()) - 3)
+        if (m.Start() > 0 && m.End() < (int)(Template().length()) - 1)
         {
             // Install mutated template
             std::string oldTpl = evaluator_->Template();
-            std::string newTpl = ApplyMultibaseMutation(oldTpl, mutationType, start, end, newBases);
+            std::string newTpl = ApplyMutation(m, oldTpl);
             evaluator_->Template(newTpl);
 
             float score;
-            if (mutationType == DELETION)
+            if (m.Type() == DELETION)
             {
-                // This doesn't work at present because of the Extra move.
-                // Potentially revisit after discussion with Pat.
-                //    score =  recursor_->LinkAlphaBeta(*evaluator_,
-                //                                      *alpha_, 1 + start,
-                //                                      *beta_, betaLinkCol,
-                //                                      absoluteLinkColumn);
-                int extendStartCol = start - 1;
+                // If we revise the semantic of Extra, we can remove the extend and just
+                // link alpha and beta directly.
+                int extendStartCol = m.Start() - 1;
                 int extendLength = 2;
                 recursor_->ExtendAlpha(*evaluator_, *alpha_, extendStartCol, *extendBuffer_, extendLength);
                 score = recursor_->LinkAlphaBeta(*evaluator_,
@@ -240,8 +160,8 @@ namespace ConsensusCore
             }
             else
             {
-                int extendStartCol = start;
-                int extendLength   = 1 + newBases.length();
+                int extendStartCol = m.Start();
+                int extendLength   = 1 + m.NewBases().length();
                 assert(extendLength <= 8);
 
                 recursor_->ExtendAlpha(*evaluator_, *alpha_, extendStartCol, *extendBuffer_, extendLength);

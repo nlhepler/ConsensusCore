@@ -73,41 +73,16 @@ TEST(MultibaseMutationScoring, DinucleotideInsertionTest)
     SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
     SparseSimpleQvMutationScorer ms(e, r);
 
-    EXPECT_EQ(0, ms.ScoreMultibaseMutation(INSERTION, 7, 7, "TT"));
-    EXPECT_EQ(0, ms.ScoreMultibaseMutation(INSERTION, 8, 8, "TT"));
-    EXPECT_EQ(0, ms.ScoreMultibaseMutation(INSERTION, 9, 9, "TT"));
+    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 7, 7, "TT"));
+    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 8, 8, "TT"));
+    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 9, 9, "TT"));
 
-    EXPECT_EQ(ez.Score(tplGCTT, read), ms.ScoreMultibaseMutation(INSERTION, 7, 7, "GC"));
-    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMultibaseMutation(INSERTION, 7, 7, "AA"));
-    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMultibaseMutation(INSERTION, 6, 6, "AA"));
+    EXPECT_EQ(ez.Score(tplGCTT, read), ms.ScoreMutation(INSERTION, 7, 7, "GC"));
+    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(INSERTION, 7, 7, "AA"));
+    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(INSERTION, 6, 6, "AA"));
 }
 
-TEST(MultibaseMutationScoring, SingleBaseInsertionTest)
-{
-    // Test single base insertions
-    QuiverConfig config = TestingConfig<QuiverConfig>();
-
-    //                     01234567890123456
-    std::string tplTT   = "CCCCCGATTACACCCCC";
-
-    QvSequenceFeatures read(tplTT);
-    QvEvaluator e(read, tplTT, config.QvParams);
-    SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
-    SparseSimpleQvMutationScorer ms(e, r);
-
-    for (int insPos=5; insPos <= 12; insPos++)
-    {
-        foreach (char insBase, std::string("ACGT"))
-        {
-            EXPECT_EQ(ms.ScoreMutation(INSERTION, insPos, insBase),
-                      ms.ScoreMultibaseMutation(INSERTION, insPos, insPos, std::string(1, insBase)));
-        }
-    }
-
-}
-
-
-TEST(MultibaseMutationScoring, BasicDeletionTest)
+TEST(MultibaseMutationScoring, DinucleotideDeletionTest)
 {
     QuiverConfig config = TestingConfig<QuiverConfig>();
 
@@ -125,33 +100,13 @@ TEST(MultibaseMutationScoring, BasicDeletionTest)
     SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
     SparseSimpleQvMutationScorer ms(e, r);
 
-    EXPECT_EQ(scoreTT, ms.ScoreMultibaseMutation(DELETION, 7, 9, ""));
-    EXPECT_EQ(scoreTT, ms.ScoreMultibaseMutation(DELETION, 8, 10, ""));
-    EXPECT_EQ(scoreTT, ms.ScoreMultibaseMutation(DELETION, 9, 11, ""));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 7, 9, ""));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 8, 10, ""));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 9, 11, ""));
 
     QvEvaluator e2(read, tplGCTT, config.QvParams);
     SparseSimpleQvRecursor r2(config.MovesAvailable, config.Banding);
     SparseSimpleQvMutationScorer ms2(e2, r2);
-    EXPECT_EQ(scoreTT, ms2.ScoreMultibaseMutation(DELETION, 7, 9, ""));
+    EXPECT_EQ(scoreTT, ms2.ScoreMutation(DELETION, 7, 9, ""));
 }
 
-
-TEST(MultibaseMutationScoring, SingleBaseDeletionTest)
-{
-    // Test single base insertions
-    QuiverConfig config = TestingConfig<QuiverConfig>();
-
-    //                     01234567890123456
-    std::string tplTT   = "CCCCCGATTACACCCCC";
-
-    QvSequenceFeatures read(tplTT);
-    QvEvaluator e(read, tplTT, config.QvParams);
-    SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
-    SparseSimpleQvMutationScorer ms(e, r);
-
-    for (int delPos=5; delPos <= 11; delPos++)
-    {
-        EXPECT_EQ(ms.ScoreMutation(DELETION, delPos, '-'),
-                  ms.ScoreMultibaseMutation(DELETION, delPos, delPos + 1, ""));
-    }
-}

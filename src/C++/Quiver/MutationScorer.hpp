@@ -67,10 +67,11 @@ namespace ConsensusCore
         void Template(std::string tpl);
         float Score() const;
         float ScoreMutation(const Mutation& m) const;
-        float ScoreMutation(MutationType mutationType, int position, char base) const;
 
-        // experimental... if this works, we need to replan the Mutation type
-        float ScoreMultibaseMutation(MutationType mutationType, int start, int end, std::string newBases);
+        // APIs that allow C# users to avoid allocating lots of
+        // tiny objects.
+        float ScoreMutation(MutationType mutationType, int position, char base) const;
+        float ScoreMutation(MutationType mutationType, int start, int end, std::string newBases) const;
 
     public:
         // Accessors that are handy for debugging.

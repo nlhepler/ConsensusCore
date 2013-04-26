@@ -54,17 +54,47 @@ using std::max;
 
 namespace ConsensusCore
 {
+    Mutation::Mutation(MutationType type, int start, int end, std::string newBases)
+        : type_(type),
+          start_(start),
+          end_(end),
+          newBases_(newBases)
+    {
+        if (!CheckInvariants()) throw InvalidInputError();
+    }
+
+
     Mutation::Mutation(MutationType type, int position, char base)
         : type_(type),
-          position_(position),
-          base_(base)
+          start_(position)
     {
-        if (!(base == 'A' ||
-              base == 'C' ||
-              base == 'G' ||
-              base == 'T' ||
-              base == '-'))
-            throw InvalidInputError();
+        if (type == INSERTION) {
+            end_ = position;
+        } else {
+            end_ = position + 1;
+        }
+        newBases_ = (type == DELETION ? "" : std::string(1, base));
+        if (!CheckInvariants()) throw InvalidInputError();
+    }
+
+
+    bool Mutation::CheckInvariants() const
+    {
+        if (!((type_ == INSERTION && (start_ == end_) && newBases_.length() > 0)  ||
+              (type_ == DELETION  && (start_ < end_)  && newBases_.length() == 0) ||
+              (type_ == SUBSTITUTION && (start_ < end_) && ((int)(newBases_.length()) == end_ - start_))))
+        {
+            return false;
+        }
+        foreach (char base, newBases_)
+        {
+            if (!(base == 'A' ||
+                  base == 'C' ||
+                  base == 'G' ||
+                  base == 'T'))
+                return false;
+        }
+        return true;
     }
 
     bool
@@ -86,15 +116,21 @@ namespace ConsensusCore
     }
 
     int
-    Mutation::Position() const
+    Mutation::Start() const
     {
-        return position_;
+        return start_;
     }
 
-    char
-    Mutation::Base() const
+    int
+    Mutation::End() const
     {
-        return base_;
+        return end_;
+    }
+
+    std::string
+    Mutation::NewBases() const
+    {
+        return newBases_;
     }
 
     MutationType
@@ -106,10 +142,11 @@ namespace ConsensusCore
     int Mutation::LengthDiff() const
     {
         if (IsInsertion())
-            return 1;
+            return newBases_.length();
         else if (IsDeletion())
-            return -1;
-        return 0;
+            return start_ - end_;
+        else
+            return 0;
     }
 
     std::string
@@ -120,9 +157,9 @@ namespace ConsensusCore
 
         switch (Type())
         {
-            case INSERTION:    return str(format("Insertion (%c) @%d") % base_ % position_);
-            case DELETION:     return str(format("Deletion @%d") % position_);
-            case SUBSTITUTION: return str(format("Substitution (%c) @%d") % base_ % position_);
+            case INSERTION:    return str(format("Insertion (%s) @%d") % newBases_ % start_);
+            case DELETION:     return str(format("Deletion @%d:%d") % start_ % end_);
+            case SUBSTITUTION: return str(format("Substitution (%s) @%d:%d") % newBases_ % start_ % end_);
             default: ShouldNotReachHere();
         }
     }
@@ -130,33 +167,35 @@ namespace ConsensusCore
     bool
     Mutation::operator==(const Mutation& other) const
     {
-        return (Position() == other.Position() &&
-                Type()     == other.Type()     &&
-                Base()     == other.Base());
+        return (Start()    == other.Start() &&
+                End()      == other.End()   &&
+                Type()     == other.Type()  &&
+                NewBases() == other.NewBases());
     }
 
     bool
     Mutation::operator<(const Mutation& other) const
     {
-        if (Position() != other.Position()) { return Position() < other.Position(); }
-        if (Type()     != other.Type())     { return Type()     < other.Type();     }
-        return Base() < other.Base();
+        if (Start() != other.Start()) { return Start() < other.Start(); }
+        if (End()   != other.End())   { return End()   < other.End();   }
+        if (Type()  != other.Type())  { return Type()  < other.Type();  }
+        return NewBases() < other.NewBases();
     }
 
     static void
-    _ApplyMutationInPlace(const Mutation& mut, int position, std::string* tpl)
+    _ApplyMutationInPlace(const Mutation& mut, int start, std::string* tpl)
     {
         if (mut.IsSubstitution())
         {
-            (*tpl)[position] = mut.Base();
+            (*tpl).replace(start, mut.End() - mut.Start(), mut.NewBases());
         }
         else if (mut.IsDeletion())
         {
-            (*tpl).erase(position, 1);
+            (*tpl).erase(start, mut.End() - mut.Start());
         }
         else if (mut.IsInsertion())
         {
-            (*tpl).insert(position, 1, mut.Base());
+            (*tpl).insert(start, mut.NewBases());
         }
     }
 
@@ -164,7 +203,7 @@ namespace ConsensusCore
     ApplyMutation(const Mutation& mut, const std::string& tpl)
     {
         std::string tplCopy(tpl);
-        _ApplyMutationInPlace(mut, mut.Position(), &tplCopy);
+        _ApplyMutationInPlace(mut, mut.Start(), &tplCopy);
         return tplCopy;
     }
 
@@ -181,12 +220,11 @@ namespace ConsensusCore
         int runningLengthDiff = 0;
         foreach (const Mutation* mut, sortedMuts)
         {
-            _ApplyMutationInPlace(*mut, mut->Position() + runningLengthDiff, &tplCopy);
+            _ApplyMutationInPlace(*mut, mut->Start() + runningLengthDiff, &tplCopy);
             runningLengthDiff += mut->LengthDiff();
         }
         return tplCopy;
     }
-
 
     std::string MutationsToTranscript(const std::vector<Mutation*>& mutations,
                                       const std::string& tpl)
@@ -199,24 +237,25 @@ namespace ConsensusCore
         std::string transcript = "";
         foreach (const Mutation* m, sortedMuts)
         {
-            for (; tpos < m->Position(); ++tpos)
+            for (; tpos < m->Start(); ++tpos)
             {
                 transcript.push_back('M');
             }
 
             if (m->IsInsertion())
             {
-                transcript.push_back('I');
+                transcript += std::string(m->LengthDiff(), 'I');
             }
             else if (m->IsDeletion())
             {
-                transcript.push_back('D');
-                ++tpos;
+                transcript += std::string(-m->LengthDiff(), 'D');
+                tpos += -m->LengthDiff();
             }
             else if (m->IsSubstitution())
             {
-                transcript.push_back('R');
-                ++tpos;
+                int len = m->End() - m->Start();
+                transcript += std::string(len, 'R');
+                tpos += len;
             }
             else
             {
