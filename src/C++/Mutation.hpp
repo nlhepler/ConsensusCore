@@ -97,5 +97,4 @@ namespace ConsensusCore
                                             const std::string& tpl);
 }
 
-
-
+#include "Mutation-inl.hpp"

@@ -54,101 +54,6 @@ using std::max;
 
 namespace ConsensusCore
 {
-    Mutation::Mutation(MutationType type, int start, int end, std::string newBases)
-        : type_(type),
-          start_(start),
-          end_(end),
-          newBases_(newBases)
-    {
-        if (!CheckInvariants()) throw InvalidInputError();
-    }
-
-
-    Mutation::Mutation(MutationType type, int position, char base)
-        : type_(type),
-          start_(position)
-    {
-        if (type == INSERTION) {
-            end_ = position;
-        } else {
-            end_ = position + 1;
-        }
-        newBases_ = (type == DELETION ? "" : std::string(1, base));
-        if (!CheckInvariants()) throw InvalidInputError();
-    }
-
-
-    bool Mutation::CheckInvariants() const
-    {
-        if (!((type_ == INSERTION && (start_ == end_) && newBases_.length() > 0)  ||
-              (type_ == DELETION  && (start_ < end_)  && newBases_.length() == 0) ||
-              (type_ == SUBSTITUTION && (start_ < end_) && ((int)(newBases_.length()) == end_ - start_))))
-        {
-            return false;
-        }
-        foreach (char base, newBases_)
-        {
-            if (!(base == 'A' ||
-                  base == 'C' ||
-                  base == 'G' ||
-                  base == 'T'))
-                return false;
-        }
-        return true;
-    }
-
-    bool
-    Mutation::IsSubstitution() const
-    {
-        return (type_ == SUBSTITUTION);
-    }
-
-    bool
-    Mutation::IsInsertion() const
-    {
-        return (type_ == INSERTION);
-    }
-
-    bool
-    Mutation::IsDeletion() const
-    {
-        return (type_ == DELETION);
-    }
-
-    int
-    Mutation::Start() const
-    {
-        return start_;
-    }
-
-    int
-    Mutation::End() const
-    {
-        return end_;
-    }
-
-    std::string
-    Mutation::NewBases() const
-    {
-        return newBases_;
-    }
-
-    MutationType
-    Mutation::Type() const
-    {
-        return type_;
-    }
-
-    int Mutation::LengthDiff() const
-    {
-        if (IsInsertion())
-            return newBases_.length();
-        else if (IsDeletion())
-            return start_ - end_;
-        else
-            return 0;
-    }
-
     std::string
     Mutation::ToString() const
     {
@@ -162,24 +67,6 @@ namespace ConsensusCore
             case SUBSTITUTION: return str(format("Substitution (%s) @%d:%d") % newBases_ % start_ % end_);
             default: ShouldNotReachHere();
         }
-    }
-
-    bool
-    Mutation::operator==(const Mutation& other) const
-    {
-        return (Start()    == other.Start() &&
-                End()      == other.End()   &&
-                Type()     == other.Type()  &&
-                NewBases() == other.NewBases());
-    }
-
-    bool
-    Mutation::operator<(const Mutation& other) const
-    {
-        if (Start() != other.Start()) { return Start() < other.Start(); }
-        if (End()   != other.End())   { return End()   < other.End();   }
-        if (Type()  != other.Type())  { return Type()  < other.Type();  }
-        return NewBases() < other.NewBases();
     }
 
     static void
