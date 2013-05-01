@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
 using ConsensusCore;
 
 namespace PacBio.Analysis.ConsensusCoreManaged.src.CSharp
 {
-    [TestFixture]
     class TestConsensusCore
     {
-        [Test]
         public void Simple()
         {
             var reads = new StringVector();
@@ -41,8 +38,6 @@ namespace PacBio.Analysis.ConsensusCoreManaged.src.CSharp
                                      -0.28016f);
         }
 
-
-        [Test]
         public void Recursion()
         {
             var bandOptions = new BandingOptions(4, 50);
