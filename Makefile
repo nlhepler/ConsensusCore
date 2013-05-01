@@ -18,7 +18,8 @@ VPATH           := src/C++/                     \
                   :src/C++/Matrix/              \
                   :src/C++/Quiver/              \
                   :src/C++/Quiver/detail        \
-                  :src/C++/Poa/                 
+                  :src/C++/Poa/                 \
+                  :src/C++/Statistics              
 
 CXX_SRCS	:= $(notdir $(shell find src/C++/ -name "*.cpp" | grep -v '\#'))
 CXX_OBJS	:= $(addprefix $(OBJDIR)/, $(CXX_SRCS:.cpp=.o))
