@@ -49,7 +49,7 @@ namespace ConsensusCore
     double BinomialSurvival(int q, int size, double prob, bool asPhred)
     {
         binomial_distribution<double> dist(size, prob);
-        double tail = cdf(complement(dist, q));
+        double tail = q < 0 ? 1 : cdf(complement(dist, q));
         return asPhred ? -10.*log10(tail) : tail;
     }
 }
