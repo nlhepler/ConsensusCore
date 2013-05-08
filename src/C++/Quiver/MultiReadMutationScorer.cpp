@@ -239,9 +239,6 @@ namespace ConsensusCore
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
-                // Hack alert: I need to replace this cut-out with
-                // something more justifiable.  I am just checking it in
-                // now to play with.
                 if (sum < quiverConfig_.FastScoreThreshold)
                 {
                     return sum;
@@ -298,9 +295,6 @@ namespace ConsensusCore
                 Mutation orientedMut = orientedMutation(kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
-                // Hack alert: I need to replace this cut-out with
-                // something more justifiable.  I am just checking it in
-                // now to play with.
                 if (sum < quiverConfig_.FastScoreThreshold)
                 {
                     return false;
