@@ -262,7 +262,7 @@ namespace ConsensusCore
             }
             else
             {
-                scoreByRead.push_back(-FLT_MAX);
+                scoreByRead.push_back(0);
             }
         }
         return scoreByRead;
