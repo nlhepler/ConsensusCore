@@ -37,6 +37,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "Types.hpp"
 #include "PBFeatures.hpp"
 #include "Sequence.hpp"
@@ -49,6 +51,7 @@ namespace ConsensusCore {
         StrandEnum Strand;
         int TemplateStart;
         int TemplateEnd;
+        std::string ReadIdentifier;
 
         MappedRead(const QvSequenceFeatures& features,
                    StrandEnum strand,
@@ -57,7 +60,23 @@ namespace ConsensusCore {
             : Features(features),
               Strand(strand),
               TemplateStart(templateStart),
-              TemplateEnd(templateEnd)
+              TemplateEnd(templateEnd),
+              ReadIdentifier("anonymous")
         {}
+
+
+        MappedRead(const QvSequenceFeatures& features,
+                   StrandEnum strand,
+                   int templateStart,
+                   int templateEnd,
+                   const std::string& readIdentifier)
+            : Features(features),
+              Strand(strand),
+              TemplateStart(templateStart),
+              TemplateEnd(templateEnd),
+              ReadIdentifier(readIdentifier)
+        {}
+
+
     };
 }

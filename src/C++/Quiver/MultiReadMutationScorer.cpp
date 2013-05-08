@@ -96,6 +96,13 @@ namespace ConsensusCore
     }
 
     template<typename R>
+    const MappedRead*
+    MultiReadMutationScorer<R>::Read(int readIdx) const
+    {
+        return readsAndScorers_[readIdx].first;
+    }
+
+    template<typename R>
     std::string
     MultiReadMutationScorer<R>::Template(StrandEnum strand) const
     {

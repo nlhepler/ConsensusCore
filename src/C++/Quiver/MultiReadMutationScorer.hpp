@@ -65,6 +65,7 @@ namespace ConsensusCore {
 
         int TemplateLength() const;
         int NumReads() const;
+        const MappedRead* Read(int readIndex) const;
 
         std::string Template(StrandEnum strand = FORWARD_STRAND) const;
         std::string Template(StrandEnum strand, int templateStart, int templateEnd) const;
@@ -100,8 +101,8 @@ namespace ConsensusCore {
 
     public:
         // Return the actual sum of scores for the current template.
-        // TODO(dalexander): need to refactor to make the semantics of the various "Score" functions
-        // clearer.
+        // TODO(dalexander): need to refactor to make the semantics of
+        // the various "Score" functions clearer.
         float BaselineScore() const;
 
     private:
