@@ -104,7 +104,7 @@ namespace ConsensusCore {
              chunkStart < winEnd;
              chunkStart += CHUNK_SIZE)
         {
-            uint32_t chunkEnd = chunkStart + CHUNK_SIZE;
+            uint32_t chunkEnd = std::min(chunkStart + CHUNK_SIZE, winEnd);
 
             // We compute a conservative guess of the rows that are involved in
             // this chunk.  Not every row in the range [startRowInChunk, endRowInChunk)
@@ -119,7 +119,7 @@ namespace ConsensusCore {
                              (endRowInChunk-startRowInChunk), tEnd+startRowInChunk,
                              chunkStart, CHUNK_SIZE, coverage);
             int j = 0;
-            while (j < CHUNK_SIZE)
+            while (j < chunkEnd - chunkStart)
             {
                 if (coverage[j] >= minCoverage)
                 {

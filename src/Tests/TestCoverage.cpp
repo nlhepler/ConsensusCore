@@ -79,3 +79,13 @@ TEST(CoverageTests, CoveredIntervalsTest)
     ASSERT_THAT(CoveredIntervals(0, 6, tStart, 6, tEnd, 100, 9900), ElementsAre(t(100, 10000)));
     ASSERT_THAT(CoveredIntervals(1, 6, tStart, 6, tEnd, 100, 9900), ElementsAre(t(900, 1010), t(2000, 10000)));
 }
+
+
+TEST(CoverageTests, CoveredIntervalsTest2)
+{
+    // Regression test
+    uint32_t tStart[] = { 48853 };
+    uint32_t tEnd[]   = { 50687 };
+    ASSERT_THAT(CoveredIntervals(1, 1, tStart, 1, tEnd, 50000, 500),
+                ElementsAre(t(50000, 50500)));
+}
