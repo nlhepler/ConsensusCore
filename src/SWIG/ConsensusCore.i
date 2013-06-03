@@ -30,6 +30,7 @@ namespace boost {
 %include "PairwiseAlignment.i"
 %include "PoaConsensus.i"
 %include "Utils.i"
+%include "Simulation.i"
 %include "Statistics.i"
 %include "Version.i"
 
