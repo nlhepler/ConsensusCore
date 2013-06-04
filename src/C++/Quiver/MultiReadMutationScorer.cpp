@@ -315,6 +315,19 @@ namespace ConsensusCore
         return sum;
     }
 
+	
+	template<typename R>
+    std::vector<float> MultiReadMutationScorer<R>::BaselineScores() const
+    {
+        std::vector<float> scoreByRead;
+        foreach (const item_t& kv, readsAndScorers_)
+        {
+			scoreByRead.push_back(kv.second->Score());
+        }
+        return scoreByRead;
+    }
+
+	
     template<typename R>
     void MultiReadMutationScorer<R>::CheckInvariants() const
     {
