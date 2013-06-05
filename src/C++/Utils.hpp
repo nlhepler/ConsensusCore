@@ -55,7 +55,7 @@ bool AlmostEqual(float A, float B, int maxUlps = 4);
 
 #define ShouldNotReachHere()                                       \
     fprintf(stderr, "Should not reach here! at " LOCATION "\n");   \
-    throw InternalError("Should not reach here!")
+    throw InternalError("Should not reach here: " LOCATION)
 
 #define NotYetImplemented()     throw NotYetImplementedException()
 
