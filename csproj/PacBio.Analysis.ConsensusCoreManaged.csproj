@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -120,6 +120,11 @@
     <Compile Include="build\CSharp\SWIGTYPE_p_unsigned_int.cs" />
     <Compile Include="build\CSharp\Version.cs" />
     <Compile Include="build\CSharp\ViterbiCombiner.cs" />
+    <Compile Include="build\CSharp\RandomNumberGenerator.cs" />
+    <Compile Include="build\CSharp\SequencingParameters.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_a_4__double.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_double.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_std__vectorT_double_t.cs" />
     <Compile Include="src\CSharp\Demo.cs" />
     <Compile Include="src\CSharp\Test.cs" />
   </ItemGroup>
