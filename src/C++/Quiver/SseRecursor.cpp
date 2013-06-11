@@ -59,6 +59,14 @@ using std::min;
 
 namespace ConsensusCore {
 
+// MSVC dones't appear to have this defined.
+#ifdef _WIN32
+    static inline __m128 operator+(const __m128 a, const __m128 b) {
+        return _mm_add_ps(a, b);
+    }
+#endif
+
+
     template<typename M, typename E, typename C>
     void
     SseRecursor<M, E, C>::FillAlpha(const E& e, const M& guide, M& alpha) const
@@ -442,7 +450,7 @@ namespace ConsensusCore {
     {
         assert(numExtColumns >= 2);
         assert(alpha.Rows() == e.ReadLength() + 1 &&
-               ext.Rows() == e.ReadLength() + 1 );
+               ext.Rows() == e.ReadLength() + 1);
 
         // The new template may not be the same length as the old template.
         // Just make sure that we have anough room to fill out the extend buffer

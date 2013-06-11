@@ -824,7 +824,7 @@ namespace ConsensusCore
             }
         }
 
-        return make_tuple(ss.str(), 0.0f, variants);  // TODO(dalexander): where do we get scores?
+        return boost::make_tuple(ss.str(), 0.0f, variants);  // TODO(dalexander): where do we get scores?
     }
 
     inline int

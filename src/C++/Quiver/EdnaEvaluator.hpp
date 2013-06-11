@@ -176,8 +176,8 @@ namespace ConsensusCore
                    0 <= i && i < ReadLength() );
 
             float ps = pStay(j);
-            float pm = (1.0 - ps) * pMerge(j);
-            float trans = 1.0 - ps - pm;
+            float pm = (1.0f - ps) * pMerge(j);
+            float trans = 1.0f - ps - pm;
 
             float em = moveDist(features_.Channel[i], j);
             return log(trans * em);
@@ -194,8 +194,8 @@ namespace ConsensusCore
             else
             {
                 float ps = pStay(j);
-                float pm = (1.0 - ps) * pMerge(j);
-                float trans = 1.0 - ps - pm;
+                float pm = (1.0f - ps) * pMerge(j);
+                float trans = 1.0f - ps - pm;
 
                 float em = moveDist(0, j);
                 return log(trans * em);
@@ -224,7 +224,7 @@ namespace ConsensusCore
             else
             {
                 float ps = pStay(j);
-                float pm = (1.0 - ps) * pMerge(j);
+                float pm = (1.0f - ps) * pMerge(j);
                 return log(pm);
             }
         }
@@ -240,8 +240,8 @@ namespace ConsensusCore
             else if (j1 + 1 == j2)
             {
                 float ps = pStay(j1);
-                float pm = (1.0 - ps) * pMerge(j1);
-                float trans = 1.0 - ps - pm;
+                float pm = (1.0f - ps) * pMerge(j1);
+                float trans = 1.0f - ps - pm;
 
                 float em = moveDist(obs, j1);
                 return log(trans * em);
@@ -249,7 +249,7 @@ namespace ConsensusCore
             else if (j1 + 2 == j2)
             {
                 float ps = pStay(j1);
-                float pm = (1.0 - ps) * pMerge(j1);
+                float pm = (1.0f - ps) * pMerge(j1);
 
                 if (obs == templateBase(j1))
                     return log(pm);

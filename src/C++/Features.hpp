@@ -49,7 +49,7 @@
 namespace ConsensusCore
 {
     /// \brief An object containing observed features from a sequencing run.
-    class SequenceFeatures
+    struct SequenceFeatures
     {
     public:
         explicit SequenceFeatures(const std::string& seq);

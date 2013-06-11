@@ -80,7 +80,7 @@ namespace ConsensusCore
             }
             pc->poaGraph_->AddSequence(read, config);
         }
-        tie(pc->consensusSequence_, pc->score_, pc->variants_) =
+        boost::tie(pc->consensusSequence_, pc->score_, pc->variants_) =
             pc->poaGraph_->FindConsensus(config);
         return pc;
     }

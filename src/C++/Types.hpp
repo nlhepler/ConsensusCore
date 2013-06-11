@@ -46,17 +46,17 @@
 // Forward declarations
 //
 namespace ConsensusCore {
-    class BandingOptions;
+    struct BandingOptions;
     class DenseMatrix;
-    class QuiverConfig;
+    struct QuiverConfig;
     class PairwiseAlignment;
     class AnnotatedPairwiseAlignment;
-    class PoaConfig;
-    class QvModelParams;
-    class EdnaModelParams;
-    class ChannelSequenceFeatures;
-    class QvSequenceFeatures;
-    class SequenceFeatures;
+    struct PoaConfig;
+    struct QvModelParams;
+    struct EdnaModelParams;
+    struct ChannelSequenceFeatures;
+    struct QvSequenceFeatures;
+    struct SequenceFeatures;
     class SparseMatrix;
     class Mutation;
 }
