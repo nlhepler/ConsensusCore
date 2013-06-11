@@ -223,6 +223,77 @@ TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
 }
 
 
+TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
+{
+    std::string tpl = "TTGACGTACGTGTGACACAGTACAGATTACAAACCGGTAGACATTACATT";
+    std::string revTpl = ReverseComplement(tpl);
+
+    MMS mScorer(this->testingConfig_, tpl);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+
+
+    std::vector<Mutation*> muts;
+    for(int i = 0; i < tpl.length(); i+=2)
+    {
+        Mutation* mutation = new Mutation(SUBSTITUTION, i, 'A');
+        muts += mutation;
+    }
+
+    mScorer.ApplyMutations(muts);
+    EXPECT_EQ(tpl.length(), mScorer.Template().length());
+}
+
+
+
+TYPED_TEST(MultiReadMutationScorerTest, CopyConstructorTest)
+{
+    std::string tpl = "TTGATTACATT";
+    std::string revTpl = ReverseComplement(tpl);
+
+    MMS mScorer(this->testingConfig_, tpl);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+
+    // Run the copy constructor of MultiReadMutationScorer
+    MMS mCopy(mScorer);
+
+    Mutation noOpMutation(SUBSTITUTION, 6, 'A');
+    Mutation insertMutation(INSERTION, 6, 'A');
+    Mutation substitutionMutation(SUBSTITUTION, 6, 'T');
+    Mutation deletionMutation(DELETION, 6, '-');
+
+    EXPECT_EQ(0, mScorer.Score(noOpMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+    EXPECT_EQ(-2, mScorer.Score(insertMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+
+    // Apply mutation to copy
+    std::vector<Mutation*> muts;
+    muts += &insertMutation;
+    mCopy.ApplyMutations(muts);
+
+    // copy template should change
+    EXPECT_EQ("TTGATTAACATT", mCopy.Template());
+
+    // original should be unchanged
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+
+    // Score of original shouldn't change
+    EXPECT_EQ(0, mScorer.Score(noOpMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+    EXPECT_EQ(-2, mScorer.Score(insertMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
+    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+}
+
+
+
 TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
 {
     // Just make sure if we reverse complemented the universe,

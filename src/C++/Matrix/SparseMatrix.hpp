@@ -51,6 +51,7 @@ namespace ConsensusCore {
     {
     public:  // Constructor, destructor
         SparseMatrix(int rows, int cols);
+        SparseMatrix(const SparseMatrix& other);
         ~SparseMatrix();
 
     public:  // Nullability

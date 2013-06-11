@@ -53,6 +53,22 @@ namespace ConsensusCore {
         }
     }
 
+    SparseMatrix::SparseMatrix(const SparseMatrix& other)
+        : nCols_(other.nCols_),
+          nRows_(other.nRows_),
+          usedRanges_(other.usedRanges_),
+          columns_(other.nCols_)
+    {
+        for (int j = 0; j < nCols_; j++)
+        {
+            if (columns_[j] != NULL)
+            {
+                SparseVector *colCopy = new SparseVector(*columns_[j]);
+                columns_[j] = colCopy;
+            }
+        }
+    }
+
     SparseMatrix::~SparseMatrix()
     {
         for (int j = 0; j < nCols_; j++)

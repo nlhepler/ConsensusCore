@@ -66,6 +66,19 @@ namespace ConsensusCore
     }
 
     template<typename R>
+    MutationScorer<R>::MutationScorer(const MutationScorer<R>& other)
+    {
+        evaluator_ = new EvaluatorType(*other.evaluator_);
+        recursor_ = new R(*other.recursor_);
+
+        // Copy alpha and beta
+        alpha_ = new MatrixType(*other.alpha_);
+        beta_ = new MatrixType(*other.beta_);
+        // Buffer where we extend into
+        extendBuffer_ = new MatrixType(*other.extendBuffer_);
+    }
+
+    template<typename R>
     float
     MutationScorer<R>::Score() const
     {

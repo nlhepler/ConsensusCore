@@ -51,7 +51,7 @@
 namespace ConsensusCore
 {
     template<typename R>
-    class MutationScorer : private boost::noncopyable
+    class MutationScorer
     {
     public:
         typedef typename R::MatrixType    MatrixType;
@@ -60,6 +60,7 @@ namespace ConsensusCore
 
     public:
         MutationScorer(const EvaluatorType& evaluator, const R& recursor);
+		MutationScorer(const MutationScorer& other);
         virtual ~MutationScorer();
 
     public:

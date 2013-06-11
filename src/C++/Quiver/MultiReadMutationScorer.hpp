@@ -61,6 +61,7 @@ namespace ConsensusCore {
 
     public:
         MultiReadMutationScorer(const QuiverConfig& params, std::string tpl);
+        MultiReadMutationScorer(const MultiReadMutationScorer<R>& scorer);
         ~MultiReadMutationScorer();
 
         int TemplateLength() const;
@@ -104,7 +105,7 @@ namespace ConsensusCore {
         // TODO(dalexander): need to refactor to make the semantics of
         // the various "Score" functions clearer.
         float BaselineScore() const;
-		std::vector<float> BaselineScores() const;
+        std::vector<float> BaselineScores() const;
 
     private:
         void CheckInvariants() const;

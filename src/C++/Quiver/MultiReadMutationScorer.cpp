@@ -72,6 +72,26 @@ namespace ConsensusCore
     }
 
     template<typename R>
+    MultiReadMutationScorer<R>::MultiReadMutationScorer(const MultiReadMutationScorer<R>& other)
+        : recursor_(other.recursor_),
+          quiverConfig_(other.quiverConfig_),
+          fwdTemplate_(other.fwdTemplate_),
+          revTemplate_(other.revTemplate_),
+          readsAndScorers_()
+    {
+        // Make a deep copy of the readsAndScorers
+        foreach(const item_t& kv, other.readsAndScorers_)
+        {
+            MappedRead* mr = new MappedRead(*kv.first);
+            MutationScorer<R>* scorer = new MutationScorer<R>(*kv.second);
+            readsAndScorers_.push_back(std::make_pair(mr, scorer));
+        }
+
+        DEBUG_ONLY(CheckInvariants());
+    }
+
+
+    template<typename R>
     MultiReadMutationScorer<R>::~MultiReadMutationScorer()
     {
         foreach (const item_t& kv, readsAndScorers_)
@@ -315,19 +335,19 @@ namespace ConsensusCore
         return sum;
     }
 
-	
-	template<typename R>
+    
+    template<typename R>
     std::vector<float> MultiReadMutationScorer<R>::BaselineScores() const
     {
         std::vector<float> scoreByRead;
         foreach (const item_t& kv, readsAndScorers_)
         {
-			scoreByRead.push_back(kv.second->Score());
+            scoreByRead.push_back(kv.second->Score());
         }
         return scoreByRead;
     }
 
-	
+    
     template<typename R>
     void MultiReadMutationScorer<R>::CheckInvariants() const
     {

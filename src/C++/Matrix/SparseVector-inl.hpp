@@ -65,6 +65,18 @@ namespace ConsensusCore
     }
 
     inline
+    SparseVector::SparseVector(const SparseVector& other)
+        : logicalLength_(other.logicalLength_),
+          allocatedBeginRow_(other.allocatedBeginRow_),
+          allocatedEndRow_(other.allocatedEndRow_),
+          nReallocs_(0)
+    {
+        storage_           =  new vector<float>(*other.storage_);
+        nReallocs_         =  0;
+        DEBUG_ONLY(CheckInvariants());
+    }
+
+    inline
     SparseVector::~SparseVector()
     {
         delete storage_;

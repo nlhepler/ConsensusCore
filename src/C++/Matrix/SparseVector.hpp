@@ -51,6 +51,7 @@ namespace ConsensusCore {
     {
     public:  // Constructor, destructor
         SparseVector(int logicalLength, int beginRow, int endRow);
+        SparseVector(const SparseVector& other);
         ~SparseVector();
 
         // Ensures there is enough allocated storage to
