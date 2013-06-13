@@ -60,7 +60,7 @@ using std::min;
 namespace ConsensusCore {
 
 // MSVC dones't appear to have this defined.
-#ifdef _WIN32
+#ifdef _MSC_VER
     static inline __m128 operator+(const __m128 a, const __m128 b) {
         return _mm_add_ps(a, b);
     }
