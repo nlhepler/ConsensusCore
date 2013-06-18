@@ -137,6 +137,7 @@ xcopy /D /Y $(ProjectDir)\bin\Debug\libConsensusCore_.dll $(TargetDir)</PreBuild
     <PreBuildEvent Condition=" '$(OS)' != 'Windows_NT' ">
 	cd $(ProjectDir)/..
 	make csharp-pacbio
+	cp $(ProjectDir)../build/CSharp/libConsensusCore_.so $(TargetDir)
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
