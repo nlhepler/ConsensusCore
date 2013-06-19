@@ -324,6 +324,38 @@ namespace ConsensusCore
         return (sum > 0);
     }
 
+
+	template<typename R>
+	std::vector<int> MultiReadMutationScorer<R>::AllocatedMatrixEntries() const
+	{
+		std::vector<int> allocatedCounts;
+		
+		foreach(const item_t& kv, readsAndScorers_)
+		{
+			int n = 0;
+			n += kv.second->Alpha()->AllocatedEntries();
+			n += kv.second->Alpha()->AllocatedEntries();
+
+			allocatedCounts.push_back(n);
+		}
+
+		return allocatedCounts;
+	}
+
+	template<typename R>
+	std::vector<int> MultiReadMutationScorer<R>::NumFlipFlops() const
+	{
+		std::vector<int> nFlipFlops;
+		
+		foreach(const item_t& kv, readsAndScorers_)
+		{
+			nFlipFlops.push_back(kv.second->NumFlipFlops());
+		}
+
+		return nFlipFlops;
+	}
+
+
     template<typename R>
     float MultiReadMutationScorer<R>::BaselineScore() const
     {

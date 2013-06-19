@@ -91,7 +91,7 @@ namespace ConsensusCore {
         /// This routine will fill the alpha and beta matrices, ensuring
         /// that the score computed from the alpha and beta recursions are
         /// identical, refilling back-and-forth if necessary.
-        virtual void
+        virtual int
         FillAlphaBeta(const E& e, M& alpha, M& beta) const
             throw(AlphaBetaMismatchException);
 

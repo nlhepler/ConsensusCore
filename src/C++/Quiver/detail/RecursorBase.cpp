@@ -66,7 +66,7 @@ namespace ConsensusCore {
 namespace detail {
 
     template<typename M, typename E, typename C>
-    void
+    int
     RecursorBase<M, E, C>::FillAlphaBeta(const E& e, M& a, M& b) const
         throw(AlphaBetaMismatchException)
     {
@@ -80,8 +80,15 @@ namespace detail {
         while (fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE
                && flipflops <= MAX_FLIP_FLOPS)
         {
-            FillAlpha(e, b, a);
-            FillBeta(e, a, b);
+			if(flipflops % 1 == 0)
+			{
+				FillAlpha(e, b, a);
+			}
+			else
+			{
+				FillBeta(e, a, b);
+			}
+
             flipflops++;
         }
 
@@ -93,6 +100,8 @@ namespace detail {
         {
             // throw AlphaBetaMismatchException();
         }
+
+		return flipflops;
     }
 
     struct MoveSpec {

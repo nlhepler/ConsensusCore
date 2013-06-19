@@ -80,6 +80,7 @@ namespace ConsensusCore
         const MatrixType* Beta() const;
         const PairwiseAlignment* Alignment() const;
         const EvaluatorType* Evaluator() const;
+		const int NumFlipFlops() const { return numFlipFlops_; }
 
     private:
         EvaluatorType* evaluator_;
@@ -87,6 +88,7 @@ namespace ConsensusCore
         MatrixType* alpha_;
         MatrixType* beta_;
         MatrixType* extendBuffer_;
+		int numFlipFlops_;
     };
 
     typedef MutationScorer<SimpleQvRecursor>       SimpleQvMutationScorer;

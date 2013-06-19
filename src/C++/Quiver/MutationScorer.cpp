@@ -62,7 +62,7 @@ namespace ConsensusCore
         // Buffer where we extend into
         extendBuffer_ = new MatrixType(evaluator.ReadLength() + 1, 8);
         // Initial alpha and beta
-        recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
+        numFlipFlops_ = recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
     }
 
     template<typename R>

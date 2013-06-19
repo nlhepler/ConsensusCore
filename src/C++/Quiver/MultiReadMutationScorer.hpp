@@ -95,6 +95,9 @@ namespace ConsensusCore {
         bool IsFavorable(const Mutation& m) const;
         bool FastIsFavorable(const Mutation& m) const;
 
+		// Rough estimate of memory consumption of scoring machinery
+		std::vector<int> AllocatedMatrixEntries() const;
+		std::vector<int> NumFlipFlops() const;
     public:
         // Alternate entry point for C# code, not requiring zillions of object
         // allocations.
