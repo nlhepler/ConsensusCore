@@ -81,10 +81,10 @@ namespace ConsensusCore {
         bool useGuide = !guide.IsNull();
         int hintBeginRow = 0, hintEndRow = 0;
 
-		float lastColBestScore = 0;
-		float dynamicScoreDiff = this->bandingOptions_.ScoreDiff;
+        float lastColBestScore = 0;
+        float dynamicScoreDiff = this->bandingOptions_.ScoreDiff;
 
-		for (int j = 0; j <= J; ++j)
+        for (int j = 0; j <= J; ++j)
         {
             if (useGuide && !guide.IsColumnEmpty(j))
             {
@@ -210,15 +210,15 @@ namespace ConsensusCore {
             endRow = i;
             alpha.FinishEditingColumn(j, beginRow, endRow);
 
-			// Adjust the dymanic scoreDiff
-			// If best score from this column is worse that the best score from last column, then
-			// the band grows. Otherwise it shrinks.
-			// We keep the band in reasonable range above the selected value.
-			// The constants were manually adjusted to give good behaviour -- unclear how robust they are, or if there's 
-			// any way to select them automatically.
-			float scoreChange = maxScore - lastColBestScore;	
-			dynamicScoreDiff = dynamicScoreDiff - 2.0 * (scoreChange - (-0.3f));
-			dynamicScoreDiff = max(this->bandingOptions_.ScoreDiff, min(this->bandingOptions_.ScoreDiff * 10, dynamicScoreDiff));
+            // Adjust the dymanic scoreDiff
+            // If best score from this column is worse that the best score from last column, then
+            // the band grows. Otherwise it shrinks.
+            // We keep the band in reasonable range above the selected value.
+            // The constants were manually adjusted to give good behaviour -- unclear how robust they are, or if there's
+            // any way to select them automatically.
+            float scoreChange = maxScore - lastColBestScore;
+            dynamicScoreDiff = dynamicScoreDiff - this->bandingOptions_.DynamicAdjustFactor * (scoreChange - this->bandingOptions_.DynamicAdjustOffset);
+            dynamicScoreDiff = max(this->bandingOptions_.ScoreDiff, min(this->bandingOptions_.ScoreDiff * 10, dynamicScoreDiff));
 
 			lastColBestScore = maxScore;
 

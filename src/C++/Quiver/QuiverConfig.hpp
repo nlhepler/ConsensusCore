@@ -56,11 +56,26 @@ namespace ConsensusCore
     struct BandingOptions
     {
         int DiagonalCross;
-        float ScoreDiff;
+        float ScoreDiff;		
+		
+		// The recursors implement a dynamic adjustment of the ScoreDiff.  
+		// dynamicScoreDiff = max(ScoreDiff, min(10*ScoreDiff,  dynamicScoreDiff - DynamicAdjustFactor * ((columnBestScoreChange) - DynamicAdjustOffset)))
+		// where columnBestScoreChange is the difference between best scores obtained in the current and previous columns.
+		float DynamicAdjustFactor;
+		float DynamicAdjustOffset;
 
         BandingOptions(int diagonalCross, float scoreDiff)
             : DiagonalCross(diagonalCross),
-              ScoreDiff(scoreDiff)
+              ScoreDiff(scoreDiff),
+			  DynamicAdjustFactor(0.0f),
+			  DynamicAdjustOffset(0.0f)
+        {}
+
+		BandingOptions(int diagonalCross, float scoreDiff, float dynamicAdjustFactor, float dynamicAdjustOffset)
+            : DiagonalCross(diagonalCross),
+              ScoreDiff(scoreDiff),
+			  DynamicAdjustFactor(dynamicAdjustFactor),
+			  DynamicAdjustOffset(dynamicAdjustOffset)
         {}
     };
 
