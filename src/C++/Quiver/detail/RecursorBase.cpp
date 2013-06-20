@@ -80,7 +80,7 @@ namespace detail {
         while (fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE
                && flipflops <= MAX_FLIP_FLOPS)
         {
-			if(flipflops % 1 == 0)
+			if(flipflops % 2 == 0)
 			{
 				FillAlpha(e, b, a);
 			}
