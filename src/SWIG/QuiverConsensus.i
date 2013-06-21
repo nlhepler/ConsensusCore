@@ -8,9 +8,21 @@
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
 #include "Quiver/ReadScorer.hpp"
+#include "Quiver/Diploid.hpp"
 #include "Sequence.hpp"
 using namespace ConsensusCore;
 %}
+
+#if SWIGPYTHON
+
+%include "numpy.i"
+%numpy_typemaps(float, NPY_DOUBLE, int)
+
+%apply (double* IN_ARRAY2, int DIM1, int DIM2)
+       { (const double *siteScores, int dim1, int dim2) }
+
+#endif // SWIGPYTHON
+
 
 %include "Sequence.hpp"
 %include "Mutation.hpp"
@@ -23,6 +35,8 @@ using namespace ConsensusCore;
 %include "Quiver/SimpleRecursor.hpp"
 %include "Quiver/SseRecursor.hpp"
 %include "Quiver/ReadScorer.hpp"
+%include "Quiver/Diploid.hpp"
+
 
 namespace ConsensusCore {
     //
