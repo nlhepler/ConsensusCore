@@ -1,3 +1,12 @@
+G_TOPDIR := ../..
+G_PBOUT_DIR := $(G_TOPDIR)/smrtanalysis/prebuilt.out
+G_BUILDOS_CMD := bash -c 'set -e; set -o pipefail; id=$$(lsb_release -si | tr "[:upper:]" "[:lower:]"); rel=$$(lsb_release -sr); case $$id in ubuntu) printf "$$id-%04d\n" $${rel/./};; centos) echo "$$id-$${rel%%.*}";; *) echo "$$id-$$rel";; esac'
+G_BUILDOS := $(shell $(G_BUILDOS_CMD))
+
+G_SWIG_DIR := $(G_PBOUT_DIR)/swig/swig-2.0.10
+GA_SWIG_DIR := $(abspath $(G_SWIG_DIR))
+GA_SWIG_BINDIR := $(GA_SWIG_DIR)/$(G_BUILDOS)/bin
+GA_SWIG_LIBDIR := $(GA_SWIG_DIR)/$(G_BUILDOS)/share/swig/2.0.10
 
 CSHARP_COMPILE           := gmcs -nowarn:0114
 CSHARP_LINK_NATIVE_FLAGS := -shared -static-libgcc -lstdc++ 
@@ -11,7 +20,8 @@ CSHARP_NATIVE_LIB_PACBIO := $(PROJECT_ROOT)/csproj/bin/Debug/libConsensusCore_.$
 
 csharp: $(CSHARP_CIL_LIB) $(CSHARP_NATIVE_LIB)
 
-csharp-pacbio: SWIG := ../../prebuilt.out/tools/swig-2.0.4/bin/swig
+csharp-pacbio: SWIG := $(GA_SWIG_BINDIR)/swig
+csharp-pacbio: SWIG_LIB := $(GA_SWIG_LIBDIR)
 csharp-pacbio: $(CSHARP_NATIVE_LIB_PACBIO)
 csharp-pacbio: CXX_OPT_FLAGS_RELEASE := -O3 --param inline-unit-growth=150   -DNDEBUG -g
 
@@ -28,7 +38,7 @@ SWIG_DEBUG :=
 $(CSHARP_NATIVE_LIB): $(CXX_LIB) $(SWIG_SRCS)
 	mkdir -p $(BUILD_ROOT)/CSharp
 	rm -rf $(BUILD_ROOT)/CSharp/*
-	$(SWIG) $(SWIG_DEBUG) -csharp -dllimport libConsensusCore_ -namespace ConsensusCore -c++ -Isrc/C++ -outdir $(BUILD_ROOT)/CSharp \
+	SWIG_LIB="$(SWIG_LIB)" $(SWIG) $(SWIG_DEBUG) -csharp -dllimport libConsensusCore_ -namespace ConsensusCore -c++ -Isrc/C++ -outdir $(BUILD_ROOT)/CSharp \
 	    -o $(BUILD_ROOT)/CSharp/ConsensusCore_wrap.cxx src/SWIG/ConsensusCore.i 
 	$(CXX) $(CSHARP_INCLUDES) -c $(BUILD_ROOT)/CSharp/ConsensusCore_wrap.cxx -o $(BUILD_ROOT)/CSharp/ConsensusCore_wrap.o 
 	$(CXX) $(CSHARP_LINK_NATIVE_FLAGS) $(BUILD_ROOT)/CSharp/ConsensusCore_wrap.o $(CXX_LIB) $(CSHARP_LIBS) -o $(BUILD_ROOT)/CSharp/libConsensusCore_.$(DYLIB)
