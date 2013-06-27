@@ -1,7 +1,10 @@
 G_TOPDIR := ../..
 G_PBOUT_DIR := $(G_TOPDIR)/smrtanalysis/prebuilt.out
 G_BUILDOS_CMD := bash -c 'set -e; set -o pipefail; id=$$(lsb_release -si | tr "[:upper:]" "[:lower:]"); rel=$$(lsb_release -sr); case $$id in ubuntu) printf "$$id-%04d\n" $${rel/./};; centos) echo "$$id-$${rel%%.*}";; *) echo "$$id-$$rel";; esac'
-G_BUILDOS := $(shell $(G_BUILDOS_CMD))
+G_BUILDOS := 
+ifeq ($(UNAME), Linux)
+  G_BUILDOS := $(shell $(G_BUILDOS_CMD))
+endif
 
 G_SWIG_DIR := $(G_PBOUT_DIR)/swig/swig-2.0.10
 GA_SWIG_DIR := $(abspath $(G_SWIG_DIR))
