@@ -38,3 +38,6 @@ The best place to get started is the BrownBag2012 presentation under
 the doc/ folder.  Then, to see how to write code using ConsensusCore,
 take a look at quiver/demo.py under the (separate) GenomicConsensus
 project.
+
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/936a243e6d9d77202b4c6428a255ac6f "gi
