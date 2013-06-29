@@ -24,3 +24,6 @@ extra/gmock-1.6.0
 vsproj/Debug
 vsproj/ipch
 *ReSharper*
+
+
+evidence_dump/
