@@ -46,11 +46,10 @@ using std::pair;
 
 TEST(DiploidQuiverTests, Test1)
 {
-    pair<int, int> diplotype;
     int dim1 = 4, dim2 = 3;
-    float siteScores[]  = { 1, 2, 3,
-                            4, 5, 6,
-                            7, 8, 9,
-                            10, 11, 12 };
-    IsSiteHeterozygous(siteScores, dim1, dim2, 0, &diplotype);
+    double siteScores[]  = { 1, 2, 3,
+                             4, 5, 6,
+                             7, 8, 9,
+                             10, 11, 12 };
+    DiploidSite* ds = IsSiteHeterozygous(siteScores, dim1, dim2, 0);
 }
