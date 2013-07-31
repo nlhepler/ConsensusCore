@@ -73,10 +73,8 @@ typedef boost::numeric::ublas::matrix_column<const dmat> dmat_column;
 namespace ConsensusCore {
 
     // This needs to be configurable.
-    const int LENGTH_DIFFS[] = { 0, 1, 1, 1, 1, -1, 0, 0, 0 };
     const int MUTATIONS_PER_SITE = 9;
-    // NEW format, to be phased in:
-    //const int LENGTH_DIFFS[] = { 0, 0, 0, 0, 1, 1, 1, 1, -1 };
+    const int LENGTH_DIFFS[] = { 0, 0, 0, 0, 1, 1, 1, 1, -1 };
 
     DiploidSite::DiploidSite(int allele0, int allele1,
                              std::vector<int> alleleForRead)
@@ -190,7 +188,7 @@ namespace ConsensusCore {
     // Is the site detected as a heterozygote?
     //  - If not, return NULL.
     //  - If so, return a pointer to a new DiploidSite object
-    // logPriorRatio <= 0 is log {Pr(hom)/Pr(het)}
+    // logPriorRatio >= 0 is log {Pr(hom)/Pr(het)}
     DiploidSite* IsSiteHeterozygous(const double *siteScores, int dim1, int dim2,
                                     double logPriorRatio)
     {
