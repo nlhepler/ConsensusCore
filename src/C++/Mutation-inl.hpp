@@ -78,14 +78,6 @@ namespace ConsensusCore {
         {
             return false;
         }
-        foreach (char base, newBases_)
-        {
-            if (!(base == 'A' ||
-                  base == 'C' ||
-                  base == 'G' ||
-                  base == 'T'))
-                return false;
-        }
         return true;
     }
 
