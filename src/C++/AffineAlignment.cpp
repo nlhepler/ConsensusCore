@@ -47,24 +47,66 @@
 
 #include "PairwiseAlignment.hpp"
 #include "Sequence.hpp"
+#include "Utils.hpp"
+
 
 namespace ConsensusCore {
 
-    AffineAlignmentParams::AffineAlignmentParams(float matchScore,
-                                                 float mismatchScore,
-                                                 float gapOpen,
-                                                 float gapExtend)
-        : MatchScore(matchScore),
-          MismatchScore(mismatchScore),
-          GapOpen(gapOpen),
-          GapExtend(gapExtend)
-    {}
+    static inline bool IsIupacPartialMatch(char iupacCode, char b)
+    {
+        assert (iupacCode != b);
 
+        switch (iupacCode) {
+        case 'R': return (b == 'A' || b == 'G');
+        case 'Y': return (b == 'C' || b == 'T');
+        case 'S': return (b == 'G' || b == 'C');
+        case 'W': return (b == 'A' || b == 'T');
+        case 'K': return (b == 'G' || b == 'T');
+        case 'M': return (b == 'A' || b == 'C');
+        default: return false;
+        }
+    }
+
+    float IupacAwareMismatchPenalty(char t, char q)
+    {
+        assert (isupper(t) && isupper(q));
+
+        // if   q == t, return 0
+        // elif  q is IUPAC(x/y), and t is x or y, return -0.25;
+        // elif  t is IUPAC(x/y), and q is x or y, return -0.25
+        // else return -1;
+
+        // Questions:
+        //   - what about N bases?
+        //
+        if (t == q)                         { return 0;    }
+        else if (IsIupacPartialMatch(t, q)) { return -0.25; }
+        else if (IsIupacPartialMatch(q, t)) { return -0.25; }
+        else                                { return -1;   }
+    }
+
+
+    AffineAlignmentParams::AffineAlignmentParams(float matchScore,
+                                                 float constantMismatchScore,
+                                                 float gapOpen,
+                                                 float gapExtend,
+                                                 MismatchPenaltyFn_t mismatchPenaltyFn)
+        : MatchScore(matchScore),
+          ConstantMismatchScore(constantMismatchScore),
+          GapOpen(gapOpen),
+          GapExtend(gapExtend),
+          MismatchPenaltyFn(mismatchPenaltyFn)
+    {}
 
 
     AffineAlignmentParams DefaultAffineAlignmentParams()
     {
         return AffineAlignmentParams(0, -1.0, -1.0, -0.5);
+    }
+
+    AffineAlignmentParams IupacAwareAffineAlignmentParams()
+    {
+        return AffineAlignmentParams(0, -1.0, -1.0, -0.5, IupacAwareMismatchPenalty);
     }
 
 
@@ -73,9 +115,9 @@ namespace ConsensusCore {
         return std::max(std::max(a, b), std::max(c, d));
     }
 
-    PairwiseAlignment* AlignWithAffineGapPenalty(const std::string& target,
-                                                 const std::string& query,
-                                                 AffineAlignmentParams params)
+    PairwiseAlignment* AlignAffine(const std::string& target,
+                                   const std::string& query,
+                                   AffineAlignmentParams params)
     {
         // Implementation follows the textbook "two-state" affine gap model
         // description from Durbin et. al
@@ -105,10 +147,21 @@ namespace ConsensusCore {
         {
             for (int j = 1; j <= J; ++j)
             {
-                M(i, j) = std::max(M(i - 1, j - 1), GAP(i - 1, j - 1)) +
-                            (query[i - 1] == target[j - 1] ?
-                                    params.MatchScore :
-                                    params.MismatchScore);
+                float mismatchScore;
+                if (query[i - 1] == target[j - 1])
+                {
+                    mismatchScore = 0;
+                }
+                else if (params.MismatchPenaltyFn == NULL)
+                {
+                    mismatchScore = params.ConstantMismatchScore;
+                }
+                else
+                {
+                    mismatchScore = (*params.MismatchPenaltyFn)(target[j - 1], query[i - 1]);
+                }
+
+                M(i, j) = std::max(M(i - 1, j - 1), GAP(i - 1, j - 1)) + mismatchScore;
                 GAP(i, j) = MAX4(M(i, j - 1)   + params.GapOpen,
                                  GAP(i, j - 1) + params.GapExtend,
                                  M(i - 1, j)   + params.GapOpen,
@@ -170,4 +223,14 @@ namespace ConsensusCore {
         assert (raQuery.length() == raTarget.length());
         return new PairwiseAlignment(Reverse(raTarget), Reverse(raQuery));
     }
+
+
+    PairwiseAlignment* AlignAffineIupac(const std::string& target,
+                                        const std::string& query)
+    {
+        return AlignAffine(target,
+                           query,
+                           IupacAwareAffineAlignmentParams());
+    }
+
 }

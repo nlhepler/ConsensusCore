@@ -137,37 +137,37 @@ TEST(PairwiseAlignmentTests, TargetPositionsInQueryTest)
 
 TEST(AffineAlignmentTests, BasicTests)
 {
-    PairwiseAlignment* a = AlignWithAffineGapPenalty("ATT", "ATT");
+    PairwiseAlignment* a = AlignAffine("ATT", "ATT");
     EXPECT_EQ("ATT", a->Target());
     EXPECT_EQ("ATT", a->Query());
     delete a;
 
-    a = AlignWithAffineGapPenalty("AT", "ATT");
+    a = AlignAffine("AT", "ATT");
     EXPECT_EQ("A-T", a->Target());
     EXPECT_EQ("ATT", a->Query());
     delete a;
 
-    a = AlignWithAffineGapPenalty("GA", "GAT");
+    a = AlignAffine("GA", "GAT");
     EXPECT_EQ("GA-", a->Target());
     EXPECT_EQ("GAT", a->Query());
     delete a;
 
-    a = AlignWithAffineGapPenalty("GAT", "GA");
+    a = AlignAffine("GAT", "GA");
     EXPECT_EQ("GAT", a->Target());
     EXPECT_EQ("GA-", a->Query());
     delete a;
 
-    a = AlignWithAffineGapPenalty("GA", "TGA");
+    a = AlignAffine("GA", "TGA");
     EXPECT_EQ("-GA", a->Target());
     EXPECT_EQ("TGA", a->Query());
     delete a;
 
-    a = AlignWithAffineGapPenalty("TGA", "GA");
+    a = AlignAffine("TGA", "GA");
     EXPECT_EQ("TGA", a->Target());
     EXPECT_EQ("-GA", a->Query());
     delete a;
 
-    a = AlignWithAffineGapPenalty("GATTACA", "GATTTACA");
+    a = AlignAffine("GATTACA", "GATTTACA");
     EXPECT_EQ("GA-TTACA", a->Target());
     EXPECT_EQ("GATTTACA", a->Query());
     delete a;
@@ -241,6 +241,24 @@ TEST(AffineAlignmentTests, LargeGapTest)
         "GCTGGAACGGGCGCTAATTTAGGGAAATCATGACCTGAGGTCAACAAACTTTTTGAAAAA"
         "ATCGCGCGTTTATTCAAACTTCAATCAATGTGTGGTTTTAATAAGCGAAAT";
 
-    PairwiseAlignment* a = AlignWithAffineGapPenalty(target, query);
+    PairwiseAlignment* a = AlignAffine(target, query);
     ASSERT_EQ(expectedAlignedTarget, a->Target());
 }
+
+
+
+// ------------------ IUPAC-aware alignment tests ---------------------
+
+TEST(IupacAlignmentTests, BasicTest)
+{
+    PairwiseAlignment* a;
+    a = AlignAffineIupac("GATTTT", "GMTTT");
+    ASSERT_EQ("GATTTT", a->Target());
+    ASSERT_EQ("GM-TTT", a->Query());
+
+    a = AlignAffineIupac("TTTTAG", "TTTMG");
+    ASSERT_EQ("TTTTAG", a->Target());;
+    ASSERT_EQ("-TTTMG", a->Query());
+}
+
+

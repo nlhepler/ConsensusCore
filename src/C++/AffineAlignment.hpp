@@ -48,21 +48,47 @@ namespace ConsensusCore {
 
     class PairwiseAlignment;
 
+    typedef float (*MismatchPenaltyFn_t)(char, char);
+
     struct AffineAlignmentParams {
         float MatchScore;
-        float MismatchScore;
+        float ConstantMismatchScore;
         float GapOpen;
         float GapExtend;
+        MismatchPenaltyFn_t MismatchPenaltyFn;
 
+        //
+        // Alignment parameters.  If mismatchPenaltyFn is null,
+        // constantMismatchScore is used for scoring mismatches.
+        // Otherwise, the function is queried.
+        //
         AffineAlignmentParams(float matchScore,
-                              float mismatchScore,
+                              float constantMismatchScore,
                               float gapOpen,
-                              float gapExtend);
+                              float gapExtend,
+                              MismatchPenaltyFn_t mismatchPenaltyFn = NULL);
     };
 
     AffineAlignmentParams DefaultAffineAlignmentParams();
+    AffineAlignmentParams IupacAwareAffineAlignmentParams();
 
-    PairwiseAlignment* AlignWithAffineGapPenalty(const std::string& target,
-                                                 const std::string& query,
-                                                 AffineAlignmentParams params = DefaultAffineAlignmentParams()); // NOLINT
+
+    //
+    // Affine gap-penalty alignment.
+    //
+    PairwiseAlignment* AlignAffine(const std::string& target,
+                                   const std::string& query,
+                                   AffineAlignmentParams params = DefaultAffineAlignmentParams()); // NOLINT
+
+    //
+    // Affine gap-penalty alignment with partial awareness of IUPAC ambiguous bases---
+    // half-penalizes partial mismatches.  For example:  (M = IUPAC A/C)
+    //   T->A = -1,
+    //   T->M = -1,
+    //   A->M = -0.5
+    //
+    PairwiseAlignment* AlignAffineIupac(const std::string& target,
+                                        const std::string& query);
+
+
 }
