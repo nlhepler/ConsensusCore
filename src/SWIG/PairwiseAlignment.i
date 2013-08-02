@@ -8,9 +8,8 @@ using namespace ConsensusCore;
 %include "Types.i"
 
 %newobject Align;
-%newobject AlignWithAffineGapPenalty;
+%newobject AlignAffine;
+%newobject AlignAffineIupac;
 
 %include <PairwiseAlignment.hpp>
 %include <AffineAlignment.hpp>
-
-
