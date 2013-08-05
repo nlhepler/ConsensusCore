@@ -77,9 +77,11 @@ namespace ConsensusCore {
     const int LENGTH_DIFFS[] = { 0, 0, 0, 0, 1, 1, 1, 1, -1 };
 
     DiploidSite::DiploidSite(int allele0, int allele1,
+                             float logBayesFactor,
                              std::vector<int> alleleForRead)
         : Allele0(allele0),
           Allele1(allele1),
+          LogBayesFactor(logBayesFactor),
           AlleleForRead(alleleForRead)
     {}
 
@@ -202,8 +204,8 @@ namespace ConsensusCore {
 
         if (logBF - logPriorRatio > 0)
         {
-            cout << "log Bayes factor:" << logBF << endl;
-            return new DiploidSite(allele0, allele1, AssignReadsToAlleles(M, allele0, allele1));
+            return new DiploidSite(allele0, allele1, logBF,
+                                   AssignReadsToAlleles(M, allele0, allele1));
         }
         else
         {

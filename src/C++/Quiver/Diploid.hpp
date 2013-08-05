@@ -47,8 +47,9 @@ namespace ConsensusCore {
     struct DiploidSite {
         int Allele0;
         int Allele1;
+        float LogBayesFactor;
         std::vector<int> AlleleForRead;
-        DiploidSite(int, int, std::vector<int>);
+        DiploidSite(int, int, float, std::vector<int>);
     };
 
     // NB: The prototype
