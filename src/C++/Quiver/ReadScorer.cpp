@@ -50,7 +50,6 @@ using std::endl;
 
 namespace ConsensusCore
 {
-
     ReadScorer::ReadScorer(QuiverConfig& config)
         : _quiverConfig(config)
     {}
@@ -66,7 +65,6 @@ namespace ConsensusCore
         SparseMatrix alpha(I+1, J+1), beta(I+1, J+1);
         r.FillAlphaBeta(e, alpha, beta);
 
-        return beta(0,0);
+        return beta(0, 0);
     }
-
 }

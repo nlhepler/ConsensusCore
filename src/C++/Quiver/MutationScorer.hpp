@@ -60,7 +60,7 @@ namespace ConsensusCore
 
     public:
         MutationScorer(const EvaluatorType& evaluator, const R& recursor);
-		MutationScorer(const MutationScorer& other);
+        MutationScorer(const MutationScorer& other);
         virtual ~MutationScorer();
 
     public:
@@ -72,7 +72,8 @@ namespace ConsensusCore
         // APIs that allow C# users to avoid allocating lots of
         // tiny objects.
         float ScoreMutation(MutationType mutationType, int position, char base) const;
-        float ScoreMutation(MutationType mutationType, int start, int end, std::string newBases) const;
+        float ScoreMutation(MutationType mutationType, int start, int end,
+                            std::string newBases) const;
 
     public:
         // Accessors that are handy for debugging.
@@ -80,7 +81,7 @@ namespace ConsensusCore
         const MatrixType* Beta() const;
         const PairwiseAlignment* Alignment() const;
         const EvaluatorType* Evaluator() const;
-		const int NumFlipFlops() const { return numFlipFlops_; }
+        const int NumFlipFlops() const { return numFlipFlops_; }
 
     private:
         EvaluatorType* evaluator_;
@@ -88,7 +89,7 @@ namespace ConsensusCore
         MatrixType* alpha_;
         MatrixType* beta_;
         MatrixType* extendBuffer_;
-		int numFlipFlops_;
+        int numFlipFlops_;
     };
 
     typedef MutationScorer<SimpleQvRecursor>       SimpleQvMutationScorer;

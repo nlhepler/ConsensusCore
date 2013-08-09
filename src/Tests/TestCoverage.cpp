@@ -65,19 +65,19 @@ TEST(CoverageTests, CoveredIntervalsTest)
 {
     // CHECK:
     // CoveredIntervals(0, [1,2,3,8,900,2000], [3,4,5,10,1010,20000], 0, 10000) -> ((0, 10000),)
-    // CoveredIntervals(1, [1,2,3,8,900,2000], [3,4,5,10,1010,20000], 0, 10000) -> ((1, 5), (8, 10), (900, 1010), (2000, 10000))
+    // CoveredIntervals(1, [1,2,3,8,900,2000], [3,4,5,10,1010,20000], 0, 10000) -> ((1, 5), (8, 10), (900, 1010), (2000, 10000))  // NOLINT
     // CoveredIntervals(2, [1,2,3,8,900,2000], [3,4,5,10,1010,20000], 0, 10000) -> ((2, 4),)
     // CoveredIntervals(3, [1,2,3,8,900,2000], [3,4,5,10,1010,20000], 0, 10000) -> ()
 
     uint32_t tStart[] = { 1, 2, 3,  8,  900,  2000 };
     uint32_t tEnd[]   = { 3, 4, 5, 10, 1010, 20000 };
     ASSERT_THAT(CoveredIntervals(0, 6, tStart, 6, tEnd, 0, 10000), ElementsAre(t(0, 10000)));
-    ASSERT_THAT(CoveredIntervals(1, 6, tStart, 6, tEnd, 0, 10000), ElementsAre(t(1, 5), t(8, 10), t(900, 1010), t(2000, 10000)));
+    ASSERT_THAT(CoveredIntervals(1, 6, tStart, 6, tEnd, 0, 10000), ElementsAre(t(1, 5), t(8, 10), t(900, 1010), t(2000, 10000)));  // NOLINT
     ASSERT_THAT(CoveredIntervals(2, 6, tStart, 6, tEnd, 0, 10000), ElementsAre(t(2, 4)));
     ASSERT_THAT(CoveredIntervals(3, 6, tStart, 6, tEnd, 0, 10000), ElementsAre());
 
     ASSERT_THAT(CoveredIntervals(0, 6, tStart, 6, tEnd, 100, 9900), ElementsAre(t(100, 10000)));
-    ASSERT_THAT(CoveredIntervals(1, 6, tStart, 6, tEnd, 100, 9900), ElementsAre(t(900, 1010), t(2000, 10000)));
+    ASSERT_THAT(CoveredIntervals(1, 6, tStart, 6, tEnd, 100, 9900), ElementsAre(t(900, 1010), t(2000, 10000)));  // NOLINT
 }
 
 

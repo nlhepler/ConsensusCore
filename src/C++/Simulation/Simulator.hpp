@@ -37,10 +37,10 @@
 
 #pragma once
 
-#include <string>
-
 #include <Sequence.hpp>
 #include <Utils.hpp>
+
+#include <string>
 
 using std::string;
 
@@ -56,10 +56,10 @@ namespace ConsensusCore {
     //     C = 3
     struct SequencingParameters
     {
-        double Ins[4][4];  // Insertion error [tplBase][emittedBase]
-        double Dark[4];    // Spontaneous deletion [tplBase]
-        double Merge[4];   // Pulse merge [tplBase], (conditional on HP context)
-        double Miscall[4]; // Miscall
+        double Ins[4][4];   // Insertion error [tplBase][emittedBase]
+        double Dark[4];     // Spontaneous deletion [tplBase]
+        double Merge[4];    // Pulse merge [tplBase], (conditional on HP context)
+        double Miscall[4];  // Miscall
 
         static SequencingParameters C2();
     };
@@ -67,7 +67,7 @@ namespace ConsensusCore {
 
     inline int Channel(char base)
     {
-        switch(base) {
+        switch (base) {
             case 'T': return 0;
             case 'G': return 1;
             case 'A': return 2;
@@ -79,4 +79,4 @@ namespace ConsensusCore {
     string SimulateRead(const SequencingParameters& p,
                         const std::string& tpl,
                         RandomNumberGenerator& rng);
- }
+}

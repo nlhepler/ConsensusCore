@@ -42,13 +42,14 @@
 
 namespace ConsensusCore
 {
-    // A ReadScorer provides a simple but inefficient means of scoring a single read against a template.
-    // This is only to be used for testing, not in production code.
+    // A ReadScorer provides a simple but inefficient means of scoring
+    // a single read against a template.  This is only to be used for
+    // testing, not in production code.
 
     class ReadScorer
     {
     public:
-        ReadScorer(QuiverConfig& config);
+        explicit ReadScorer(QuiverConfig& config);
         float Score(const std::string& tpl, const QvSequenceFeatures& read) const;
 
     private:

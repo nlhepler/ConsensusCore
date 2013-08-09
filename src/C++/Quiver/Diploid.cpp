@@ -37,7 +37,7 @@
 
 #include "Diploid.hpp"
 
-
+#include <algorithm>
 #include <cassert>
 #include <cfloat>
 #include <cmath>
@@ -50,9 +50,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
-#include <boost/lambda/lambda.hpp>
 
-#include <Mutation.hpp>
+#include "Mutation.hpp"
 
 using std::vector;
 using std::accumulate;
@@ -61,14 +60,9 @@ using std::make_pair;
 using std::cout;
 using std::endl;
 
-using namespace boost::lambda;
-
-
 typedef boost::numeric::ublas::vector<double> dvec;
 typedef boost::numeric::ublas::matrix<double> dmat;
 typedef boost::numeric::ublas::matrix_column<const dmat> dmat_column;
-
-
 
 namespace ConsensusCore {
 
@@ -88,8 +82,11 @@ namespace ConsensusCore {
     static inline double logaddexp(double x, double y)
     {
          double diff = x - y;
-         if (diff > 0)        { return x + log1p(exp(-diff)); }
-         else                 { return y + log1p(exp(diff));  }
+         if (diff > 0)  {
+             return x + log1p(exp(-diff));
+         } else {
+             return y + log1p(exp(diff));
+         }
     }
 
     //
@@ -174,13 +171,13 @@ namespace ConsensusCore {
         }
         cout << endl;
     }
-#endif // 0
+#endif  // 0
 
     vector<int> AssignReadsToAlleles(const dmat& siteScores, int allele0, int allele1)
     {
         int I = siteScores.size1();
         vector<int> assignment(I, -1);
-        for (int i=0; i < I; i++)
+        for (int i = 0; i < I; i++)
         {
             assignment[i] = (siteScores(i, allele0) > siteScores(i, allele1) ? 0 : 1);
         }
@@ -212,5 +209,4 @@ namespace ConsensusCore {
             return NULL;
         }
     }
-
 }

@@ -76,7 +76,5 @@ namespace ConsensusCore {
               TemplateEnd(templateEnd),
               ReadIdentifier(readIdentifier)
         {}
-
-
     };
 }

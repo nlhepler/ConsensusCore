@@ -138,7 +138,8 @@ namespace ConsensusCore
 
     template<typename R>
     float
-    MutationScorer<R>::ScoreMutation(MutationType mutationType, int start, int end, std::string newBases) const
+    MutationScorer<R>::ScoreMutation(MutationType mutationType, int start, int end,
+                                     std::string newBases) const
     {
         Mutation m(mutationType, start, end, newBases);
         return ScoreMutation(m);
@@ -165,7 +166,8 @@ namespace ConsensusCore
                 // link alpha and beta directly.
                 int extendStartCol = m.Start() - 1;
                 int extendLength = 2;
-                recursor_->ExtendAlpha(*evaluator_, *alpha_, extendStartCol, *extendBuffer_, extendLength);
+                recursor_->ExtendAlpha(*evaluator_, *alpha_,
+                                       extendStartCol, *extendBuffer_, extendLength);
                 score = recursor_->LinkAlphaBeta(*evaluator_,
                                                  *extendBuffer_, extendLength,
                                                  *beta_, betaLinkCol,
@@ -177,7 +179,8 @@ namespace ConsensusCore
                 int extendLength   = 1 + m.NewBases().length();
                 assert(extendLength <= 8);
 
-                recursor_->ExtendAlpha(*evaluator_, *alpha_, extendStartCol, *extendBuffer_, extendLength);
+                recursor_->ExtendAlpha(*evaluator_, *alpha_,
+                                       extendStartCol, *extendBuffer_, extendLength);
                 score = recursor_->LinkAlphaBeta(*evaluator_,
                                                  *extendBuffer_, extendLength,
                                                  *beta_, betaLinkCol,

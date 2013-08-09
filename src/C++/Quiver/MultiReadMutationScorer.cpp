@@ -325,35 +325,35 @@ namespace ConsensusCore
     }
 
 
-	template<typename R>
-	std::vector<int> MultiReadMutationScorer<R>::AllocatedMatrixEntries() const
-	{
-		std::vector<int> allocatedCounts;
-		
-		foreach(const item_t& kv, readsAndScorers_)
-		{
-			int n = 0;
-			n += kv.second->Alpha()->AllocatedEntries();
-			n += kv.second->Alpha()->AllocatedEntries();
+    template<typename R>
+    std::vector<int> MultiReadMutationScorer<R>::AllocatedMatrixEntries() const
+    {
+        std::vector<int> allocatedCounts;
 
-			allocatedCounts.push_back(n);
-		}
+        foreach(const item_t& kv, readsAndScorers_)
+        {
+            int n = 0;
+            n += kv.second->Alpha()->AllocatedEntries();
+            n += kv.second->Alpha()->AllocatedEntries();
 
-		return allocatedCounts;
-	}
+            allocatedCounts.push_back(n);
+        }
 
-	template<typename R>
-	std::vector<int> MultiReadMutationScorer<R>::NumFlipFlops() const
-	{
-		std::vector<int> nFlipFlops;
-		
-		foreach(const item_t& kv, readsAndScorers_)
-		{
-			nFlipFlops.push_back(kv.second->NumFlipFlops());
-		}
+        return allocatedCounts;
+    }
 
-		return nFlipFlops;
-	}
+    template<typename R>
+    std::vector<int> MultiReadMutationScorer<R>::NumFlipFlops() const
+    {
+        std::vector<int> nFlipFlops;
+
+        foreach(const item_t& kv, readsAndScorers_)
+        {
+            nFlipFlops.push_back(kv.second->NumFlipFlops());
+        }
+
+        return nFlipFlops;
+    }
 
 
     template<typename R>
@@ -367,7 +367,7 @@ namespace ConsensusCore
         return sum;
     }
 
-    
+
     template<typename R>
     std::vector<float> MultiReadMutationScorer<R>::BaselineScores() const
     {
@@ -379,7 +379,7 @@ namespace ConsensusCore
         return scoreByRead;
     }
 
-    
+
     template<typename R>
     void MultiReadMutationScorer<R>::CheckInvariants() const
     {

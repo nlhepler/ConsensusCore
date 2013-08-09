@@ -83,5 +83,4 @@ namespace ConsensusCore {
     PairwiseAlignment* AlignAffineIupac(const std::string& target,
                                         const std::string& query,
                                         AffineAlignmentParams params = IupacAwareAffineAlignmentParams()); // NOLINT
-
 }

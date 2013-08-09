@@ -37,6 +37,7 @@
 
 #include "Random.hpp"
 
+#include <vector>
 #include <boost/random/discrete_distribution.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 #include <boost/random/mersenne_twister.hpp>
@@ -58,5 +59,4 @@ namespace ConsensusCore {
         boost::random::discrete_distribution<> dist(probabilities);
         return dist(_rng);
     }
-
 }

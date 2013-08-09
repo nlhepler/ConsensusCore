@@ -140,23 +140,28 @@ namespace ConsensusCore {
                 if (score > maxScore)
                 {
                     maxScore = score;
-					thresholdScore = maxScore - dynamicScoreDiff;
+                    thresholdScore = maxScore - dynamicScoreDiff;
                 }
             }
             endRow = i;
             alpha.FinishEditingColumn(j, beginRow, endRow);
 
-            // Adjust the dymanic scoreDiff
-            // If best score from this column is worse that the best score from last column, then
-            // the band grows. Otherwise it shrinks.
-            // We keep the band in reasonable range above the selected value.
-            // The constants were manually adjusted to give good behaviour -- unclear how robust they are, or if there's 
-            // any way to select them automatically.
+            // Adjust the dynamic scoreDiff
+            // If best score from this column is worse that the best
+            // score from last column, then the band grows. Otherwise
+            // it shrinks.  We keep the band in reasonable range above
+            // the selected value.  The constants were manually
+            // adjusted to give good behaviour -- unclear how robust
+            // they are, or if there's any way to select them
+            // automatically.
             float scoreChange = maxScore - lastColBestScore;
-            dynamicScoreDiff = dynamicScoreDiff - this->bandingOptions_.DynamicAdjustFactor * (scoreChange - this->bandingOptions_.DynamicAdjustOffset);
-            dynamicScoreDiff = max(this->bandingOptions_.ScoreDiff, min(this->bandingOptions_.ScoreDiff * 10, dynamicScoreDiff));
+            float adj = this->bandingOptions_.DynamicAdjustFactor * \
+                    (scoreChange - this->bandingOptions_.DynamicAdjustOffset);
+            dynamicScoreDiff -= adj;
+            dynamicScoreDiff = max(this->bandingOptions_.ScoreDiff,
+                                   min(this->bandingOptions_.ScoreDiff * 10, dynamicScoreDiff));
 
-			lastColBestScore = maxScore;
+            lastColBestScore = maxScore;
 
             // Now, revise the hints to tell the caller where the mass of the
             // distribution really lived in this column.

@@ -103,7 +103,7 @@ namespace
          if (t == q)                         { return matchScore;    }
          else if (IsIupacPartialMatch(t, q)) { return partialMatchScore; }
          else if (IsIupacPartialMatch(q, t)) { return partialMatchScore; }
-         else                                { return mismatchScore;   }
+         else                                { return mismatchScore;   }   // NOLINT
      }
 
      template<class C>
@@ -174,10 +174,10 @@ namespace
              {
                  assert(mat == GAP_MATRIX);
                  float s[4];
-                 s[0] = (j > 0 ? M  (i  , j-1) + params.GapOpen   : -FLT_MAX);
+                 s[0] = (j > 0 ?   M(i  , j-1) + params.GapOpen   : -FLT_MAX);
                  s[1] = (j > 0 ? GAP(i  , j-1) + params.GapExtend : -FLT_MAX);
-                 s[2] = (i > 0 ? M  (i-1, j  ) + params.GapOpen   : -FLT_MAX);
-                 s[3] = (i > 0 ? GAP(i-1, j  ) + params.GapExtend : -FLT_MAX);
+                 s[2] = (i > 0 ?   M(i-1,   j) + params.GapOpen   : -FLT_MAX);
+                 s[3] = (i > 0 ? GAP(i-1,   j) + params.GapExtend : -FLT_MAX);
                  int argMax = std::max_element(s, s + 4) - s;
 
                  matPrev = ((argMax == 0 || argMax == 2)? MATCH_MATRIX : GAP_MATRIX);

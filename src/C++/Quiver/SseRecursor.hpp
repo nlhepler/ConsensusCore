@@ -61,7 +61,7 @@ namespace ConsensusCore {
 
         void ExtendAlpha(const E& e,
                          const M& alpha, int beginColumn,
-                         M& ext, int numExtColumns=2) const;
+                         M& ext, int numExtColumns = 2) const;
 
     public:
         //

@@ -124,8 +124,12 @@ namespace ConsensusCore
                 &(*storage_)[0],
                 (allocatedEndRow_ - allocatedBeginRow_) * sizeof(float)); // NOLINT
         // "Zero"-fill the allocated but unused space.
-        std::fill(storage_->begin(), storage_->begin() + (allocatedBeginRow_ - newAllocatedBegin), LZERO);
-        std::fill(storage_->begin() + (allocatedEndRow_- newAllocatedBegin), storage_->end(), LZERO);
+        std::fill(storage_->begin(),
+                  storage_->begin() + (allocatedBeginRow_ - newAllocatedBegin),
+                  LZERO);
+        std::fill(storage_->begin() + (allocatedEndRow_- newAllocatedBegin),
+                  storage_->end(),
+                  LZERO);
         // Update pointers.
         allocatedBeginRow_ = newAllocatedBegin;
         allocatedEndRow_   = newAllocatedEnd;

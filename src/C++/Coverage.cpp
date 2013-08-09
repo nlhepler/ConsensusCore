@@ -62,11 +62,11 @@ namespace ConsensusCore {
         int nReads = tStartDim;
         uint32_t winEnd = winStart + winLen;
         std::fill_n(coverage, winLen, 0);
-        for (int read=0; read < nReads; read++)
+        for (int read = 0; read < nReads; read++)
         {
             uint32_t tStart_ = tStart[read];
             uint32_t tEnd_   = tEnd[read];
-            for (uint32_t pos=max(tStart_, winStart); pos < min(tEnd_, winEnd); pos++)
+            for (uint32_t pos = max(tStart_, winStart); pos < min(tEnd_, winEnd); pos++)
             {
                 coverage[pos-winStart] += 1;
             }
@@ -111,7 +111,7 @@ namespace ConsensusCore {
             // actually overlaps the chunk, but no rows not in that range intersect the chunk.
             // startRowInChunk is computed by scanning from where it was for the last chunk.
             // This is the best we can do within pulling in the nBackRead stuff.
-            uint32_t endRowInChunk = std::lower_bound(tStart, tStart + tStartDim, chunkEnd) - tStart;
+            uint32_t endRowInChunk = std::lower_bound(tStart, tStart + tStartDim, chunkEnd) - tStart;  // NOLINT
             for (; ((startRowInChunk < endRowInChunk) & (tEnd[startRowInChunk] < chunkStart));
                  startRowInChunk++);
 

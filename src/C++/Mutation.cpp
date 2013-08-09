@@ -62,9 +62,12 @@ namespace ConsensusCore
 
         switch (Type())
         {
-            case INSERTION:    return str(format("Insertion (%s) @%d") % newBases_ % start_);
-            case DELETION:     return str(format("Deletion @%d:%d") % start_ % end_);
-            case SUBSTITUTION: return str(format("Substitution (%s) @%d:%d") % newBases_ % start_ % end_);
+            case INSERTION:
+                return str(format("Insertion (%s) @%d") % newBases_ % start_);
+            case DELETION:
+                return str(format("Deletion @%d:%d") % start_ % end_);
+            case SUBSTITUTION:
+                return str(format("Substitution (%s) @%d:%d") % newBases_ % start_ % end_);
             default: ShouldNotReachHere();
         }
     }

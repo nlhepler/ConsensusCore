@@ -36,10 +36,12 @@
 // Author: David Alexander
 
 #pragma once
+
+#include <stdint.h>
 #include <string>
 #include <utility>
 
-#include <stdint.h>
+
 
 
 //

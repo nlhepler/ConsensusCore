@@ -60,5 +60,4 @@ namespace ConsensusCore {
     DiploidSite*
     IsSiteHeterozygous(const double *siteScores, int dim1, int dim2,
                        double logPriorRatio);
-
 }

@@ -257,7 +257,7 @@ TEST(IupacAlignmentTests, BasicTest)
     ASSERT_EQ("GM-TTT", a->Query());
 
     a = AlignAffineIupac("TTTTAG", "TTTMG");
-    ASSERT_EQ("TTTTAG", a->Target());;
+    ASSERT_EQ("TTTTAG", a->Target());
     ASSERT_EQ("-TTTMG", a->Query());
 }
 

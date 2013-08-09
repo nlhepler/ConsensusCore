@@ -71,9 +71,12 @@ namespace ConsensusCore
         bool IsDeletion() const;
 
         /// \brief Template positions of the mutation.
-        /// Convention: the bases of the template changed by the mutation are [ Start, End ).
-        //  For a substitution, tpl[Start..End) are mutated; for a deletion, tpl[Start..End) are removed.
-        /// In the case of an insertion, Start=End= template position before the new bases are inserted.
+        /// Convention: the bases of the template changed by the mutation are
+        /// [ Start, End ).
+        /// For a substitution, tpl[Start..End) are mutated;
+        /// for a deletion, tpl[Start..End) are removed;
+        /// for an insertion, Start=End=template position after the
+        /// new bases are to be inserted.
         int Start() const;
         int End() const;
 

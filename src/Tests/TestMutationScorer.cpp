@@ -233,7 +233,7 @@ TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
 
 
     std::vector<Mutation*> muts;
-    for(int i = 0; i < tpl.length(); i+=2)
+    for (int i = 0; i < tpl.length(); i+=2)
     {
         Mutation* mutation = new Mutation(SUBSTITUTION, i, 'A');
         muts += mutation;

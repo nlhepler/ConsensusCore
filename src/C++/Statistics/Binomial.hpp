@@ -44,5 +44,5 @@ namespace ConsensusCore
     //    pbinom(q, size, prob, lower.tail=F)
     // in R.   If `asPhred` is true, the probability is converted
     // to the "phred" quality scale via Q=-10*log10(p)
-    double BinomialSurvival(int q, int size, double prob, bool asPhred=false);
+    double BinomialSurvival(int q, int size, double prob, bool asPhred = false);
 }

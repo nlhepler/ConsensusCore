@@ -38,24 +38,24 @@
 #include "ParameterSettings.hpp"
 #include "Quiver/QuiverConfig.hpp"
 
-using namespace ConsensusCore;
+using namespace ConsensusCore;  // NOLINT
 
 
 template<>
 QvModelParams TestingParams<QvModelParams>()
 {
-    return QvModelParams(0.f,   // Match
-                         -10.f, // Mismatch
-                         -0.1f, // MismatchS
-                         -5.f,  // Branch
-                         -0.1f, // BranchS
-                         -4.f,  // DeletionN
-                         -6.f,  // DeletionWithTag
-                         -0.1f, // DeletionWithTagS
-                         -8.f,  // Nce
-                         -0.1f, // NceS
-                         -2.f,  // Merge
-                         0.f);  // MergeS
+    return QvModelParams(0.f,    // Match
+                         -10.f,  // Mismatch
+                         -0.1f,  // MismatchS
+                         -5.f,   // Branch
+                         -0.1f,  // BranchS
+                         -4.f,   // DeletionN
+                         -6.f,   // DeletionWithTag
+                         -0.1f,  // DeletionWithTagS
+                         -8.f,   // Nce
+                         -0.1f,  // NceS
+                         -2.f,   // Merge
+                         0.f);   // MergeS
 }
 
 template<>

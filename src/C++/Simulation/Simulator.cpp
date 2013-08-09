@@ -58,14 +58,14 @@ namespace ConsensusCore
     SequencingParameters SequencingParameters::C2() {
         SequencingParameters c2 = {
             //     T     G     A     C
-            { { 0.04, 0.02, 0.02, 0.02 },    // T > Ins _
-              { 0.01, 0.06, 0.01, 0.02 },    // G > Ins _
-              { 0.01, 0.02, 0.08, 0.02 },    // A > Ins _
-              { 0.01, 0.06, 0.02, 0.08 },    // C > Ins _
+            { { 0.04, 0.02, 0.02, 0.02 },     // T > Ins _
+              { 0.01, 0.06, 0.01, 0.02 },     // G > Ins _
+              { 0.01, 0.02, 0.08, 0.02 },     // A > Ins _
+              { 0.01, 0.06, 0.02, 0.08 },     // C > Ins _
             },
-              { 0.03, 0.03, 0.03, 0.03 },    // _ > Dark
-              { 0.05, 0.05, 0.07, 0.11 },    // _ > Merge
-              { 0.005, 0.005, 0.005, 0.005 } // _ > Miscall
+              { 0.03, 0.03, 0.03, 0.03 },     // _ > Dark
+              { 0.05, 0.05, 0.07, 0.11 },     // _ > Merge
+              { 0.005, 0.005, 0.005, 0.005 }  // _ > Miscall
         };
         return c2;
     }
@@ -75,7 +75,7 @@ namespace ConsensusCore
 
     {
         vector<double> errorProbs;
-        for (int e=0; e<4; e++)                       // Insert
+        for (int e = 0; e < 4; e++)                       // Insert
         {
             errorProbs.push_back(p.Ins[channel][e]);
         }
@@ -140,8 +140,4 @@ namespace ConsensusCore
 
         return read;
     }
-
-
-
-
 }

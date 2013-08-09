@@ -48,11 +48,8 @@ namespace ConsensusCore {
         Rng _rng;
 
     public:
-        RandomNumberGenerator(int seed);
+        explicit RandomNumberGenerator(int seed);
         char RandomBase();
         int RandomChoice(std::vector<double> probabilities);
     };
-
-
-
 }
