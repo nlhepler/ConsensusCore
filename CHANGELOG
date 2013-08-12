@@ -38,3 +38,6 @@
 
 * 0.6.1 (4/26/2013)
   - Support for fast testing of multi-base template mutations
+
+* 0.7.0 (8/12/2013)
+  - Backend support for diploid variant calling

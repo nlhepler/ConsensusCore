@@ -197,7 +197,7 @@ if "install" in sys.argv and not "build" in sys.argv:
     sys.argv.insert(installPos, "build")
 
 setup(name="ConsensusCore",
-      version="0.6.2",
+      version="0.7.0",
       author="Pacific Biosciences",
       author_email="devnet@pacificbiosciences.com",
       url="http://www.github.com/PacificBiosciences/ConsensusCore",
