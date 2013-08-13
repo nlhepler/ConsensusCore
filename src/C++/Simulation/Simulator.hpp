@@ -44,9 +44,10 @@
 
 using std::string;
 
-class RandomNumberGenerator;
 
 namespace ConsensusCore {
+
+    class RandomNumberGenerator;
 
     // SequencingParams represents the Markov error probabilities
     // We use the channel codes to agree with order shown in EDNA:
