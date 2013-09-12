@@ -265,5 +265,6 @@ namespace detail {
     // template instantiation
     template class RecursorBase<DenseMatrix, QvEvaluator, ViterbiCombiner>;
     template class RecursorBase<SparseMatrix, QvEvaluator, ViterbiCombiner>;
+	template class RecursorBase<SparseMatrix, QvEvaluator, SumProductCombiner>;
     template class RecursorBase<SparseMatrix, EdnaEvaluator, SumProductCombiner>;
 }}

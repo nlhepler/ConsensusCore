@@ -423,6 +423,7 @@ namespace ConsensusCore {
 
     template class SimpleRecursor<DenseMatrix,  QvEvaluator, detail::ViterbiCombiner>;
     template class SimpleRecursor<SparseMatrix, QvEvaluator, detail::ViterbiCombiner>;
+	template class SimpleRecursor<SparseMatrix, QvEvaluator, detail::SumProductCombiner>;
 }
 
 
