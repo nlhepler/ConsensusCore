@@ -27,7 +27,6 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -39,10 +38,6 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -126,6 +121,12 @@
     <Compile Include="build\CSharp\DiploidSite.cs" />
     <Compile Include="src\CSharp\Demo.cs" />
     <Compile Include="src\CSharp\Test.cs" />
+    <Compile Include="build\CSharp\SparseQvSumProductRecursorBase.cs" />
+    <Compile Include="build\CSharp\SparseSimpleQvSumProductMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSimpleQvSumProductRecursor.cs" />
+    <Compile Include="build\CSharp\SparseSseQvSumProductMultiReadMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSseQvSumProductMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSseQvSumProductRecursor.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
