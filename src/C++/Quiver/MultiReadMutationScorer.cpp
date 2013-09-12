@@ -398,4 +398,5 @@ namespace ConsensusCore
 
 
     template class MultiReadMutationScorer<SparseSseQvRecursor>;
+    template class MultiReadMutationScorer<SparseSseQvSumProductRecursor>;
 }

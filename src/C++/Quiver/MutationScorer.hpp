@@ -96,5 +96,7 @@ namespace ConsensusCore
     typedef MutationScorer<SseQvRecursor>          SseQvMutationScorer;
     typedef MutationScorer<SparseSimpleQvRecursor> SparseSimpleQvMutationScorer;
     typedef MutationScorer<SparseSseQvRecursor>    SparseSseQvMutationScorer;
+    typedef MutationScorer<SparseSimpleQvSumProductRecursor> SparseSimpleQvSumProductMutationScorer;
+    typedef MutationScorer<SparseSseQvSumProductRecursor>    SparseSseQvSumProductMutationScorer;
     typedef MutationScorer<SparseSseEdnaRecursor>  SparseSseEdnaMutationScorer;
 }

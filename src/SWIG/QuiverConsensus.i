@@ -47,7 +47,7 @@ namespace ConsensusCore {
     %template(SimpleQvMutationScorer)   MutationScorer<SimpleQvRecursor>;
     %template(SseQvRecursor)            SseRecursor<DenseMatrix, QvEvaluator, detail::ViterbiCombiner>;
     %template(SseQvMutationScorer)      MutationScorer<SseQvRecursor>;
-	
+
     //
     // Sparse matrix support
     //
@@ -59,9 +59,20 @@ namespace ConsensusCore {
 
     %template(SparseSseQvMultiReadMutationScorer) MultiReadMutationScorer<SparseSseQvRecursor>;
 
-	//
-	// Edna evaluator support
-	//
+    //
+    // Sparse matrix sum-product support
+    //
+    %template(SparseQvSumProductRecursorBase)           detail::RecursorBase<SparseMatrix, QvEvaluator, detail::SumProductCombiner>;
+    %template(SparseSimpleQvSumProductRecursor)         SimpleRecursor<SparseMatrix, QvEvaluator, detail::SumProductCombiner>;
+    %template(SparseSimpleQvSumProductMutationScorer)   MutationScorer<SparseSimpleQvSumProductRecursor>;
+    %template(SparseSseQvSumProductRecursor)            SseRecursor<SparseMatrix, QvEvaluator, detail::SumProductCombiner>;
+    %template(SparseSseQvSumProductMutationScorer)      MutationScorer<SparseSseQvSumProductRecursor>;
+
+    %template(SparseSseQvSumProductMultiReadMutationScorer) MultiReadMutationScorer<SparseSseQvSumProductRecursor>;
+
+    //
+    // Edna evaluator support
+    //
     %template(SparseEdnaRecursorBase)          detail::RecursorBase<SparseMatrix, EdnaEvaluator, detail::SumProductCombiner>;
     %template(SparseSseEdnaRecursor)            SseRecursor<SparseMatrix, EdnaEvaluator, detail::SumProductCombiner>;
     %template(SparseSseEdnaMutationScorer)      MutationScorer<SparseSseEdnaRecursor>;

@@ -125,4 +125,5 @@ namespace ConsensusCore {
     };
 
     typedef MultiReadMutationScorer<SparseSseQvRecursor> SparseSseQvMultiReadMutationScorer;
+    typedef MultiReadMutationScorer<SparseSseQvSumProductRecursor> SparseSseQvSumProductMultiReadMutationScorer;
 }
