@@ -46,6 +46,7 @@
 #include "Utils.hpp"
 
 #define MARGIN 3
+#define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
 
 namespace ConsensusCore
 {
@@ -301,7 +302,7 @@ namespace ConsensusCore
                         kv.second->Score());
             }
         }
-        return (sum > 0);
+        return (sum > MIN_FAVORABLE_SCOREDIFF);
     }
 
     template<typename R>
@@ -321,7 +322,7 @@ namespace ConsensusCore
                 }
             }
         }
-        return (sum > 0);
+        return (sum > MIN_FAVORABLE_SCOREDIFF);
     }
 
 
