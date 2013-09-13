@@ -175,6 +175,20 @@ namespace ConsensusCore
             this->MergeS[2] = MergeS_G;
             this->MergeS[3] = MergeS_T;
         }
+
+
+        // Access to the array-stored params
+
+        float Merge_A() const { return this->Merge[0]; }
+        float Merge_C() const { return this->Merge[1]; }
+        float Merge_G() const { return this->Merge[2]; }
+        float Merge_T() const { return this->Merge[3]; }
+
+        float MergeS_A() const { return this->MergeS[0]; }
+        float MergeS_C() const { return this->MergeS[1]; }
+        float MergeS_G() const { return this->MergeS[2]; }
+        float MergeS_T() const { return this->MergeS[3]; }
+
     };
 
 
