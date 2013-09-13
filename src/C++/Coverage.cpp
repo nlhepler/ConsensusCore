@@ -119,7 +119,7 @@ namespace ConsensusCore {
                              (endRowInChunk-startRowInChunk), tEnd+startRowInChunk,
                              chunkStart, CHUNK_SIZE, coverage);
             int j = 0;
-            while (j < chunkEnd - chunkStart)
+            while (j < (int)(chunkEnd - chunkStart))
             {
                 if (coverage[j] >= minCoverage)
                 {

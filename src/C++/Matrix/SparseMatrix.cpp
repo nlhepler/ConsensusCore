@@ -54,10 +54,11 @@ namespace ConsensusCore {
     }
 
     SparseMatrix::SparseMatrix(const SparseMatrix& other)
-        : nCols_(other.nCols_),
+        : columns_(other.nCols_),
+          nCols_(other.nCols_),
           nRows_(other.nRows_),
-          usedRanges_(other.usedRanges_),
-          columns_(other.nCols_)
+          columnBeingEdited_(other.columnBeingEdited_),
+          usedRanges_(other.usedRanges_)
     {
         for (int j = 0; j < nCols_; j++)
         {
