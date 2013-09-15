@@ -51,8 +51,66 @@
 
 namespace ConsensusCore {
 
+	
+    class AbstractMultiReadMutationScorer
+    {
+	protected:
+		AbstractMultiReadMutationScorer() { };
+
+    public:       
+
+        virtual int TemplateLength() const = 0;
+        virtual int NumReads() const = 0;
+        virtual const MappedRead* Read(int readIndex) const = 0;
+
+        virtual std::string Template(StrandEnum strand = FORWARD_STRAND) const = 0;
+        virtual std::string Template(StrandEnum strand, int templateStart, int templateEnd) const = 0;
+        virtual void ApplyMutations(const std::vector<Mutation*>& mutations) = 0;
+
+        // Reads provided must be clipped to the reference/scaffold window implied by the
+        // template, however they need not span the window entirely---nonspanning reads
+        // must be provided with (0-based) template start/end coordinates.
+        virtual void AddRead(const QvSequenceFeatures& features, StrandEnum strand) = 0;
+        virtual void AddRead(const QvSequenceFeatures& features, StrandEnum strand,
+                     int templateStart, int templateEnd,
+                     bool pinStart = true, bool pinEnd = true) = 0;
+        virtual void AddRead(const MappedRead& mappedRead) = 0;
+
+        virtual float Score(const Mutation& m) const = 0;
+        virtual float FastScore(const Mutation& m) const = 0;
+
+        // Return a vector (of length NumReads) of the difference in
+        // the score of each read caused by the template mutation.  In
+        // the case where the mutation cannot be scored for a read
+        // (i.e., it is too close to the end of the template, or the
+        // read does not span the mutation site) that entry in the
+        // vector is -FLT_MAX, which is to be interpreted as NA.
+        virtual std::vector<float> Scores(const Mutation& m) const = 0;
+
+        virtual bool IsFavorable(const Mutation& m) const = 0;
+        virtual bool FastIsFavorable(const Mutation& m) const = 0;
+
+        // Rough estimate of memory consumption of scoring machinery
+        virtual std::vector<int> AllocatedMatrixEntries() const = 0;
+        virtual std::vector<int> NumFlipFlops() const = 0;
+
+    public:
+        // Alternate entry point for C# code, not requiring zillions of object
+        // allocations.
+        virtual float Score(MutationType mutationType, int position, char base) const = 0;
+
+    public:
+        // Return the actual sum of scores for the current template.
+        // TODO(dalexander): need to refactor to make the semantics of
+        // the various "Score" functions clearer.
+        virtual float BaselineScore() const = 0;
+        virtual std::vector<float> BaselineScores() const = 0;
+    };
+
+
+
     template<typename R>
-    class MultiReadMutationScorer : private boost::noncopyable
+	class MultiReadMutationScorer : public AbstractMultiReadMutationScorer, private boost::noncopyable
     {
     public:
         typedef R                                         RecursorType;
