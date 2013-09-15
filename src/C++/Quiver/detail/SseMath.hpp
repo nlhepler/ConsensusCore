@@ -65,10 +65,14 @@ namespace detail {
 
     inline __m128 logAdd4(__m128 aa, __m128 bb)
     {
+		/* Old exact version -- way too slow!! 
         __m128 max = _mm_max_ps(aa, bb);
         __m128 min = _mm_min_ps(aa, bb);
         __m128 diff = _mm_sub_ps(min, max);
         return _mm_add_ps(max, log_ps(_mm_add_ps(ones, exp_ps(diff))));
+		*/
+
+		return logAddApprox_ps(aa,bb);
     }
 
     inline float logAdd(float a, float b)

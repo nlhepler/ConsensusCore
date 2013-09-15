@@ -350,6 +350,64 @@ inline v4sf exp_ps(v4sf x) {
   return y;
 }
 
+
+// Fast logAdd function - Patrick Marks, 2013
+// Make a rough approximation of
+// log(exp(x) + exp(y))
+// 
+//	Method:
+//
+//  Assume x > y, then convert to
+//
+//  x + log(1 + exp(y-x))
+// 
+//  then use a polynomial approximation for 
+//  f(d) = log(1 + exp(d)) ~ (a0 + a1 * x + a2 * x^2 + x3 * x^3)^2
+// polynomial a_n is:  0.829003478 0.307939048 0.042920466 0.002439664
+// polynomial is chosen to have f(-6.0) = 0 -- this is where we cutoff the approximation to zero
+
+// The full calculation using the log and exp methods above take ~115 instructions.
+// This method takes ~15 instructions
+
+_PS_CONST(logAdd_a0, 0.829003478);
+_PS_CONST(logAdd_a1, 0.307939048);
+_PS_CONST(logAdd_a2, 0.042920466);
+_PS_CONST(logAdd_a3, 0.002439664);
+
+/* natural logarithm computed for 4 simultaneous float 
+   return NaN for x <= 0
+*/
+inline v4sf logAddApprox_ps(v4sf x, v4sf y) {
+
+  v4sf big = _mm_max_ps(x,y);
+  v4sf small = _mm_min_ps(x,y);
+
+  // Diff is always <= 0
+  v4sf diff = _mm_sub_ps(small, big);
+  diff = _mm_max_ps(diff, _mm_set_ps1(-6.0f));
+
+  // Run the polynomial on the diff
+
+    v4sf bn = *(v4sf*)_ps_logAdd_a3;
+
+	bn = _mm_mul_ps(bn, diff);
+	bn = _mm_add_ps(bn, *(v4sf*)_ps_logAdd_a2);
+
+	bn = _mm_mul_ps(bn, diff);
+	bn = _mm_add_ps(bn, *(v4sf*)_ps_logAdd_a1);
+
+	bn = _mm_mul_ps(bn, diff);
+	bn = _mm_add_ps(bn, *(v4sf*)_ps_logAdd_a0);
+
+	bn = _mm_mul_ps(bn,bn);
+
+	return _mm_add_ps(big, bn);
+}
+
+
+
+
+
 _PS_CONST(minus_cephes_DP1, -0.78515625);
 _PS_CONST(minus_cephes_DP2, -2.4187564849853515625e-4);
 _PS_CONST(minus_cephes_DP3, -3.77489497744594108e-8);
