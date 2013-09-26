@@ -188,7 +188,6 @@ namespace ConsensusCore
         float MergeS_C() const { return this->MergeS[1]; }
         float MergeS_G() const { return this->MergeS[2]; }
         float MergeS_T() const { return this->MergeS[3]; }
-
     };
 
 

@@ -574,6 +574,6 @@ namespace ConsensusCore {
 
     template class SseRecursor<DenseMatrix,  QvEvaluator, detail::ViterbiCombiner>;
     template class SseRecursor<SparseMatrix, QvEvaluator, detail::ViterbiCombiner>;
-	template class SseRecursor<SparseMatrix, QvEvaluator, detail::SumProductCombiner>;
+    template class SseRecursor<SparseMatrix, QvEvaluator, detail::SumProductCombiner>;
     template class SseRecursor<SparseMatrix, EdnaEvaluator, detail::SumProductCombiner>;
 }

@@ -51,20 +51,23 @@
 
 namespace ConsensusCore {
 
-	
+
     class AbstractMultiReadMutationScorer
     {
-	protected:
-		AbstractMultiReadMutationScorer() { };
+    protected:
+        AbstractMultiReadMutationScorer() {}
+        virtual ~AbstractMultiReadMutationScorer() = 0;
 
-    public:       
-
+    public:
         virtual int TemplateLength() const = 0;
         virtual int NumReads() const = 0;
         virtual const MappedRead* Read(int readIndex) const = 0;
 
         virtual std::string Template(StrandEnum strand = FORWARD_STRAND) const = 0;
-        virtual std::string Template(StrandEnum strand, int templateStart, int templateEnd) const = 0;
+        virtual std::string Template(StrandEnum strand,
+                                     int templateStart,
+                                     int templateEnd) const = 0;
+
         virtual void ApplyMutations(const std::vector<Mutation*>& mutations) = 0;
 
         // Reads provided must be clipped to the reference/scaffold window implied by the
@@ -110,7 +113,8 @@ namespace ConsensusCore {
 
 
     template<typename R>
-	class MultiReadMutationScorer : public AbstractMultiReadMutationScorer, private boost::noncopyable
+    class MultiReadMutationScorer : public AbstractMultiReadMutationScorer,
+                                    private boost::noncopyable
     {
     public:
         typedef R                                         RecursorType;
@@ -182,6 +186,8 @@ namespace ConsensusCore {
         typedef typename std::pair<MappedRead*, ScorerType*>  item_t;
     };
 
-    typedef MultiReadMutationScorer<SparseSseQvRecursor> SparseSseQvMultiReadMutationScorer;
-    typedef MultiReadMutationScorer<SparseSseQvSumProductRecursor> SparseSseQvSumProductMultiReadMutationScorer;
+    typedef MultiReadMutationScorer<SparseSseQvRecursor> \
+      SparseSseQvMultiReadMutationScorer;
+    typedef MultiReadMutationScorer<SparseSseQvSumProductRecursor> \
+      SparseSseQvSumProductMultiReadMutationScorer;
 }
