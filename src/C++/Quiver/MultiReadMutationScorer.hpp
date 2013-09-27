@@ -56,7 +56,7 @@ namespace ConsensusCore {
     {
     protected:
         AbstractMultiReadMutationScorer() {}
-        virtual ~AbstractMultiReadMutationScorer() = 0;
+        virtual ~AbstractMultiReadMutationScorer() {}
 
     public:
         virtual int TemplateLength() const = 0;
