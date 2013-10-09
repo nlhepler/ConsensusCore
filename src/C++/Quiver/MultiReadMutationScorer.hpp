@@ -113,8 +113,7 @@ namespace ConsensusCore {
 
 
     template<typename R>
-    class MultiReadMutationScorer : public AbstractMultiReadMutationScorer,
-                                    private boost::noncopyable
+    class MultiReadMutationScorer : public AbstractMultiReadMutationScorer
     {
     public:
         typedef R                                         RecursorType;
