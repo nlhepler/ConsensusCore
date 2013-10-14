@@ -102,5 +102,8 @@ install: python-install
 check-syntax:
 	$(CXX) -Wall -Wextra -pedantic -fsyntax-only $(CHK_SOURCES)
 
+benchmark: $(CXX_LIB) src/Benchmark/Benchmark.cpp
+	$(CXX) src/Benchmark/Benchmark.cpp $(CXX_LIB) -o benchmark
+
 .PHONY: all debug release demo shell docs astyle lint pre-commit-hook \
 	clean clean-lib clobber tests coverage test check
