@@ -63,7 +63,7 @@ namespace ConsensusCoreDemo
             var intFeature = new IntFeature(10);
             var resultArray = new FloatArray(5);
 
-            counter.DoCount(intFeature, eval, scorer, 3,4, resultArray.cast());
+            //counter.DoCount(intFeature, eval, scorer, 3,4, resultArray.cast());
         }
     }
     
