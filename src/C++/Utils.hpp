@@ -71,3 +71,11 @@ bool AlmostEqual(float A, float B, int maxUlps = 4);
 #else
 #   define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
+
+
+// Aggressive sledghammer for forcing inlining
+#ifdef _MSC_VER
+#    define INLINE_CALLEES
+#else
+#    define INLINE_CALLEES __attribute__((flatten))
+#endif

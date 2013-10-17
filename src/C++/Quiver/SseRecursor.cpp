@@ -383,7 +383,7 @@ namespace ConsensusCore {
     }
 
     template<typename M, typename E, typename C>
-    float
+    INLINE_CALLEES float
     SseRecursor<M, E, C>::LinkAlphaBeta(const E& e,
                                         const M& alpha, int alphaColumn,
                                         const M& beta, int betaColumn,
@@ -463,7 +463,7 @@ namespace ConsensusCore {
     }
 
     template<typename M, typename E, typename C>
-    void
+    INLINE_CALLEES void
     SseRecursor<M, E, C>::ExtendAlpha(const E& e,
                                       const M& alpha, int beginColumn,
                                       M& ext, int numExtColumns) const
