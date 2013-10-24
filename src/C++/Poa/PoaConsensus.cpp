@@ -132,4 +132,3 @@ namespace ConsensusCore
         return variants_;
     }
 }
-

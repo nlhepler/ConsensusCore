@@ -894,5 +894,3 @@ namespace ConsensusCore
         delete impl;
     }
 }
-
-
