@@ -63,6 +63,11 @@ namespace ConsensusCore
         delete poaGraph_;
         if (variants_ != NULL)
         {
+            typedef std::pair<Mutation*, float> item_t;
+            foreach (item_t& p, *variants_)
+            {
+                delete p.first;
+            }
             delete variants_;
         }
     }
