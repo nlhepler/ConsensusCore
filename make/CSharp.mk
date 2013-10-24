@@ -47,7 +47,6 @@ csharp: $(CSHARP_CIL_LIB) $(CSHARP_NATIVE_LIB)
 csharp-pacbio: SWIG := $(GA_SWIG_BINDIR)/swig
 csharp-pacbio: SWIG_LIB := $(GA_SWIG_LIBDIR)
 csharp-pacbio: $(CSHARP_NATIVE_LIB_PACBIO)
-csharp-pacbio: CXX_OPT_FLAGS_RELEASE := -O3 --param inline-unit-growth=150   -DNDEBUG -g
 
 # Customized build rules for getting a p/invoke-able dll from mingw on windows.
 # See: http://www.transmissionzero.co.uk/computing/advanced-mingw-dll-topics/ for background
