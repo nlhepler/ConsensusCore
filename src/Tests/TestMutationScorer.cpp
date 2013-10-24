@@ -241,6 +241,11 @@ TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
 
     mScorer.ApplyMutations(muts);
     EXPECT_EQ(tpl.length(), mScorer.Template().length());
+
+    foreach (Mutation* mut, muts)
+    {
+        delete mut;
+    }
 }
 
 

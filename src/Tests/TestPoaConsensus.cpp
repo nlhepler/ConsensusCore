@@ -109,6 +109,7 @@ TEST(PoaGraph, SmallBasicTest)
     plotGraph(pc->Graph(), "small-basic");
     EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
     EXPECT_EQ("GGG", pc->Sequence());
+    delete pc;
 }
 
 TEST(PoaGraph, SmallExtraTests)
@@ -137,6 +138,7 @@ TEST(PoaGraph, SmallExtraTests)
         plotGraph(pc->Graph(), "extra-at-beginning");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("GGG", pc->Sequence());
+        delete pc;
     }
 
     // Extra in middle
@@ -165,6 +167,7 @@ TEST(PoaGraph, SmallExtraTests)
         // plotGraph(pc->getGraph(), "extra-in-middle");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("GGG", pc->Sequence());
+        delete pc;
     }
 
     // Extra at end
@@ -191,6 +194,7 @@ TEST(PoaGraph, SmallExtraTests)
         plotGraph(pc->Graph(), "extra-at-end");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("GGG", pc->Sequence());
+        delete pc;
     }
 }
 
@@ -221,6 +225,7 @@ TEST(PoaGraph, SmallMismatchTests)
         plotGraph(pc->Graph(), "mismatch-at-beginning");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("GG", pc->Sequence());
+        delete pc;
     }
 
     // Mismatch in middle
@@ -247,6 +252,7 @@ TEST(PoaGraph, SmallMismatchTests)
         plotGraph(pc->Graph(), "mismatch-in-middle");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("GTG", pc->Sequence());
+        delete pc;
     }
 
     // Mismatch at end
@@ -273,6 +279,7 @@ TEST(PoaGraph, SmallMismatchTests)
         plotGraph(pc->Graph(), "mismatch-at-end");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("GG", pc->Sequence());
+        delete pc;
     }
 }
 
@@ -300,6 +307,7 @@ TEST(PoaGraph, SmallDeletionTests)
         plotGraph(pc->Graph(), "deletion-at-beginning");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("AT", pc->Sequence());
+        delete pc;
     }
 
     // Deletion in middle
@@ -323,6 +331,7 @@ TEST(PoaGraph, SmallDeletionTests)
             "}";
         plotGraph(pc->Graph(), "deletion-in-middle");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
+        delete pc;
     }
 
     // Deletion at end
@@ -364,6 +373,7 @@ TEST(PoaConsensus, TestSimple)
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
     plotGraph(pc->Graph(), "simple");
     EXPECT_EQ("TTTACAGGATAGTCCAGT", pc->Sequence());
+    delete pc;
 }
 
 TEST(PoaConsensus, TestOverhangSecond)
@@ -375,6 +385,7 @@ TEST(PoaConsensus, TestOverhangSecond)
              "TTTACAGGATAGTCCAGTAAA";
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::GLOBAL_ALIGNMENT);
     EXPECT_EQ("TTTACAGGATAGTCCAGTAAA", pc->Sequence());
+    delete pc;
 }
 
 // This won't work until local alignment is properly implemented
@@ -423,6 +434,7 @@ TEST(PoaConsensus, Tiling)
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::LOCAL_ALIGNMENT);
     //    plotGraph(pc->getGraph(), "tiling", true);
     // EXPECT_EQ(expectedResult, pc->getSequence());
+    delete pc;
 }
 
 
@@ -455,6 +467,7 @@ TEST(PoaConsensus, SmallLocalTest)
     string dot = pc->Graph()->ToGraphViz();
     EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
     EXPECT_EQ("GGTGG", pc->Sequence());
+    delete pc;
 }
 
 TEST(PoaConsensus, SmallTilingTest)
@@ -468,6 +481,7 @@ TEST(PoaConsensus, SmallTilingTest)
     const PoaConsensus* pc = PoaConsensus::FindConsensus(reads, PoaConfig::LOCAL_ALIGNMENT);
     plotGraph(pc->Graph(), "small-tiling");
     EXPECT_EQ("GGGGAAAATTTTCCCCAGGA", pc->Sequence());
+    delete pc;
 }
 
 
@@ -497,6 +511,7 @@ TEST(PoaConsensus, TestVerboseGraphVizOutput)
                         "0->5 ;}";
 
     EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
+    delete pc;
 }
 
 
@@ -528,6 +543,5 @@ TEST(PoaConsensus, TestMutations)
                                            "Insertion (G) @5",
                                            "Substitution (T) @6:7" };
     ASSERT_THAT(variantDescriptions, ElementsAreArray(expectedDescriptions));
+    delete pc;
 }
-
-

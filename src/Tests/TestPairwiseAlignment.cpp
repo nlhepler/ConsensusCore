@@ -243,6 +243,7 @@ TEST(AffineAlignmentTests, LargeGapTest)
 
     PairwiseAlignment* a = AlignAffine(target, query);
     ASSERT_EQ(expectedAlignedTarget, a->Target());
+    delete a;
 }
 
 
@@ -255,10 +256,10 @@ TEST(IupacAlignmentTests, BasicTest)
     a = AlignAffineIupac("GATTTT", "GMTTT");
     ASSERT_EQ("GATTTT", a->Target());
     ASSERT_EQ("GM-TTT", a->Query());
+    delete a;
 
     a = AlignAffineIupac("TTTTAG", "TTTMG");
     ASSERT_EQ("TTTTAG", a->Target());
     ASSERT_EQ("-TTTMG", a->Query());
+    delete a;
 }
-
-

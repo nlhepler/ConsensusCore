@@ -109,4 +109,3 @@ TEST(MultibaseMutationScoring, DinucleotideDeletionTest)
     SparseSimpleQvMutationScorer ms2(e2, r2);
     EXPECT_EQ(scoreTT, ms2.ScoreMutation(DELETION, 7, 9, ""));
 }
-

@@ -143,6 +143,7 @@ TYPED_TEST(RecursorTest, SmallMismatchTest)
     const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
     EXPECT_EQ("GATG", alignment->Target());
     EXPECT_EQ("GATC", alignment->Query());
+    delete alignment;
 }
 
 
@@ -167,11 +168,13 @@ TYPED_TEST(RecursorTest, SmallMergeTest)
     const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
     EXPECT_EQ("GATT", alignment->Target());
     EXPECT_EQ("GA-T", alignment->Query());
+    delete alignment;
 
     // Make sure Beta gave the same score
     EXPECT_FLOAT_EQ(-2.0f, beta(0, 0));
     //    std::cout << std::endl;
     //    std::cout << ConsensusCore::detail::PrintMatrix(beta) << std::endl;
+
 }
 
 
@@ -275,7 +278,6 @@ protected:
     {
         int numEvaluators = 200;
         int tplLen = 20;
-        int seed = 42;
 
         Rng rng(42);
         for (int n = 0; n < numEvaluators; n++)
@@ -326,6 +328,7 @@ TYPED_TEST(RecursorFuzzTest, Alignment)
         recursor.FillAlphaBeta(e, alpha, beta);
         const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
         EXPECT_TRUE(alignment->Target().length() == alignment->Query().length());
+        delete alignment;
     }
 }
 
@@ -379,4 +382,3 @@ TYPED_TEST(RecursorFuzzTest, ExtendAlpha)
         }
     }
 }
-

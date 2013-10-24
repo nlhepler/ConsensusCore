@@ -255,5 +255,3 @@ TYPED_TEST(MatrixTest, BigIrregularBandedMatrix)
 {
     // fill a big matrix, experimenting with modulating the bandwidth
 }
-
-

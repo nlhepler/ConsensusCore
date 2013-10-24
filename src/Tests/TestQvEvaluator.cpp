@@ -152,4 +152,10 @@ TEST_F(QvEvaluatorTest, BadTagTest)
     QvSequenceFeatures* f;
     ASSERT_THROW(f = new QvSequenceFeatures(seq, insQv, subsQv, delQv, delTag, mergeQv),
                  InternalError);
+
+    delete[] insQv;
+    delete[] subsQv;
+    delete[] delQv;
+    delete[] delTag;
+    delete[] mergeQv;
 }
