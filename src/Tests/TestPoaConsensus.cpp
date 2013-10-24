@@ -356,6 +356,7 @@ TEST(PoaGraph, SmallDeletionTests)
         plotGraph(pc->Graph(), "deletion-at-end");
         EXPECT_EQ(expectedDot, erase_all_copy(dot, "\n"));
         EXPECT_EQ("GA", pc->Sequence());
+        delete pc;
     }
 }
 

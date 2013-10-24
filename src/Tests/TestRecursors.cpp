@@ -114,6 +114,7 @@ TYPED_TEST(RecursorTest, SmallMatchTest)
     const PairwiseAlignment* alignment = recursor.Alignment(e, alpha);
     EXPECT_EQ("GATG", alignment->Target());
     EXPECT_EQ("GATG", alignment->Query());
+    delete alignment;
 
     // Make sure Beta gave the same score
     EXPECT_FLOAT_EQ(0.0f, beta(0, 0));
