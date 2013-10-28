@@ -104,9 +104,6 @@
     <ClCompile Include="build\CSharp\ConsensusCore_wrap.cxx">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\C++\Quiver\KineticModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\C++\AffineAlignment.hpp">

@@ -93,7 +93,6 @@
     <ClCompile Include="src\C++\Quiver\detail\RecursorBase.cpp" />
     <ClCompile Include="src\C++\Quiver\Diploid.cpp" />
     <ClCompile Include="src\C++\Quiver\EdnaCounts.cpp" />
-    <ClCompile Include="src\C++\Quiver\KineticModel.cpp" />
     <ClCompile Include="src\C++\Quiver\MultiReadMutationScorer.cpp" />
     <ClCompile Include="src\C++\Quiver\MutationScorer.cpp" />
     <ClCompile Include="src\C++\Quiver\PBFeatures.cpp" />
@@ -156,7 +155,7 @@
   <ItemGroup>
     <CustomBuild Include="src\SWIG\ConsensusCore.i">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\..\ThirdParty\swigwin-2.0.10\swig   -csharp -dllimport libConsensusCore_ -namespace ConsensusCore -c++ -Isrc/C++ -outdir csproj\build\CSharp -o build\CSharp\ConsensusCore_wrap.cxx src/SWIG/ConsensusCore.i</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\..\ThirdParty\swigwin-2.0.4\swig   -csharp -dllimport libConsensusCore_ -namespace ConsensusCore -c++ -Isrc/C++ -outdir csproj\build\CSharp -o build\CSharp\ConsensusCore_wrap.cxx src/SWIG/ConsensusCore.i</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">build\CSharp\ConsensusCore_wrap.cxx</Outputs>
     </CustomBuild>
     <None Include="src\SWIG\Edna.i" />
