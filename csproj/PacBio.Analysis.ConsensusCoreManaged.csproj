@@ -135,9 +135,10 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">cd $(ProjectDir)/..
-tools\mingw-run.bat $(ProjectDir)..\..\..\ThirdParty\MinGW csharp-win
-xcopy /D /Y $(ProjectDir)\bin\Debug\libConsensusCore_.dll $(TargetDir)</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' == 'Windows_NT' ">
+	rem cd $(ProjectDir)/..
+	rem tools\mingw-run.bat $(ProjectDir)..\..\..\ThirdParty\MinGW csharp-win
+	rem xcopy /D /Y $(ProjectDir)\bin\Debug\libConsensusCore_.dll $(TargetDir)</PreBuildEvent>
     <PreBuildEvent Condition=" '$(OS)' != 'Windows_NT' ">
 	cd $(ProjectDir)/..
 	make csharp-pacbio
