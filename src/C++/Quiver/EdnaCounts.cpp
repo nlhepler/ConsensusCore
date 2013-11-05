@@ -65,7 +65,7 @@ using std::max;
 
 namespace ConsensusCore
 {
-    void EdnaCounts::DoCount(Feature<int> channelRead,
+    INLINE_CALLEES void EdnaCounts::DoCount(Feature<int> channelRead,
                              EdnaEvaluator& eval,
                              MutationScorer<SparseSseEdnaRecursor>& scorer,
                              int j1, int j2, float *results)
