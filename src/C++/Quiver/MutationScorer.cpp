@@ -76,6 +76,7 @@ namespace ConsensusCore
         beta_ = new MatrixType(*other.beta_);
         // Buffer where we extend into
         extendBuffer_ = new MatrixType(*other.extendBuffer_);
+        numFlipFlops_ = other.numFlipFlops_;
     }
 
     template<typename R>

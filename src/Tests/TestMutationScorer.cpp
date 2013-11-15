@@ -113,6 +113,18 @@ TYPED_TEST(MutationScorerTest, BasicTest)
     EXPECT_EQ("GATTACA", ms.Template());
 }
 
+
+TYPED_TEST(MutationScorerTest, CopyTest)
+{
+    std::string tpl = "GATTACA";
+    QvSequenceFeatures read("GATTACA");
+    E ev(read, tpl, this->testingParams_, true, true);
+    MS ms(ev, this->recursor_);
+    MS msCopy(ms);
+    ASSERT_EQ(ms.Score(), msCopy.Score());
+}
+
+
 TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
 {
     std::string tpl = "GATTACA";
@@ -159,6 +171,7 @@ protected:
 
 
 #define MMS MultiReadMutationScorer<TypeParam>
+#define MS  MutationScorer<TypeParam>
 #define E   typename TypeParam::EvaluatorType
 
 TYPED_TEST(MultiReadMutationScorerTest, Template)
@@ -381,4 +394,19 @@ TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)
     muts += &insertMutation1, &insertMutation2;
     mScorer.ApplyMutations(muts);
     EXPECT_EQ("AATGTTAATCAATTGATTAACATT", mScorer.Template());
+}
+
+
+TYPED_TEST(MultiReadMutationScorerTest, CopyTest)
+{
+    // read1:                     >>>>>>>>>>>
+    // read2:          <<<<<<<<<<<
+    //                 0123456789012345678901
+    std::string tpl = "AATGTAATCAATTGATTACATT";
+    MMS mScorer(this->testingConfig_, tpl);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND, 11, 22);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND,  0, 11);
+    MMS mScorerCopy(mScorer);
+
+    ASSERT_EQ(mScorer.BaselineScore(), mScorerCopy.BaselineScore());
 }

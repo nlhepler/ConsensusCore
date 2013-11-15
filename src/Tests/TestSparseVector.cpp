@@ -89,3 +89,18 @@ TEST(SparseVectorTest, BasicTest2)
     }
 }
 
+
+
+TEST(SparseVector, CopyTest)
+{
+    SparseVector sv(10, 3, 7);
+    sv.Set(4, 5);
+
+    SparseVector svCopy(sv);
+    ASSERT_EQ(5, svCopy(4));
+
+    for (int i=0; i < 10; i++)
+    {
+        ASSERT_EQ(sv(i), svCopy(i));
+    }
+}

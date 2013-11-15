@@ -255,3 +255,15 @@ TYPED_TEST(MatrixTest, BigIrregularBandedMatrix)
 {
     // fill a big matrix, experimenting with modulating the bandwidth
 }
+
+
+TYPED_TEST(MatrixTest, CopyTest)
+{
+    TypeParam m(4, 4);
+    m.StartEditingColumn(1, 0, 4);
+    m.Set(1,1,5);
+    m.FinishEditingColumn(1,1,2);
+    TypeParam mCopy(m);
+
+    ASSERT_EQ(5, mCopy(1,1));
+}

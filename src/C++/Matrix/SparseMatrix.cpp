@@ -62,10 +62,13 @@ namespace ConsensusCore {
     {
         for (int j = 0; j < nCols_; j++)
         {
-            if (columns_[j] != NULL)
+            if (other.columns_[j] != NULL)
             {
-                SparseVector *colCopy = new SparseVector(*columns_[j]);
-                columns_[j] = colCopy;
+                columns_[j] = new SparseVector(*other.columns_[j]);
+            }
+            else
+            {
+                columns_[j] = NULL;
             }
         }
     }
