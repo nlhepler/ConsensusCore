@@ -395,13 +395,11 @@ namespace ConsensusCore {
         assert(absoluteColumn < e.TemplateLength());
 
         int usedBegin, usedEnd;
-
-        std::pair<int, int> hull = std::make_pair(INT_MAX, 0);
-        hull = RangeUnion(hull, alpha.UsedRowRange(alphaColumn - 2));
-        hull = RangeUnion(hull, alpha.UsedRowRange(alphaColumn - 1));
-        hull = RangeUnion(hull, beta.UsedRowRange(betaColumn));
-        hull = RangeUnion(hull, beta.UsedRowRange(betaColumn + 1));
-        boost::tie(usedBegin, usedEnd) = hull;
+        boost::tie(usedBegin, usedEnd) = \
+            RangeUnion(alpha.UsedRowRange(alphaColumn - 2),
+                       alpha.UsedRowRange(alphaColumn - 1),
+                       beta.UsedRowRange(betaColumn),
+                       beta.UsedRowRange(betaColumn + 1));
 
         float v = NEG_INF;
         __m128 v4 = NEG_INF_4;

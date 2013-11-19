@@ -74,10 +74,8 @@ namespace ConsensusCore
         const SparseMatrix *beta = scorer.Beta();
 
         int usedBegin, usedEnd;
-        std::pair<int, int> hull = std::make_pair(INT_MAX, 0);
-        hull = RangeUnion(hull, alpha->UsedRowRange(j1));
-        hull = RangeUnion(hull, beta->UsedRowRange(j2));
-        boost::tie(usedBegin, usedEnd) = hull;
+        boost::tie(usedBegin, usedEnd) = RangeUnion(alpha->UsedRowRange(j1),
+                                                    beta->UsedRowRange(j2));
 
         for (int k = 0; k < 5; k++)
             results[k] = NEG_INF;
