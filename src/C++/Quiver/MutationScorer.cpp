@@ -153,7 +153,7 @@ namespace ConsensusCore
         int betaLinkCol = 1 + m.End();
         int absoluteLinkColumn = 1 + m.End() + m.LengthDiff();
 
-        if (m.Start() > 0 && m.End() < (int)(Template().length()) - 1)
+        if (m.Start() > 2 && m.End() < (int)(Template().length()) - 1)
         {
             // Install mutated template
             std::string oldTpl = evaluator_->Template();
