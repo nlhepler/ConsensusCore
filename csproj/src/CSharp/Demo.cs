@@ -11,25 +11,25 @@ namespace ConsensusCoreDemo
     /// </summary>
     public class TestEdna
     {
-        public IntArray ChannelArray()
+        public IntVector ChannelArray()
         {
-            var channel = new IntArray(8);
+            var channel = new IntVector(8);
 
             var ch = new[] {1, 2, 3, 4, 1, 2, 3, 4};
             for(int i = 0; i < ch.Length; i++)
-                channel.setitem(i, ch[i]);
+                channel[i] = ch[i];
 
             return channel;
         }
 
-        public SWIGTYPE_p_float FloatArray(int n, float val)
+        public FloatVector FloatArray(int n, float val)
         {
-            var arr = new FloatArray(n);
+            var arr = new FloatVector(n);
 
             for(int i = 0; i < n; i++)
-                arr.setitem(i, val);
+                arr[i] = val;
 
-            return arr.cast();
+            return arr;
         }
 
 
@@ -47,13 +47,13 @@ namespace ConsensusCoreDemo
 
         public ChannelSequenceFeatures EdnaFeatures()
         {
-            var feature = new ChannelSequenceFeatures("ACGTACGT", ChannelArray().cast());
+            var feature = new ChannelSequenceFeatures("ACGTACGT", ChannelArray());
             return feature;
         }
 
         public void EdnaScorer()
         {
-            var eval = new EdnaEvaluator(EdnaFeatures(), "ACGTACGT", ChannelArray().cast(), ModelParams());
+            var eval = new EdnaEvaluator(EdnaFeatures(), "ACGTACGT", ChannelArray(), ModelParams());
             var recursor = new SparseSseEdnaRecursor((int) Move.ALL_MOVES, new BandingOptions(0, 10));
             var scorer = new SparseSseEdnaMutationScorer(eval, recursor);
 

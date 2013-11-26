@@ -74,12 +74,12 @@ namespace ConsensusCore
     public:
         EdnaEvaluator(const ChannelSequenceFeatures& features,
                     const std::string& tpl,
-                    const int* channelTpl,
+                    const std::vector<int> channelTpl,
                     const EdnaModelParams& params)
             : features_(features),
               params_(params),
               tpl_(tpl),
-              channelTpl_(channelTpl, tpl_.length()),
+              channelTpl_(&(channelTpl[0]), tpl_.length()),
               pinStart_(true),
               pinEnd_(true)
         {}
@@ -147,13 +147,13 @@ namespace ConsensusCore
 
         float pStay(int j) const
         {
-            return params_.pStay[templateBase(j)-1];
+            return params_.pStay_[templateBase(j)-1];
         }
 
         float pMerge(int j) const
         {
             if (mergeable(j))
-                return params_.pMerge[templateBase(j)-1];
+                return params_.pMerge_[templateBase(j)-1];
 
             return 0.0;
         }
@@ -161,13 +161,13 @@ namespace ConsensusCore
         float moveDist(int obs, int j) const
         {
             int tplBase = templateBase(j) - 1;
-            return params_.moveDists[tplBase*5 + obs];
+            return params_.moveDists_[tplBase*5 + obs];
         }
 
         float stayDist(int obs, int j) const
         {
             int tplBase = templateBase(j)  - 1;
-            return params_.stayDists[tplBase*5 + obs];
+            return params_.stayDists_[tplBase*5 + obs];
         }
 
         float Inc(int i, int j) const

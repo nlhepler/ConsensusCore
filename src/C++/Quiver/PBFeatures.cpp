@@ -35,6 +35,7 @@
 
 // Author: David Alexander
 
+#include <vector>
 #include <algorithm>
 #include <boost/foreach.hpp>
 #include <string>
@@ -129,8 +130,8 @@ namespace ConsensusCore
           Channel(Length())
     {}
 
-    ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq, const int* channel)
+    ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq, const std::vector<int>& channel)
         : SequenceFeatures(seq),
-          Channel(channel, Length())
+          Channel(&(channel[0]), Length())
     {}
 }

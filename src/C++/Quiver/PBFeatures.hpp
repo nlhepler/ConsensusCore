@@ -77,6 +77,6 @@ namespace ConsensusCore
 
         explicit ChannelSequenceFeatures(const std::string& seq);
 
-        ChannelSequenceFeatures(const std::string& seq, const int* channel);
+        ChannelSequenceFeatures(const std::string& seq, const std::vector<int>& channel);
     };
 }
