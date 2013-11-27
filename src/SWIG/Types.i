@@ -18,6 +18,7 @@ using namespace ConsensusCore;
 namespace std {
   %template(Interval)               std::pair<uint32_t, uint32_t>;
   %template(IntervalVector)         std::vector<Interval>;
+  %template(IntervalS)              std::pair<int, int>;
   %template(IntVector)              std::vector<int>;
   %template(FloatVector)            std::vector<float>;
   %template(StringVector)           std::vector<string>;
