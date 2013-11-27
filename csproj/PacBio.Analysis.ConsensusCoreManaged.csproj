@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -68,6 +68,7 @@
     <Compile Include="build\CSharp\IntArray.cs" />
     <Compile Include="build\CSharp\InternalError.cs" />
     <Compile Include="build\CSharp\Interval.cs" />
+    <Compile Include="build\CSharp\IntervalS.cs" />
     <Compile Include="build\CSharp\IntervalVector.cs" />
     <Compile Include="build\CSharp\IntFeature.cs" />
     <Compile Include="build\CSharp\IntVector.cs" />
@@ -113,7 +114,6 @@
     <Compile Include="build\CSharp\SWIGTYPE_p_int.cs" />
     <Compile Include="build\CSharp\SWIGTYPE_p___m128.cs" />
     <Compile Include="build\CSharp\SWIGTYPE_p_p_float.cs" />
-    <Compile Include="build\CSharp\SWIGTYPE_p_std__pairT_int_int_t.cs" />
     <Compile Include="build\CSharp\SWIGTYPE_p_unsigned_int.cs" />
     <Compile Include="build\CSharp\Version.cs" />
     <Compile Include="build\CSharp\ViterbiCombiner.cs" />
