@@ -16,10 +16,10 @@ using namespace ConsensusCore;
 #if SWIGPYTHON
 
 %include "numpy.i"
-%numpy_typemaps(float, NPY_DOUBLE, int)
+%numpy_typemaps(float, NPY_FLOAT, int)
 
-%apply (double* IN_ARRAY2, int DIM1, int DIM2)
-       { (const double *siteScores, int dim1, int dim2) }
+%apply (float* IN_ARRAY2, int DIM1, int DIM2)
+       { (const float *siteScores, int dim1, int dim2) }
 
 #endif // SWIGPYTHON
 

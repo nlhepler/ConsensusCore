@@ -58,6 +58,6 @@ namespace ConsensusCore {
     //  (siteScores)
     // for Python by SWIG.
     DiploidSite*
-    IsSiteHeterozygous(const double *siteScores, int dim1, int dim2,
-                       double logPriorRatio);
+    IsSiteHeterozygous(const float *siteScores, int dim1, int dim2,
+                       float logPriorRatio);
 }

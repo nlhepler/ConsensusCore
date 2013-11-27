@@ -60,14 +60,14 @@ using std::make_pair;
 using std::cout;
 using std::endl;
 
-typedef boost::numeric::ublas::vector<double> dvec;
-typedef boost::numeric::ublas::matrix<double> dmat;
-typedef boost::numeric::ublas::matrix_column<const dmat> dmat_column;
+typedef boost::numeric::ublas::vector<float> fvec;
+typedef boost::numeric::ublas::matrix<float> fmat;
+typedef boost::numeric::ublas::matrix_column<const fmat> fmat_column;
 
 #ifdef _MSC_VER
 
 // compute log(1+x) without losing precision for small values of x
-double log1p(double x)
+float log1p(float x)
 {
     if (x <= -1.0)
     {
@@ -106,9 +106,9 @@ namespace ConsensusCore {
           AlleleForRead(alleleForRead)
     {}
 
-    static inline double logaddexp(double x, double y)
+    static inline float logaddexp(float x, float y)
     {
-         double diff = x - y;
+         float diff = x - y;
          if (diff > 0)  {
              return x + log1p(exp(-diff));
          } else {
@@ -119,10 +119,10 @@ namespace ConsensusCore {
     //
     // Computes Pr(R | hom)
     //
-    static double HomozygousLogLikelihood(const dmat& siteScores)
+    static float HomozygousLogLikelihood(const fmat& siteScores)
     {
         int G = siteScores.size2();
-        dvec gScores(G);
+        fvec gScores(G);
         for (int g = 0; g < G; g++)
         {
             gScores(g) = sum(column(siteScores, g));
@@ -133,17 +133,17 @@ namespace ConsensusCore {
     //
     // Computes: Pr(R | het)
     //
-    static double HeterozygousLogLikelihood(const dmat& siteScores,
+    static float HeterozygousLogLikelihood(const fmat& siteScores,
                                             int* allele0, int* allele1)
     {
         assert (siteScores.size2() == MUTATIONS_PER_SITE);
 
         int I = siteScores.size1();
         int G = siteScores.size2();
-        double log2 = log(2);
+        float log2 = log(2);
 
-        vector<double> varScores;
-        double runningMax = -FLT_MAX;
+        vector<float> varScores;
+        float runningMax = -FLT_MAX;
         int runningAllele0 = -1;
         int runningAllele1 = -1;
         for (int g0 = 0; g0 < G; g0++)
@@ -152,7 +152,7 @@ namespace ConsensusCore {
             {
                 if (LENGTH_DIFFS[g0] == LENGTH_DIFFS[g1])
                 {
-                    double total = -I * log2;
+                    float total = -I * log2;
                     for (int i = 0; i < I; i++)
                     {
                         total += logaddexp(siteScores(i, g0),
@@ -177,16 +177,16 @@ namespace ConsensusCore {
     }
 
 
-    static inline dmat ToMatrix(const double *siteScores, int dim1, int dim2)
+    static inline fmat ToMatrix(const float *siteScores, int dim1, int dim2)
     {
         // Kind of kludgy.  I blame ublas--a pretty crummy matrix library.
-        dmat M(dim1, dim2);
+        fmat M(dim1, dim2);
         std::copy(siteScores, siteScores + dim1*dim2, M.data().begin());
         return M;
     }
 
 #if 0
-    static void PrintMatrix(const dmat& siteScores)
+    static void PrintMatrix(const fmat& siteScores)
     {
         for (int i = 0; i < (int)siteScores.size1(); i++)
         {
@@ -200,7 +200,7 @@ namespace ConsensusCore {
     }
 #endif  // 0
 
-    vector<int> AssignReadsToAlleles(const dmat& siteScores, int allele0, int allele1)
+    vector<int> AssignReadsToAlleles(const fmat& siteScores, int allele0, int allele1)
     {
         int I = siteScores.size1();
         vector<int> assignment(I, -1);
@@ -215,16 +215,16 @@ namespace ConsensusCore {
     //  - If not, return NULL.
     //  - If so, return a pointer to a new DiploidSite object
     // logPriorRatio >= 0 is log {Pr(hom)/Pr(het)}
-    DiploidSite* IsSiteHeterozygous(const double *siteScores, int dim1, int dim2,
-                                    double logPriorRatio)
+    DiploidSite* IsSiteHeterozygous(const float *siteScores, int dim1, int dim2,
+                                    float logPriorRatio)
     {
         // First column of siteScores must correspond to no-op mutation.
         int allele0, allele1;
 
-        dmat M = ToMatrix(siteScores, dim1, dim2);
-        double homScore = HomozygousLogLikelihood(M);
-        double hetScore = HeterozygousLogLikelihood(M, &allele0, &allele1);
-        double logBF = hetScore - homScore;
+        fmat M = ToMatrix(siteScores, dim1, dim2);
+        float homScore = HomozygousLogLikelihood(M);
+        float hetScore = HeterozygousLogLikelihood(M, &allele0, &allele1);
+        float logBF = hetScore - homScore;
 
         if (logBF - logPriorRatio > 0)
         {
