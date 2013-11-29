@@ -31,38 +31,38 @@ namespace ConsensusCoreDemo
         }
 
 
-        public EdnaModelParams ModelParams()
-        {
-            var modelParams = new EdnaModelParams(
-                FloatArray(4, 0.1f),
-                FloatArray(4, 0.1f),
-                FloatArray(20, 0.2f),
-                FloatArray(20, 0.2f));
+        // public EdnaModelParams ModelParams()
+        // {
+        //     var modelParams = new EdnaModelParams(
+        //         FloatArray(4, 0.1f),
+        //         FloatArray(4, 0.1f),
+        //         FloatArray(20, 0.2f),
+        //         FloatArray(20, 0.2f));
 
-            return modelParams;
-        }
+        //     return modelParams;
+        // }
 
 
-        public ChannelSequenceFeatures EdnaFeatures()
-        {
-            var feature = new ChannelSequenceFeatures("ACGTACGT", ChannelArray().cast());
-            return feature;
-        }
+        // public ChannelSequenceFeatures EdnaFeatures()
+        // {
+        //     var feature = new ChannelSequenceFeatures("ACGTACGT", ChannelArray().cast());
+        //     return feature;
+        // }
 
-        public void EdnaScorer()
-        {
-            var eval = new EdnaEvaluator(EdnaFeatures(), "ACGTACGT", ChannelArray().cast(), ModelParams());
-            var recursor = new SparseSseEdnaRecursor((int)Move.ALL_MOVES, new BandingOptions(0, 10));
-            var scorer = new SparseSseEdnaMutationScorer(eval, recursor);
+        // public void EdnaScorer()
+        // {
+        //     var eval = new EdnaEvaluator(EdnaFeatures(), "ACGTACGT", ChannelArray().cast(), ModelParams());
+        //     var recursor = new SparseSseEdnaRecursor((int)Move.ALL_MOVES, new BandingOptions(0, 10));
+        //     var scorer = new SparseSseEdnaMutationScorer(eval, recursor);
 
-            scorer.ScoreMutation(MutationType.INSERTION, 3, 'A');
+        //     scorer.ScoreMutation(MutationType.INSERTION, 3, 'A');
 
-            var counter = new EdnaCounts();
-            var intFeature = new IntFeature(10);
-            var resultArray = new FloatArray(5);
+        //     var counter = new EdnaCounts();
+        //     var intFeature = new IntFeature(10);
+        //     var resultArray = new FloatArray(5);
 
-            counter.DoCount(intFeature, eval, scorer, 3, 4, resultArray.cast());
-        }
+        //     counter.DoCount(intFeature, eval, scorer, 3, 4, resultArray.cast());
+        // }
     }
 
 
