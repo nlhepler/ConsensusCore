@@ -143,6 +143,7 @@ namespace ConsensusCore {
     inline void
     SparseMatrix::Set(int i, int j, float v)
     {
+        assert(columnBeingEdited_ == j);
         columns_[j]->Set(i, v);
     }
 
@@ -173,6 +174,7 @@ namespace ConsensusCore {
     inline void
     SparseMatrix::Set4(int i, int j, __m128 v4)
     {
+        assert(columnBeingEdited_ == j);
         columns_[j]->Set4(i, v4);
     }
 }
