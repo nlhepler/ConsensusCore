@@ -53,33 +53,6 @@ namespace ConsensusCore {
         std::string Message() const throw() { return "Alpha and beta could not be mated."; }
     };
 
-
-    /// Take the convex hull of two ranges --- returning the smallest range containing
-    /// range1 and range2.
-    typedef std::pair<int, int> Range;
-
-    inline Range
-    RangeUnion(const Range& range1, const Range& range2)
-    {
-        return std::make_pair(std::min(range1.first, range2.first),
-                              std::max(range1.second, range2.second));
-    }
-
-    inline Range
-    RangeUnion(const Range& range1, const Range& range2, const Range& range3)
-    {
-        return RangeUnion(range1, RangeUnion(range2, range3));
-    }
-
-    inline Range
-    RangeUnion(const Range& range1, const Range& range2,
-               const Range& range3, const Range& range4)
-    {
-        return RangeUnion(RangeUnion(range1, range2),
-                          RangeUnion(range3, range4));
-    }
-
-
     namespace detail {
 
     /// \brief A base class for recursors, providing some functionality

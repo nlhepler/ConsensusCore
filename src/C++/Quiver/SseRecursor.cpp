@@ -43,6 +43,7 @@
 #include <numeric>
 #include <utility>
 
+#include "Interval.hpp"
 #include "Utils.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"

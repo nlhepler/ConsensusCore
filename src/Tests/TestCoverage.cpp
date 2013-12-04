@@ -44,20 +44,20 @@ using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 
-#define t(a, b) std::pair<uint32_t, uint32_t>((a), (b))
+#define t(a, b) std::pair<int, int>((a), (b))
 
 TEST(CoverageTests, CoverageInWindowTest)
 {
-    uint32_t coverage[10];
-    uint32_t tStart[] = { 1, 2, 3,  8, 10, 15 };
-    uint32_t tEnd[]   = { 3, 4, 5, 10, 10, 200};
+    int coverage[10];
+    int tStart[] = { 1, 2, 3,  8, 10, 15 };
+    int tEnd[]   = { 3, 4, 5, 10, 10, 200};
 
     CoverageInWindow(6, tStart, 6, tEnd, 0, 10, coverage);
-    uint32_t expectedCoverage1[] = { 0, 1, 2, 2, 1, 0, 0, 0, 1, 1 };
+    int expectedCoverage1[] = { 0, 1, 2, 2, 1, 0, 0, 0, 1, 1 };
     ASSERT_THAT(coverage, ElementsAreArray(expectedCoverage1, 10));
 
     CoverageInWindow(6, tStart, 6, tEnd, 10, 10, coverage);
-    uint32_t expectedCoverage2[] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 };
+    int expectedCoverage2[] = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 };
     ASSERT_THAT(coverage, ElementsAreArray(expectedCoverage2, 10));
 }
 
@@ -69,8 +69,8 @@ TEST(CoverageTests, CoveredIntervalsTest)
     // CoveredIntervals(2, [1,2,3,8,900,2000], [3,4,5,10,1010,20000], 0, 10000) -> ((2, 4),)
     // CoveredIntervals(3, [1,2,3,8,900,2000], [3,4,5,10,1010,20000], 0, 10000) -> ()
 
-    uint32_t tStart[] = { 1, 2, 3,  8,  900,  2000 };
-    uint32_t tEnd[]   = { 3, 4, 5, 10, 1010, 20000 };
+    int tStart[] = { 1, 2, 3,  8,  900,  2000 };
+    int tEnd[]   = { 3, 4, 5, 10, 1010, 20000 };
     ASSERT_THAT(CoveredIntervals(0, 6, tStart, 6, tEnd, 0, 10000), ElementsAre(t(0, 10000)));
     ASSERT_THAT(CoveredIntervals(1, 6, tStart, 6, tEnd, 0, 10000), ElementsAre(t(1, 5), t(8, 10), t(900, 1010), t(2000, 10000)));  // NOLINT
     ASSERT_THAT(CoveredIntervals(2, 6, tStart, 6, tEnd, 0, 10000), ElementsAre(t(2, 4)));
@@ -84,8 +84,8 @@ TEST(CoverageTests, CoveredIntervalsTest)
 TEST(CoverageTests, CoveredIntervalsTest2)
 {
     // Regression test
-    uint32_t tStart[] = { 48853 };
-    uint32_t tEnd[]   = { 50687 };
+    int tStart[] = { 48853 };
+    int tEnd[]   = { 50687 };
     ASSERT_THAT(CoveredIntervals(1, 1, tStart, 1, tEnd, 50000, 500),
                 ElementsAre(t(50000, 50500)));
 }

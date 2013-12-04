@@ -46,13 +46,13 @@ using std::vector;
 
 namespace ConsensusCore {
 
-    void CoverageInWindow(int tStartDim,
-                          uint32_t *tStart,
-                          int tEndDim,
-                          uint32_t *tEnd,
-                          uint32_t winStart,
-                          int winLen,
-                          uint32_t* coverage)
+    void CoverageInWindow(int  tStartDim,
+                          int *tStart,
+                          int  tEndDim,
+                          int *tEnd,
+                          int  winStart,
+                          int  winLen,
+                          int *coverage)
     {
         using std::max;
         using std::min;
@@ -60,13 +60,13 @@ namespace ConsensusCore {
         assert (tStartDim == tEndDim);
 
         int nReads = tStartDim;
-        uint32_t winEnd = winStart + winLen;
+        int winEnd = winStart + winLen;
         std::fill_n(coverage, winLen, 0);
         for (int read = 0; read < nReads; read++)
         {
-            uint32_t tStart_ = tStart[read];
-            uint32_t tEnd_   = tEnd[read];
-            for (uint32_t pos = max(tStart_, winStart); pos < min(tEnd_, winEnd); pos++)
+            int tStart_ = tStart[read];
+            int tEnd_   = tEnd[read];
+            for (int pos = max(tStart_, winStart); pos < min(tEnd_, winEnd); pos++)
             {
                 coverage[pos-winStart] += 1;
             }
@@ -76,12 +76,12 @@ namespace ConsensusCore {
 
     #define CHUNK_SIZE 10000
 
-    vector<Interval> CoveredIntervals(uint32_t minCoverage,
+    vector<Interval> CoveredIntervals(int minCoverage,
                                       int tStartDim,
-                                      uint32_t *tStart,
+                                      int *tStart,
                                       int tEndDim,
-                                      uint32_t *tEnd,
-                                      uint32_t winStart,
+                                      int *tEnd,
+                                      int winStart,
                                       int winLen)
     {
         using std::make_pair;
@@ -94,24 +94,24 @@ namespace ConsensusCore {
         // spanning chunk boundaries.  We also rely on the sortedness of the
         // tStart to restrict our attention to
 
-        uint32_t winEnd = winStart + winLen;
-        uint32_t coverage[CHUNK_SIZE];
+        int winEnd = winStart + winLen;
+        int coverage[CHUNK_SIZE];
         int currentIntervalStart = -1;
         vector<Interval> intervals;
 
-        uint32_t startRowInChunk = 0;
-        for (uint32_t chunkStart = winStart;
+        int startRowInChunk = 0;
+        for (int chunkStart = winStart;
              chunkStart < winEnd;
              chunkStart += CHUNK_SIZE)
         {
-            uint32_t chunkEnd = std::min(chunkStart + CHUNK_SIZE, winEnd);
+            int chunkEnd = std::min(chunkStart + CHUNK_SIZE, winEnd);
 
             // We compute a conservative guess of the rows that are involved in
             // this chunk.  Not every row in the range [startRowInChunk, endRowInChunk)
             // actually overlaps the chunk, but no rows not in that range intersect the chunk.
             // startRowInChunk is computed by scanning from where it was for the last chunk.
             // This is the best we can do within pulling in the nBackRead stuff.
-            uint32_t endRowInChunk = std::lower_bound(tStart, tStart + tStartDim, chunkEnd) - tStart;  // NOLINT
+            int endRowInChunk = std::lower_bound(tStart, tStart + tStartDim, chunkEnd) - tStart;
             for (; ((startRowInChunk < endRowInChunk) & (tEnd[startRowInChunk] < chunkStart));
                  startRowInChunk++);
 
@@ -119,7 +119,7 @@ namespace ConsensusCore {
                              (endRowInChunk-startRowInChunk), tEnd+startRowInChunk,
                              chunkStart, CHUNK_SIZE, coverage);
             int j = 0;
-            while (j < (int)(chunkEnd - chunkStart))
+            while (j < (chunkEnd - chunkStart))
             {
                 if (coverage[j] >= minCoverage)
                 {
@@ -132,8 +132,7 @@ namespace ConsensusCore {
                 {
                     if (currentIntervalStart != -1)
                     {
-                        intervals.push_back(make_pair((uint32_t)currentIntervalStart,
-                                                      chunkStart + j));
+                        intervals.push_back(make_pair(currentIntervalStart, chunkStart + j));
                         currentIntervalStart = -1;
                     }
                 }
@@ -142,7 +141,7 @@ namespace ConsensusCore {
         }
         if (currentIntervalStart != -1)
         {
-            intervals.push_back(make_pair((uint32_t)currentIntervalStart, winEnd));
+            intervals.push_back(make_pair(currentIntervalStart, winEnd));
         }
         return intervals;
     }

@@ -47,6 +47,7 @@
 #include "Quiver/detail/Combiner.hpp"
 #include "Quiver/detail/RecursorBase.hpp"
 #include "Quiver/QvEvaluator.hpp"
+#include "Interval.hpp"
 #include "Utils.hpp"
 
 using std::min;

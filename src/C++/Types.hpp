@@ -146,6 +146,4 @@ namespace ConsensusCore {
     };
 }
 
-
-typedef std::pair<uint32_t, uint32_t> Interval;
-typedef std::pair<int, int> IntervalS;
+typedef std::pair<int, int> Interval;

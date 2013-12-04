@@ -55,6 +55,7 @@
 #include "Quiver/PBFeatures.hpp"
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/SimpleRecursor.hpp"
+#include "Interval.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
 

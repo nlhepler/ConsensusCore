@@ -7,14 +7,12 @@ using namespace ConsensusCore;
 
 %include "Types.hpp"
 
-typedef unsigned int uint32_t;
-
 #ifdef SWIGPYTHON
-    %apply (int DIM1, uint32_t* IN_ARRAY1)
-         { (int tStartDim, uint32_t* tStart),
-           (int tEndDim,   uint32_t* tEnd)  };
-    %apply (int DIM1, uint32_t* ARGOUT_ARRAY1)
-         { (int winLen, uint32_t* coverage) };
+    %apply (int DIM1, int* IN_ARRAY1)
+         { (int tStartDim, int* tStart),
+           (int tEndDim,   int* tEnd)  };
+    %apply (int DIM1, int* ARGOUT_ARRAY1)
+         { (int winLen, int* coverage) };
 #endif // SWIGPYTHON
 
 %include "Utils.hpp"

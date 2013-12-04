@@ -37,29 +37,32 @@
 
 #pragma once
 
-#include <vector>
 #include <utility>
-#include "Types.hpp"
 
-namespace ConsensusCore
-{
-    // These APIs are a little more awkward than I'd have liked---see
-    // "winLen" instead of winEnd.  Had to contort a bit to get SWIG
-    // bindings working well.
+namespace ConsensusCore {
 
-    void CoverageInWindow(int  tStartDim,
-                          int* tStart,
-                          int  tEndDim,
-                          int* tEnd,
-                          int  winStart,
-                          int  winLen,
-                          int* coverage);
+    typedef std::pair<int, int> Interval;
 
-    std::vector<Interval> CoveredIntervals(int  minCoverage,
-                                           int  tStartDim,
-                                           int* tStart,
-                                           int  tEndDim,
-                                           int* tEnd,
-                                           int  winStart,
-                                           int  winLen);
+    inline Interval
+    RangeUnion(const Interval& range1, const Interval& range2)
+    {
+        return std::make_pair(std::min(range1.first, range2.first),
+                              std::max(range1.second, range2.second));
+    }
+
+    inline Interval
+    RangeUnion(const Interval& range1, const Interval& range2,
+               const Interval& range3)
+    {
+        return RangeUnion(range1, RangeUnion(range2, range3));
+    }
+
+    inline Interval
+    RangeUnion(const Interval& range1, const Interval& range2,
+               const Interval& range3, const Interval& range4)
+    {
+        return RangeUnion(RangeUnion(range1, range2),
+                          RangeUnion(range3, range4));
+    }
+
 }
