@@ -105,5 +105,16 @@ check-syntax:
 benchmark: $(CXX_LIB) src/Benchmark/Benchmark.cpp
 	$(CXX) src/Benchmark/Benchmark.cpp $(CXX_LIB) -o benchmark
 
+pip-uninstall: $(shell which pip > /dev/null)
+	@pip freeze|grep 'ConsensusCore=='>/dev/null \
+      && pip uninstall -y ConsensusCore \
+      || echo -n ''
+
+pip-install: $(shell which pip > /dev/null)
+	@pip install --no-index \
+          --install-option="--swig=$(SWIG)" \
+          --install-option="--boost=$(BOOST)" \
+          ./
+
 .PHONY: all debug release demo shell docs astyle lint pre-commit-hook \
 	clean clean-lib clobber tests coverage test check
