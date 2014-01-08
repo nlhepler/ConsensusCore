@@ -43,10 +43,10 @@
 #include "Mutation.hpp"
 #include "Sequence.hpp"
 #include "Quiver/MutationScorer.hpp"
-#include "Quiver/MultiReadMutationScorer.hpp"
 #include "Quiver/PBFeatures.hpp"
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/QvEvaluator.hpp"
+#include "Quiver/ReadScorer.hpp"
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
 
@@ -59,9 +59,9 @@ typedef testing::Types<SimpleQvRecursor,
                        SseQvRecursor,
                        SparseSimpleQvRecursor,
                        SparseSseQvRecursor>    AllRecursorTypes;
+
 TYPED_TEST_CASE(MutationScorerTest,          AllRecursorTypes);
 
-TYPED_TEST_CASE(MultiReadMutationScorerTest, testing::Types<SparseSseQvRecursor>);
 
 //
 // ================== Tests for single read MutationScorer ============================
@@ -76,22 +76,25 @@ public:
 protected:
     MutationScorerTest()
         : recursor_(ALL_MOVES, BandingOptions(4, 200)),
-          testingParams_(TestingParams<typename MS::EvaluatorType::ParamsType>())
+          testingParams_(TestingParams<QvModelParams>()),
+          testingConfig_(TestingConfig<QuiverConfig>())
     {}
 
     virtual ~MutationScorerTest() {}
 
 protected:
     typename MS::RecursorType recursor_;
-    typename MS::EvaluatorType::ParamsType testingParams_;
+    QvModelParams testingParams_;
+    QuiverConfig testingConfig_;
 };
-
 
 #define MS MutationScorer<TypeParam>
 #define E  typename TypeParam::EvaluatorType
 
-#define params    (this->testingParams_)
 #define recursor  (this->recursor_)
+#define params    (this->testingParams_)
+#define config    (this->testingConfig_)
+
 
 TYPED_TEST(MutationScorerTest, BasicTest)
 {
@@ -218,292 +221,54 @@ TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
 }
 
 
-//
-// ================== Tests for MultiReadMutationScorer ===========================
-//
-
-template <typename R>
-class MultiReadMutationScorerTest : public testing::Test
+TYPED_TEST(MutationScorerTest, DinucleotideInsertionTest)
 {
-public:
-    typedef MultiReadMutationScorer<R> MMS;
+    //                     0123456789012345678
+    std::string tplTT   = "CCCCCGATTACACCCCC";
+    std::string tplTTTT = "CCCCCGATTTTACACCCCC";
+    std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
+    std::string tplAATT = "CCCCCGAAATTACACCCCC";
 
-protected:
-    MultiReadMutationScorerTest()
-        : testingConfig_(TestingParams<typename MMS::EvaluatorType::ParamsType>(),
-                         ALL_MOVES,
-                         BandingOptions(4, 200),
-                         -500)
-    {}
+    QvSequenceFeatures read("CCCCCGATTTTACACCCCC");
+    ReadScorer ez(config);
+    float scoreTTTT = ez.Score(tplTTTT, read);
+    EXPECT_EQ(0, scoreTTTT);
 
-    virtual ~MultiReadMutationScorerTest() {}
+    QvEvaluator e(read, tplTT, params);
+    SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
+    SparseSimpleQvMutationScorer ms(e, r);
 
-protected:
-    QuiverConfig testingConfig_;
-};
+    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 7, 7, "TT"));
+    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 8, 8, "TT"));
+    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 9, 9, "TT"));
 
-
-#define MMS MultiReadMutationScorer<TypeParam>
-#define MS  MutationScorer<TypeParam>
-#define E   typename TypeParam::EvaluatorType
-
-TYPED_TEST(MultiReadMutationScorerTest, Template)
-{
-    //                 0123456789
-    std::string fwd = "AAAATTTTGG";
-    std::string rev = ReverseComplement(fwd);
-
-    // Make sure the Template function works right
-    MMS mScorer(this->testingConfig_, fwd);
-    ASSERT_EQ(fwd, mScorer.Template());
-    ASSERT_EQ(fwd, mScorer.Template(FORWARD_STRAND));
-    ASSERT_EQ(rev, mScorer.Template(REVERSE_STRAND));
-    ASSERT_EQ(fwd, mScorer.Template(FORWARD_STRAND, 0, 10));
-    ASSERT_EQ(rev, mScorer.Template(REVERSE_STRAND, 0, 10));
-    ASSERT_EQ("AT", mScorer.Template(FORWARD_STRAND, 3, 5));
-    ASSERT_EQ("AT", mScorer.Template(REVERSE_STRAND, 3, 5));
-    ASSERT_EQ("TTTT", mScorer.Template(FORWARD_STRAND, 4, 8));
-    ASSERT_EQ("AAAA", mScorer.Template(REVERSE_STRAND, 4, 8));
+    EXPECT_EQ(ez.Score(tplGCTT, read), ms.ScoreMutation(INSERTION, 7, 7, "GC"));
+    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(INSERTION, 7, 7, "AA"));
+    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(INSERTION, 6, 6, "AA"));
 }
 
-TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
+TYPED_TEST(MutationScorerTest, DinucleotideDeletionTest)
 {
-    std::string tpl = "TTGATTACATT";
-    std::string revTpl = ReverseComplement(tpl);
+    //                     0123456789012345678
+    std::string tplTT   = "CCCCCGATTACACCCCC";
+    std::string tplTTTT = "CCCCCGATTTTACACCCCC";
+    std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
 
-    MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+    QvSequenceFeatures read("CCCCCGATTACACCCCC");
+    ReadScorer ez(config);
+    float scoreTT = ez.Score(tplTT, read);
+    EXPECT_EQ(0, scoreTT);
 
-    Mutation noOpMutation(SUBSTITUTION, 6, 'A');
-    Mutation insertMutation(INSERTION, 6, 'A');
-    Mutation substitutionMutation(SUBSTITUTION, 6, 'T');
-    Mutation deletionMutation(DELETION, 6, '-');
+    QvEvaluator e(read, tplTTTT, params);
+    SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
+    SparseSimpleQvMutationScorer ms(e, r);
 
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 7, 9, ""));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 8, 10, ""));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 9, 11, ""));
 
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
-
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-4, mScorer.Score(insertMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-20, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-16, mScorer.Score(deletionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-
-    std::vector<Mutation*> muts;
-    muts += &insertMutation;
-    mScorer.ApplyMutations(muts);
-    EXPECT_EQ("TTGATTAACATT", mScorer.Template());
-
-    Mutation newNoOpMutation(SUBSTITUTION, 6, 'A');
-    EXPECT_EQ(0, mScorer.Score(newNoOpMutation));
-}
-
-
-TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
-{
-    std::string tpl = "TTGACGTACGTGTGACACAGTACAGATTACAAACCGGTAGACATTACATT";
-    std::string revTpl = ReverseComplement(tpl);
-
-    MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
-
-
-    std::vector<Mutation*> muts;
-    for (int i = 0; i < tpl.length(); i+=2)
-    {
-        Mutation* mutation = new Mutation(SUBSTITUTION, i, 'A');
-        muts += mutation;
-    }
-
-    mScorer.ApplyMutations(muts);
-    EXPECT_EQ(tpl.length(), mScorer.Template().length());
-
-    foreach (Mutation* mut, muts)
-    {
-        delete mut;
-    }
-}
-
-
-
-TYPED_TEST(MultiReadMutationScorerTest, CopyConstructorTest)
-{
-    std::string tpl = "TTGATTACATT";
-    std::string revTpl = ReverseComplement(tpl);
-
-    MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
-
-    // Run the copy constructor of MultiReadMutationScorer
-    MMS mCopy(mScorer);
-
-    Mutation noOpMutation(SUBSTITUTION, 6, 'A');
-    Mutation insertMutation(INSERTION, 6, 'A');
-    Mutation substitutionMutation(SUBSTITUTION, 6, 'T');
-    Mutation deletionMutation(DELETION, 6, '-');
-
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-
-    // Apply mutation to copy
-    std::vector<Mutation*> muts;
-    muts += &insertMutation;
-    mCopy.ApplyMutations(muts);
-
-    // copy template should change
-    EXPECT_EQ("TTGATTAACATT", mCopy.Template());
-
-    // original should be unchanged
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-
-    // Score of original shouldn't change
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
-    EXPECT_EQ("TTGATTACATT", mScorer.Template());
-}
-
-
-
-TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
-{
-    // Just make sure if we reverse complemented the universe,
-    // everything would come out the same.
-    std::string tpl = "AATGTAATCAA";
-    MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND);
-
-    Mutation noOpMutation(SUBSTITUTION, 4, 'T');
-    Mutation insertMutation(INSERTION, 5, 'T');
-    Mutation substitutionMutation(SUBSTITUTION, 4, 'A');
-    Mutation deletionMutation(DELETION, 4, '-');
-
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND);
-
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-4, mScorer.Score(insertMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-20, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-16, mScorer.Score(deletionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-
-    std::vector<Mutation*> muts;
-    muts += &insertMutation;
-    mScorer.ApplyMutations(muts);
-    EXPECT_EQ("AATGTTAATCAA", mScorer.Template());
-
-    Mutation newNoOpMutation(SUBSTITUTION, 4, 'T');
-    EXPECT_EQ(0, mScorer.Score(newNoOpMutation));
-}
-
-
-TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtEnds)
-{
-    std::string tpl = "TTGATTACATT";
-    std::string revTpl = ReverseComplement(tpl);
-
-    MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
-
-    Mutation noOpMutation(SUBSTITUTION, 0, 'T');
-    Mutation deletionMutation(DELETION, 0, '-');
-    Mutation insertMutation(INSERTION, 0, 'A');
-    Mutation insertMutation2(INSERTION, 1, 'A');
-
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-
-    // Note that there is no actual way to test an insertion before
-    // the first base ... the alignment just slides over.
-    EXPECT_EQ(0, mScorer.Score(insertMutation));
-    EXPECT_EQ(-4, mScorer.Score(insertMutation2));
-
-    EXPECT_EQ(-5, mScorer.Score(deletionMutation));  // now there is a branch...
-}
-
-
-TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)
-{
-    // read1:                     >>>>>>>>>>>
-    // read2:          <<<<<<<<<<<
-    //                 0123456789012345678901
-    std::string tpl = "AATGTAATCAATTGATTACATT";
-    MMS mScorer(this->testingConfig_, tpl);
-
-    // mutations in the latter half
-    Mutation noOpMutation1(SUBSTITUTION, 17, 'A');
-    Mutation insertMutation1(INSERTION, 17, 'A');
-    Mutation substitutionMutation1(SUBSTITUTION, 17, 'T');
-    Mutation deletionMutation1(DELETION, 17, '-');
-
-    // mutations in the first half
-    Mutation noOpMutation2(SUBSTITUTION, 4, 'T');
-    Mutation insertMutation2(INSERTION, 5, 'T');
-    Mutation substitutionMutation2(SUBSTITUTION, 4, 'A');
-    Mutation deletionMutation2(DELETION, 4, '-');
-
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND, 11, 22);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND,  0, 11);
-
-    EXPECT_EQ(0, mScorer.Score(noOpMutation1));
-    EXPECT_EQ(-2, mScorer.Score(insertMutation1));
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation1));
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation1));
-
-    EXPECT_EQ(0, mScorer.Score(noOpMutation2));
-    EXPECT_EQ(-2, mScorer.Score(insertMutation2));
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation2));
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation2));
-
-    EXPECT_EQ(tpl, mScorer.Template());
-
-    std::vector<Mutation*> muts;
-    muts += &insertMutation1, &insertMutation2;
-    mScorer.ApplyMutations(muts);
-    EXPECT_EQ("AATGTTAATCAATTGATTAACATT", mScorer.Template());
-}
-
-
-TYPED_TEST(MultiReadMutationScorerTest, CopyTest)
-{
-    // read1:                     >>>>>>>>>>>
-    // read2:          <<<<<<<<<<<
-    //                 0123456789012345678901
-    std::string tpl = "AATGTAATCAATTGATTACATT";
-    MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND, 11, 22);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND,  0, 11);
-    MMS mScorerCopy(mScorer);
-
-    ASSERT_EQ(mScorer.BaselineScore(), mScorerCopy.BaselineScore());
+    QvEvaluator e2(read, tplGCTT, params);
+    SparseSimpleQvRecursor r2(config.MovesAvailable, config.Banding);
+    SparseSimpleQvMutationScorer ms2(e2, r2);
+    EXPECT_EQ(scoreTT, ms2.ScoreMutation(DELETION, 7, 9, ""));
 }
