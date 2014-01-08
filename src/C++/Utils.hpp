@@ -59,6 +59,10 @@ bool AlmostEqual(float A, float B, int maxUlps = 4);
 
 #define NotYetImplemented()     throw NotYetImplementedException()
 
+// For use in debugging only.
+#define Breakpoint()  asm volatile ("int3;")
+
+
 #ifdef NDEBUG
 #   define DEBUG_ONLY(stmt)
 #else
