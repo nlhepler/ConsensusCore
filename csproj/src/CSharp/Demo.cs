@@ -57,7 +57,7 @@ namespace ConsensusCoreDemo
             var recursor = new SparseSseEdnaRecursor((int) Move.ALL_MOVES, new BandingOptions(0, 10));
             var scorer = new SparseSseEdnaMutationScorer(eval, recursor);
 
-            scorer.ScoreMutation(MutationType.INSERTION, 3, 'A');
+            scorer.ScoreMutation(Mutation(MutationType.INSERTION, 3, 'A'));
 
             var counter = new EdnaCounts();
             var intFeature = new IntFeature(10);
