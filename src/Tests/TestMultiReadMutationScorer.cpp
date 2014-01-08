@@ -230,6 +230,8 @@ protected:
 #define E   typename TypeParam::EvaluatorType
 
 #define config    (this->testingConfig_)
+#define params    (this->testingConfig_.QvParams)
+
 
 TYPED_TEST(MultiReadMutationScorerTest, Template)
 {
@@ -412,28 +414,50 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
 }
 
 
-TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtEnds)
+TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtBeginning)
 {
     std::string tpl = "TTGATTACATT";
-    std::string revTpl = ReverseComplement(tpl);
 
     MMS mScorer(this->testingConfig_, tpl);
     mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
 
-    Mutation noOpMutation(SUBSTITUTION, 0, 'T');
-    Mutation deletionMutation(DELETION, 0, '-');
-    Mutation insertMutation(INSERTION, 0, 'A');
-    Mutation insertMutation2(INSERTION, 1, 'A');
+    Mutation noOpMutation     (SUBSTITUTION , 0, 'T');
+    Mutation deletionMutation (DELETION     , 0, '-');
+    Mutation insertMutation   (INSERTION    , 0, 'A');
+    Mutation insertMutation2  (INSERTION    , 1, 'A');
 
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
+    EXPECT_EQ(0                , mScorer.Score(noOpMutation));
 
     // Note that there is no actual way to test an insertion before
     // the first base ... the alignment just slides over.
-    EXPECT_EQ(0, mScorer.Score(insertMutation));
-    EXPECT_EQ(-4, mScorer.Score(insertMutation2));
-
-    EXPECT_EQ(-5, mScorer.Score(deletionMutation));  // now there is a branch...
+    EXPECT_EQ(0                , mScorer.Score(insertMutation));
+    EXPECT_EQ(params.DeletionN , mScorer.Score(insertMutation2));
+    EXPECT_EQ(params.Branch    , mScorer.Score(deletionMutation));  // now there is a branch...
 }
+
+TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtEnd)
+{
+    //                 01234567890
+    std::string tpl = "TTGATTACATT";
+
+    MMS mScorer(this->testingConfig_, tpl);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+
+    Mutation noOpMutation     (SUBSTITUTION , 10, 'T');
+    Mutation deletionMutation (DELETION     , 10, '-');
+    Mutation insertMutation   (INSERTION    , 11, 'A');
+    Mutation insertMutation2  (INSERTION    , 12, 'A');
+
+    EXPECT_EQ(0                , mScorer.Score(noOpMutation));
+
+    // Note that there is no actual way to test an insertion before
+    // the first base ... the alignment just slides over.
+    EXPECT_EQ(params.DeletionN , mScorer.Score(insertMutation));
+    EXPECT_EQ(0                , mScorer.Score(insertMutation2));
+    EXPECT_EQ(params.Branch    , mScorer.Score(deletionMutation));
+}
+
+
 
 
 TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)

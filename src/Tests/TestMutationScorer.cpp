@@ -76,7 +76,6 @@ public:
 protected:
     MutationScorerTest()
         : recursor_(ALL_MOVES, BandingOptions(4, 200)),
-          testingParams_(TestingParams<QvModelParams>()),
           testingConfig_(TestingConfig<QuiverConfig>())
     {}
 
@@ -84,7 +83,6 @@ protected:
 
 protected:
     typename MS::RecursorType recursor_;
-    QvModelParams testingParams_;
     QuiverConfig testingConfig_;
 };
 
@@ -92,7 +90,7 @@ protected:
 #define E  typename TypeParam::EvaluatorType
 
 #define recursor  (this->recursor_)
-#define params    (this->testingParams_)
+#define params    (this->testingConfig_.QvParams)
 #define config    (this->testingConfig_)
 
 
