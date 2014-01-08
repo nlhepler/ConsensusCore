@@ -440,14 +440,14 @@ namespace ConsensusCore {
     void
     SimpleRecursor<M, E, C>::ExtendBeta(const E& e,
                                         const M& beta, int lastColumn,
-                                        M& ext, int numExtColumns) const
+                                        M& ext, int numExtColumns,
+                                        int lengthDiff) const
     {
         int I = beta.Rows() - 1;
         int J = beta.Columns() - 1;
 
         int lastExtColumn = numExtColumns - 1;
 
-        assert(numExtColumns >= 2);
         assert(beta.Rows() == I + 1 &&
                ext.Rows() == I + 1);
 
@@ -459,6 +459,7 @@ namespace ConsensusCore {
 
         for (int j = lastColumn; j > lastColumn - numExtColumns; j--)
         {
+            int jp = j + lengthDiff;
             int extCol = lastExtColumn - (lastColumn - j);
             int beginRow, endRow;
 
@@ -490,14 +491,14 @@ namespace ConsensusCore {
                     float prev = (extCol == lastExtColumn) ?
                         beta(i + 1, j + 1) :
                         ext(i + 1, extCol + 1);
-                    thisMoveScore = prev + e.Inc(i, j);
+                    thisMoveScore = prev + e.Inc(i, jp);
                     score = C::Combine(score, thisMoveScore);
                 }
 
                 // Extra:
                 if (i < I)
                 {
-                    thisMoveScore = ext(i + 1, extCol) + e.Extra(i, j);
+                    thisMoveScore = ext(i + 1, extCol) + e.Extra(i, jp);
                     score = C::Combine(score, thisMoveScore);
                 }
 
@@ -507,7 +508,7 @@ namespace ConsensusCore {
                     float prev = (extCol == lastExtColumn) ?
                         beta(i, j + 1) :
                         ext(i, extCol + 1);
-                    thisMoveScore = prev + e.Del(i, j);
+                    thisMoveScore = prev + e.Del(i, jp);
                     score = C::Combine(score, thisMoveScore);
                 }
 
@@ -515,7 +516,7 @@ namespace ConsensusCore {
                 // Merge:
                 if ((this->movesAvailable_ & MERGE) && j < J - 1 && i < I)
                 {
-                    thisMoveScore = beta(i + 1, j + 2) + e.Merge(i, j);
+                    thisMoveScore = beta(i + 1, j + 2) + e.Merge(i, jp);
                     score = C::Combine(score, thisMoveScore);
                 }
 

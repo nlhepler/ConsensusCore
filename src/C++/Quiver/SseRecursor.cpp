@@ -587,9 +587,10 @@ namespace ConsensusCore {
     void
     SseRecursor<M, E, C>::ExtendBeta(const E& e,
                                      const M& beta, int endColumn,
-                                     M& ext, int numExtColumns) const
+                                     M& ext, int numExtColumns,
+                                     int lengthDiff) const
     {
-        simpleRecursor_.ExtendBeta(e, beta, endColumn, ext, numExtColumns);
+        simpleRecursor_.ExtendBeta(e, beta, endColumn, ext, numExtColumns, lengthDiff);
     }
 
 

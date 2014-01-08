@@ -141,12 +141,10 @@ namespace ConsensusCore
         std::string newTpl = ApplyMutation(m, oldTpl);
         float score;
 
-        bool canExtend = (3 <= m.Start());
-        bool canLink = \
-            ((0 <= betaLinkCol && betaLinkCol < (int)oldTpl.length()) &&
-             (2 <= absoluteLinkColumn && absoluteLinkColumn < (int)newTpl.length()));
+        bool atBegin = (m.Start() < 3);
+        bool atEnd   = (m.End() > (int)oldTpl.length() - 2);
 
-        if (canExtend && canLink)
+        if (!atBegin && !atEnd)
         {
             // Install mutated template
             evaluator_->Template(newTpl);
@@ -175,35 +173,10 @@ namespace ConsensusCore
                                              *beta_, betaLinkCol,
                                              absoluteLinkColumn);
         }
-        else if (!canExtend && canLink)
+        else if (!atBegin && atEnd)
         {
             //
-            // FillAlpha for first few columns, then link (alternately
-            //  could do a backwards extend of beta, but that would
-            //  require some additional code)
-            //
-
-            // Use a new matrix rather than extendBuffer_ ... otherwise
-            // we have to weaken helpful assertions in recursors
-            MatrixType miniAlpha(evaluator_->ReadLength() + 1, absoluteLinkColumn + 1);
-
-            // Install mutated template
-            std::string newTplTrunc = newTpl.substr(0, absoluteLinkColumn);
-            assert((int)newTplTrunc.length() == absoluteLinkColumn);
-
-            evaluator_->Template(newTplTrunc);
-            recursor_->FillAlpha(*evaluator_, MatrixType::Null(), miniAlpha);
-
-            evaluator_->Template(newTpl);
-            score = recursor_->LinkAlphaBeta(*evaluator_,
-                                             miniAlpha, absoluteLinkColumn,
-                                             *beta_, betaLinkCol,
-                                             absoluteLinkColumn);
-        }
-        else if (canExtend && !canLink)
-        {
-            //
-            // Extend to the end and read off the last entry--no link required
+            // Extend alpha to end
             //
             evaluator_->Template(newTpl);
 
@@ -214,10 +187,25 @@ namespace ConsensusCore
                                    extendStartCol, *extendBuffer_, extendLength);
             score = (*extendBuffer_)(evaluator_->ReadLength(), extendLength - 1);
         }
-        else if (!canExtend && !canLink)
+        else if (atBegin && !atEnd)
         {
             //
-            // Just do the whole FillAlpha.  Don't bother with beta.
+            // Extend beta back
+            //
+            evaluator_->Template(newTpl);
+
+            int extendLastCol = m.End();
+            int extendLength = m.End() + m.LengthDiff() + 1;
+
+            recursor_->ExtendBeta(*evaluator_, *beta_,
+                                  extendLastCol, *extendBuffer_, extendLength,
+                                  m.LengthDiff());
+            score = (*extendBuffer_)(0, 0);
+        }
+        else if (atBegin && atEnd)
+        {
+            //
+            // Just do the whole fill
             //
             MatrixType alphaP(evaluator_->ReadLength() + 1,
                               newTpl.length() + 1);
@@ -228,6 +216,9 @@ namespace ConsensusCore
 
         // Restore the original template.
         evaluator_->Template(oldTpl);
+
+        //if (fabs(score - Score()) > 50) { Breakpoint(); }
+
         return score;
     }
 

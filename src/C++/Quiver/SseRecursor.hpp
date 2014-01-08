@@ -65,7 +65,8 @@ namespace ConsensusCore {
 
         void ExtendBeta(const E& e,
                         const M& beta, int endColumn,
-                        M& ext, int numExtColumns = 2) const;
+                        M& ext, int numExtColumns = 2,
+                        int lengthDiff = 0) const;
 
     public:
         //
@@ -98,6 +99,3 @@ namespace ConsensusCore {
                         EdnaEvaluator,
                         detail::SumProductCombiner> SparseSseEdnaRecursor;
 }
-
-
-
