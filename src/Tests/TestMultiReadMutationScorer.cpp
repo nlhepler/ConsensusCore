@@ -42,9 +42,9 @@
 
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Quiver/QuiverConfig.hpp"
+#include "Quiver/ReadScorer.hpp"
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
-#include "Quiver/ReadScorer.hpp"
 
 #include "ParameterSettings.hpp"
 
@@ -517,13 +517,54 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyTest)
 }
 
 
+TYPED_TEST(MultiReadMutationScorerTest, MultiBaseSubstitutionsAtBounds)
+{
+    // read1:                     >>>>>>>>>
+    // read2:            <<<<<<<<<
+    //                 0123456789012345678901
+    std::string tpl = "AATGTAATCAATTGATTACATT";
+    MMS mScorer(this->testingConfig_, tpl);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), FORWARD_STRAND, 11, 20);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), REVERSE_STRAND,  2, 11);
+
+    EXPECT_EQ(0                 , mScorer.Score(Mutation(SUBSTITUTION, 0, 2, "MN")));
+    EXPECT_EQ(params.Mismatch   , mScorer.Score(Mutation(SUBSTITUTION, 1, 3, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION, 2, 4, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION, 9,11, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,10,12, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,11,13, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,18,20, "MN")));
+    EXPECT_EQ(params.Mismatch   , mScorer.Score(Mutation(SUBSTITUTION,19,21, "MN")));
+    EXPECT_EQ(0                 , mScorer.Score(Mutation(SUBSTITUTION,20,22, "MN")));
+}
+
 TYPED_TEST(MultiReadMutationScorerTest, MultiBaseIndelsAtBounds)
 {
     // read1:                     >>>>>>>>>
     // read2:            <<<<<<<<<
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
+    MMS mScorer(this->testingConfig_, tpl);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), FORWARD_STRAND, 11, 20);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), REVERSE_STRAND,  2, 11);
 
+    // Insertions
+    EXPECT_EQ(0                  , mScorer.Score(Mutation(INSERTION,  2,  2, "MN")));
+    EXPECT_EQ(2*params.DeletionN , mScorer.Score(Mutation(INSERTION,  3,  3, "MN")));
+    EXPECT_EQ(2*params.DeletionN , mScorer.Score(Mutation(INSERTION, 11, 11, "MN")));
+    EXPECT_EQ(2*params.DeletionN , mScorer.Score(Mutation(INSERTION, 12, 12, "MN")));
+    EXPECT_EQ(2*params.DeletionN , mScorer.Score(Mutation(INSERTION, 19, 19, "MN")));
+    EXPECT_EQ(2*params.DeletionN , mScorer.Score(Mutation(INSERTION, 20, 20, "MN")));
+    EXPECT_EQ(0                  , mScorer.Score(Mutation(INSERTION, 21, 21, "MN")));
 
-
+    // Deletions
+    EXPECT_EQ(0                          , mScorer.Score(Mutation(DELETION, 0, 2, "")));
+    EXPECT_EQ(params.Nce                 , mScorer.Score(Mutation(DELETION, 1, 3, "")));
+    EXPECT_EQ(params.Nce + params.Branch , mScorer.Score(Mutation(DELETION, 2, 4, "")));
+    EXPECT_EQ(2*params.Nce               ,  mScorer.Score(Mutation(DELETION, 9, 11, "")));
+    EXPECT_EQ(2*params.Branch            ,  mScorer.Score(Mutation(DELETION,10, 12, "")));
+    EXPECT_EQ(2*params.Nce               ,  mScorer.Score(Mutation(DELETION,11, 13, "")));
+    EXPECT_EQ(params.Nce + params.Branch ,  mScorer.Score(Mutation(DELETION, 18, 20, "")));
+    EXPECT_EQ(params.Nce                 ,  mScorer.Score(Mutation(DELETION, 19, 21, "")));
+    EXPECT_EQ(0                          ,  mScorer.Score(Mutation(DELETION, 20, 22, "")));
 }
