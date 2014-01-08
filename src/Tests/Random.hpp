@@ -154,33 +154,4 @@ RandomSampleWithoutReplacement(RNG& rng, int n, int k)
     }
 }
 
-template<typename RNG>
-std::vector<Mutation>
-RandomTemplateMutations(RNG& rng, std::string tpl, int k)
-{
-    std::vector<Mutation> muts;
-
-    const char* bases = "ACGT";
-    boost::random::uniform_int_distribution<> baseIndexDist(0, 3);
-
-    const MutationType mutTypes = { ConsensusCore::INSERTION,
-                                    ConsensusCore::SUBSTITUTION,
-                                    ConsensusCore::DELETION      };
-    boost::random::uniform_int_distribution<> mutTypeIndexDist(0, 3);
-
-    std::vector<int> positions = RandomSampleWithoutReplacement(rng, tpl.length(), k);
-    for (int i = 0; i < k; i++)
-    {
-        int pos = positions.pop_back();
-        MutationType type = mutTypes[mutTypeIndexDist(rng)];
-        // this doesn't do anything to avoid (Mismatch A->A)'s.
-        // not important for now.
-        char base = (type == ConsensusCore::DELETION ? '-' : bases[baseIndexDist(rng)]);
-        Mutation mut(pos, type, base);
-        muts.push_back(mut);
-    }
-}
-
-
 typedef boost::mt19937 Rng;
-
