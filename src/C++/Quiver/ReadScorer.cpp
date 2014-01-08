@@ -38,6 +38,7 @@
 #include <iostream>
 #include <string>
 
+#include "PairwiseAlignment.hpp"
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Quiver/ReadScorer.hpp"
@@ -67,4 +68,37 @@ namespace ConsensusCore
 
         return beta(0, 0);
     }
+
+    const PairwiseAlignment*
+    ReadScorer::Align(const string& tpl, const QvSequenceFeatures & read) const
+    {
+        int I, J;
+        SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
+        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+
+        I = read.Length();
+        J = tpl.length();
+        SparseMatrix alpha(I+1, J+1), beta(I+1, J+1);
+        r.FillAlphaBeta(e, alpha, beta);
+        return r.Alignment(e, alpha);
+    }
+
+    const SparseMatrix*
+    ReadScorer::Alpha(const string& tpl, const QvSequenceFeatures & read) const
+    {
+        int I, J;
+        SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
+        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+
+        I = read.Length();
+        J = tpl.length();
+        SparseMatrix *alpha = new SparseMatrix(I+1, J+1);
+        SparseMatrix *beta  = new SparseMatrix(I+1, J+1);
+        r.FillAlphaBeta(e, *alpha, *beta);
+        return alpha;
+    }
+
+
+
+
 }
