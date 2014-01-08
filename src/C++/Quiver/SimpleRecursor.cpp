@@ -465,7 +465,7 @@ namespace ConsensusCore {
             if (j < 0)
             {
                 beginRow = 0;
-                endRow = beta.UsedRowRange(0).first;
+                endRow = beta.UsedRowRange(0).second;
             }
             else
             {
