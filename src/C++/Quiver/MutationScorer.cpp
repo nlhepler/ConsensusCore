@@ -185,12 +185,8 @@ namespace ConsensusCore
                 assert(extendLength <= EXTEND_BUFFER_COLUMNS);
             }
 
-            // Requirements: 2 <= extendStartCol < newTpl.length()
             recursor_->ExtendAlpha(*evaluator_, *alpha_,
                                    extendStartCol, *extendBuffer_, extendLength);
-
-            // Requirements:  0 <= betaLinkCol < oldTpl.length()
-            //                2 <=  absoluteLinkColumn < newTpl.length()
             score = recursor_->LinkAlphaBeta(*evaluator_,
                                              *extendBuffer_, extendLength,
                                              *beta_, betaLinkCol,
@@ -206,7 +202,6 @@ namespace ConsensusCore
 
             // Use a new matrix rather than extendBuffer_ ... otherwise
             // we have to weaken helpful assertions in recursors
-            // Actually I think I would rather weaken those assertions anyway.
             MatrixType miniAlpha(evaluator_->ReadLength() + 1, absoluteLinkColumn + 1);
 
             // Install mutated template
@@ -247,7 +242,6 @@ namespace ConsensusCore
             recursor_->FillAlpha(*evaluator_, MatrixType::Null(), alphaP);
             score = alphaP(evaluator_->ReadLength(), newTpl.length());
         }
-
 
         // Restore the original template.
         evaluator_->Template(oldTpl);
