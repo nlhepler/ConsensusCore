@@ -227,7 +227,7 @@ TYPED_TEST(RecursorTest, LinkTest)
 }
 
 
-TYPED_TEST(RecursorTest, ExtendTest)
+TYPED_TEST(RecursorTest, ExtendAlphaTest)
 {
     std::string tpl("GATTCTC");
     QvSequenceFeatures read("GATCTTC");
@@ -256,6 +256,33 @@ TYPED_TEST(RecursorTest, ExtendTest)
             }
         }
     }
+}
+
+
+TYPED_TEST(RecursorTest, ExtendBetaTest)
+{
+    std::string tpl("GATTCTC");
+    QvSequenceFeatures read("GATCTTC");
+    E e(read, tpl, this->testingParams_);
+
+    R recursor(BASIC_MOVES | MERGE, this->noBanding_);
+    M alpha(read.Length() + 1, tpl.length() + 1);
+    M beta(read.Length() + 1, tpl.length() + 1);
+    recursor.FillAlphaBeta(e, alpha, beta);
+
+    M ext(read.Length() + 1, 2);
+    for (int j = 1; j <= tpl.length() - 2; j++)
+    {
+        recursor.ExtendBeta(e, beta, j, ext);
+        for (int i = 0; i <= read.Length(); i++)
+        {
+            ASSERT_FLOAT_EQ(beta(i, j), ext(i, 1))
+                << i << " " << j << std::endl;
+            ASSERT_FLOAT_EQ(beta(i, j - 1), ext(i, 0))
+                << i << " " << j-1 << std::endl;
+        }
+    }
+
 }
 
 
@@ -378,6 +405,35 @@ TYPED_TEST(RecursorFuzzTest, ExtendAlpha)
                 {
                     ASSERT_FLOAT_EQ(alpha(i, j + extCol), ext(i, extCol))
                             << i << " " << j << " " << extCol << std::endl;
+                }
+            }
+        }
+    }
+}
+
+TYPED_TEST(RecursorFuzzTest, ExtendBeta)
+{
+    R recursor(BASIC_MOVES | MERGE, this->banding_);
+
+    foreach (const QvEvaluator& e, this->fuzzEvaluators_)
+    {
+        int tplLength = e.TemplateLength();
+        int readLength = e.ReadLength();
+
+        M alpha(readLength + 1, tplLength + 1);
+        M beta(readLength + 1, tplLength + 1);
+        M ext(readLength + 1, 2);
+
+        for (int j = 1; j <= tplLength - 2; j++)
+        {
+            recursor.ExtendBeta(e, beta, j, ext);
+            for (int extCol = 0; extCol < 2; extCol++)
+            {
+                int jj = j + extCol - 1;
+                for (int i = 0; i <= readLength; i++)
+                {
+                    ASSERT_FLOAT_EQ(beta(i, jj), ext(i, extCol))
+                        << i << " " << jj << " " << extCol << std::endl;
                 }
             }
         }

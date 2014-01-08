@@ -46,6 +46,7 @@
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/detail/Combiner.hpp"
 #include "Quiver/detail/RecursorBase.hpp"
+#include "Quiver/EdnaEvaluator.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Interval.hpp"
 #include "Utils.hpp"
@@ -332,6 +333,9 @@ namespace ConsensusCore {
     }
 
 
+    //
+    // Reads: alpha(:, (beginColumn-2)..)
+    //
     template<typename M, typename E, typename C>
     void
     SimpleRecursor<M, E, C>::ExtendAlpha(const E& e,
@@ -379,12 +383,6 @@ namespace ConsensusCore {
                 float thisMoveScore;
                 score = NEG_INF;
 
-                // Start:
-                if (i == 0 && j == 0)
-                {
-                    score = 0.0f;
-                }
-
                 // Incorporation:
                 if (i > 0 && j > 0)
                 {
@@ -412,6 +410,7 @@ namespace ConsensusCore {
                     score = C::Combine(score, thisMoveScore);
                 }
 
+                // FIXME: is the merge code below incorrect for numExtColumns > 2?
                 // Merge:
                 if ((this->movesAvailable_ & MERGE) && j > 1 && i > 0)
                 {
@@ -427,6 +426,105 @@ namespace ConsensusCore {
         }
     }
 
+
+    // Semantic: After ExtendBeta(B, j), we have
+    //    ext(:, numExtColumns-1) = B'(:,j)
+    //    ext(:, numExtColumns-2) = B'(:,j-1) ...
+    //
+    // Note: lastColumn is the numerically largest column number that
+    // will be filled, but it is filled first since beta fill is done
+    // backwards.
+    //
+    // Accesses B(:, ..(j+2))
+    template<typename M, typename E, typename C>
+    void
+    SimpleRecursor<M, E, C>::ExtendBeta(const E& e,
+                                        const M& beta, int lastColumn,
+                                        M& ext, int numExtColumns) const
+    {
+        int I = e.ReadLength();
+        int J = e.TemplateLength();
+        int lastExtColumn = numExtColumns - 1;
+
+        assert(numExtColumns >= 2);
+        assert(beta.Rows() == I + 1 &&
+               ext.Rows() == I + 1);
+
+        // The new template may not be the same length as the old template.
+        // Just make sure that we have anough room to fill out the extend buffer
+        assert(lastColumn + 2 <= J);
+        assert(lastColumn >= 0);
+        assert(ext.Columns() >= numExtColumns);
+
+        for (int j = lastColumn; j > lastColumn - numExtColumns; j--)
+        {
+            int extCol = lastExtColumn - (lastColumn - j);
+            int beginRow, endRow;
+
+            if (j < 0)
+            {
+                beginRow = 0;
+                endRow = beta.UsedRowRange(0).first;
+            }
+            else
+            {
+                boost::tie(beginRow, endRow) = beta.UsedRowRange(j);
+            }
+
+            ext.StartEditingColumn(extCol, beginRow, endRow);
+
+            int i;
+            float score;
+
+            for (i = endRow - 1;
+                 i >= beginRow;
+                 i--)
+            {
+                float thisMoveScore;
+                score = NEG_INF;
+
+                // Incorporation:
+                if (i < I && j < J)
+                {
+                    float prev = (extCol == lastExtColumn) ?
+                        beta(i + 1, j + 1) :
+                        ext(i + 1, extCol + 1);
+                    thisMoveScore = prev + e.Inc(i, j);
+                    score = C::Combine(score, thisMoveScore);
+                }
+
+                // Extra:
+                if (i < I)
+                {
+                    thisMoveScore = ext(i + 1, extCol) + e.Extra(i, j);
+                    score = C::Combine(score, thisMoveScore);
+                }
+
+                // Delete:
+                if (j < J)
+                {
+                    float prev = (extCol == lastExtColumn) ?
+                        beta(i, j + 1) :
+                        ext(i, extCol + 1);
+                    thisMoveScore = prev + e.Del(i, j);
+                    score = C::Combine(score, thisMoveScore);
+                }
+
+                // FIXME: is the merge code below incorrect for numExtColumns > 2?
+                // Merge:
+                if ((this->movesAvailable_ & MERGE) && j < J - 1 && i < I)
+                {
+                    thisMoveScore = beta(i + 1, j + 2) + e.Merge(i, j);
+                    score = C::Combine(score, thisMoveScore);
+                }
+
+                ext.Set(i, extCol, score);
+            }
+            ext.FinishEditingColumn(extCol, beginRow, endRow);
+        }
+    }
+
+
     template<typename M, typename E, typename C>
     SimpleRecursor<M, E, C>::SimpleRecursor(int movesAvailable, const BandingOptions& banding)
         : detail::RecursorBase<M, E, C>(movesAvailable, banding)
@@ -436,4 +534,6 @@ namespace ConsensusCore {
     template class SimpleRecursor<DenseMatrix,  QvEvaluator, detail::ViterbiCombiner>;
     template class SimpleRecursor<SparseMatrix, QvEvaluator, detail::ViterbiCombiner>;
     template class SimpleRecursor<SparseMatrix, QvEvaluator, detail::SumProductCombiner>;
+    template class SimpleRecursor<SparseMatrix, EdnaEvaluator, detail::SumProductCombiner>;
+
 }

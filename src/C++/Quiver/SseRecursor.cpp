@@ -36,6 +36,7 @@
 // Author: David Alexander
 
 #include "Quiver/SseRecursor.hpp"
+#include "Quiver/SimpleRecursor.hpp"
 
 #include <algorithm>
 #include <boost/tuple/tuple.hpp>
@@ -581,9 +582,22 @@ namespace ConsensusCore {
         }
     }
 
+
+    template<typename M, typename E, typename C>
+    void
+    SseRecursor<M, E, C>::ExtendBeta(const E& e,
+                                     const M& beta, int endColumn,
+                                     M& ext, int numExtColumns) const
+    {
+        simpleRecursor_.ExtendBeta(e, beta, endColumn, ext, numExtColumns);
+    }
+
+
+
     template<typename M, typename E, typename C>
     SseRecursor<M, E, C>::SseRecursor(int movesAvailable, const BandingOptions& banding)
-        : detail::RecursorBase<M, E, C>(movesAvailable, banding)
+        : detail::RecursorBase<M, E, C>(movesAvailable, banding),
+          simpleRecursor_(movesAvailable, banding)
     {}
 
     template class SseRecursor<DenseMatrix,  QvEvaluator, detail::ViterbiCombiner>;

@@ -60,6 +60,11 @@ namespace ConsensusCore {
                          const M& alpha, int beginColumn,
                          M& ext, int numExtColumns = 2) const;
 
+        void ExtendBeta(const E& e,
+                        const M& beta, int endColumn,
+                        M& ext, int numExtColumns = 2) const;
+
+
     public:
         //
         // Constructors
@@ -83,8 +88,3 @@ namespace ConsensusCore {
                            QvEvaluator,
                            detail::SumProductCombiner> SparseSimpleQvSumProductRecursor;
 }
-
-
-
-
-

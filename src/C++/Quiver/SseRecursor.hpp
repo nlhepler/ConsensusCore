@@ -63,11 +63,19 @@ namespace ConsensusCore {
                          const M& alpha, int beginColumn,
                          M& ext, int numExtColumns = 2) const;
 
+        void ExtendBeta(const E& e,
+                        const M& beta, int endColumn,
+                        M& ext, int numExtColumns = 2) const;
+
     public:
         //
         // Constructors
         //
         SseRecursor(int movesAvailable, const BandingOptions& banding);
+
+    private:
+        // Used during bringup
+        SimpleRecursor<M, E, C> simpleRecursor_;
     };
 
     typedef SseRecursor<DenseMatrix,
