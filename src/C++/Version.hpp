@@ -43,7 +43,7 @@
 
 #define API_MAJOR 0
 #define API_MINOR 7
-#define API_PATCH 0
+#define API_PATCH 5
 
 namespace ConsensusCore
 {
