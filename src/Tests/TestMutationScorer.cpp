@@ -107,17 +107,17 @@ TYPED_TEST(MutationScorerTest, BasicTest)
 
     // Testing mutations should not change the template.
     // Let's just make sure of that.
-    EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(0, ms.Score());
-    EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation));
-    EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(-4, ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(-10, ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(-8, ms.ScoreMutation(deletionMutation));
-    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ("GATTACA"        , ms.Template());
+    EXPECT_EQ(0                , ms.Score());
+    EXPECT_EQ("GATTACA"        , ms.Template());
+    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ("GATTACA"        , ms.Template());
+    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ("GATTACA"        , ms.Template());
+    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ("GATTACA"        , ms.Template());
+    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ("GATTACA"        , ms.Template());
 }
 
 
@@ -145,13 +145,13 @@ TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
     Mutation substitutionMutation(SUBSTITUTION, 0, 'T');
     Mutation deletionMutation(DELETION, 0, '-');
 
-    EXPECT_EQ(0, ms.Score());
-    EXPECT_EQ(-4, ms.ScoreMutation(insertBefore));
-    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation1));
-    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation2));
-    EXPECT_EQ(-4, ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ(-10, ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ(-8, ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ(0                , ms.Score());
+    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(insertBefore));
+    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation1));
+    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation2));
+    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
 }
 
 TYPED_TEST(MutationScorerTest, MutationsAtEnd)
@@ -165,11 +165,11 @@ TYPED_TEST(MutationScorerTest, MutationsAtEnd)
     Mutation substitutionMutation(SUBSTITUTION, 6, 'T');
     Mutation deletionMutation(DELETION, 6, '-');
 
-    EXPECT_EQ(0, ms.Score());
-    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation));
-    EXPECT_EQ(-4, ms.ScoreMutation(unmergeableInsertMutation));
-    EXPECT_EQ(-10, ms.ScoreMutation(substitutionMutation));
-    EXPECT_EQ(-8, ms.ScoreMutation(deletionMutation));
+    EXPECT_EQ(0                , ms.Score());
+    EXPECT_EQ(params.Merge[0]  , ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ(params.DeletionN , ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(params.Mismatch  , ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(params.Nce       , ms.ScoreMutation(deletionMutation));
 }
 
 
@@ -207,15 +207,15 @@ TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
     MS ms(ev, recursor);
     Mutation insertMutation(INSERTION, 4, 'A');
 
-    EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(0, ms.Score());
-    EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(-2, ms.ScoreMutation(insertMutation));
+    EXPECT_EQ("GATTACA"       , ms.Template());
+    EXPECT_EQ(0               , ms.Score());
+    EXPECT_EQ("GATTACA"       , ms.Template());
+    EXPECT_EQ(params.Merge[0] , ms.ScoreMutation(insertMutation));
 
     std::string newTpl = ApplyMutation(insertMutation, tpl);
     ms.Template(newTpl);
-    EXPECT_EQ(-2, ms.Score());
-    EXPECT_EQ("GATTAACA", ms.Template());
+    EXPECT_EQ(params.Merge[0] , ms.Score());
+    EXPECT_EQ("GATTAACA"      , ms.Template());
 }
 
 

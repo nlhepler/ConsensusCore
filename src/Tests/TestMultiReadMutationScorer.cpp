@@ -267,11 +267,11 @@ TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
 
     EXPECT_EQ(0, mScorer.Score(noOpMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
+    EXPECT_EQ(params.Merge[0], mScorer.Score(insertMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
+    EXPECT_EQ(params.Mismatch, mScorer.Score(substitutionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
+    EXPECT_EQ(params.Nce, mScorer.Score(deletionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
 
     mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
@@ -340,11 +340,11 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyConstructorTest)
 
     EXPECT_EQ(0, mScorer.Score(noOpMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
+    EXPECT_EQ(params.Merge[0], mScorer.Score(insertMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
+    EXPECT_EQ(params.Mismatch, mScorer.Score(substitutionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
+    EXPECT_EQ(params.Nce, mScorer.Score(deletionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
 
     // Apply mutation to copy
@@ -361,11 +361,11 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyConstructorTest)
     // Score of original shouldn't change
     EXPECT_EQ(0, mScorer.Score(noOpMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
+    EXPECT_EQ(params.Merge[0], mScorer.Score(insertMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
+    EXPECT_EQ(params.Mismatch, mScorer.Score(substitutionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
+    EXPECT_EQ(params.Nce, mScorer.Score(deletionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
 }
 
@@ -384,25 +384,25 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
     Mutation substitutionMutation(SUBSTITUTION, 4, 'A');
     Mutation deletionMutation(DELETION, 4, '-');
 
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-2, mScorer.Score(insertMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
+    EXPECT_EQ(0               , mScorer.Score(noOpMutation));
+    EXPECT_EQ("AATGTAATCAA"   , mScorer.Template());
+    EXPECT_EQ(params.Merge[0]    , mScorer.Score(insertMutation));
+    EXPECT_EQ("AATGTAATCAA"   , mScorer.Template());
+    EXPECT_EQ(params.Mismatch , mScorer.Score(substitutionMutation));
+    EXPECT_EQ("AATGTAATCAA"   , mScorer.Template());
+    EXPECT_EQ(params.Nce      , mScorer.Score(deletionMutation));
+    EXPECT_EQ("AATGTAATCAA"   , mScorer.Template());
 
     mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND);
 
-    EXPECT_EQ(0, mScorer.Score(noOpMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-4, mScorer.Score(insertMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-20, mScorer.Score(substitutionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
-    EXPECT_EQ(-16, mScorer.Score(deletionMutation));
-    EXPECT_EQ("AATGTAATCAA", mScorer.Template());
+    EXPECT_EQ(0                 , mScorer.Score(noOpMutation));
+    EXPECT_EQ("AATGTAATCAA"     , mScorer.Template());
+    EXPECT_EQ(2*params.Merge[0] , mScorer.Score(insertMutation));
+    EXPECT_EQ("AATGTAATCAA"     , mScorer.Template());
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(substitutionMutation));
+    EXPECT_EQ("AATGTAATCAA"     , mScorer.Template());
+    EXPECT_EQ(2*params.Nce      , mScorer.Score(deletionMutation));
+    EXPECT_EQ("AATGTAATCAA"     , mScorer.Template());
 
     std::vector<Mutation*> muts;
     muts += &insertMutation;
@@ -483,15 +483,15 @@ TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)
     mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND, 11, 22);
     mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND,  0, 11);
 
-    EXPECT_EQ(0, mScorer.Score(noOpMutation1));
-    EXPECT_EQ(-2, mScorer.Score(insertMutation1));
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation1));
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation1));
+    EXPECT_EQ(0               , mScorer.Score(noOpMutation1));
+    EXPECT_EQ(params.Merge[0] , mScorer.Score(insertMutation1));
+    EXPECT_EQ(params.Mismatch , mScorer.Score(substitutionMutation1));
+    EXPECT_EQ(params.Nce      , mScorer.Score(deletionMutation1));
 
-    EXPECT_EQ(0, mScorer.Score(noOpMutation2));
-    EXPECT_EQ(-2, mScorer.Score(insertMutation2));
-    EXPECT_EQ(-10, mScorer.Score(substitutionMutation2));
-    EXPECT_EQ(-8, mScorer.Score(deletionMutation2));
+    EXPECT_EQ(0               , mScorer.Score(noOpMutation2));
+    EXPECT_EQ(params.Merge[0] , mScorer.Score(insertMutation2));
+    EXPECT_EQ(params.Mismatch , mScorer.Score(substitutionMutation2));
+    EXPECT_EQ(params.Nce      , mScorer.Score(deletionMutation2));
 
     EXPECT_EQ(tpl, mScorer.Template());
 

@@ -75,6 +75,8 @@ namespace ConsensusCore
             case 'C': return 1;
             case 'G': return 2;
             case 'T': return 3;
+            case 'M': return 4; // For testing
+            case 'N': return 5; // For testing
             default:  ShouldNotReachHere();
         }
     }
