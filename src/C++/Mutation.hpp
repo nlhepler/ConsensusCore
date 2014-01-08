@@ -63,6 +63,7 @@ namespace ConsensusCore
     public:
         Mutation(MutationType type, int start, int end, std::string newBases);
         Mutation(MutationType type, int position, char base);
+        Mutation(const Mutation& other);
 
         MutationType Type() const;
 

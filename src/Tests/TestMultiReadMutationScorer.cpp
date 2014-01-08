@@ -52,8 +52,157 @@ using namespace ConsensusCore;  // NOLINT
 using namespace boost::assign;  // NOLINT
 
 
-TYPED_TEST_CASE(MultiReadMutationScorerTest, testing::Types<SparseSseQvRecursor>);
+//
+// Tests for supporting code: OrientedMutation, ReadScoresMutation
+//
 
+TEST(MutationOrientationTests, ReadScoresMutation1)
+{
+    //  012345678901
+    //    >>>>>>>>    mr
+    QvSequenceFeatures f("G");
+    MappedRead mr(f, FORWARD_STRAND,  2, 10);
+
+    for (int p=0; p <= 11; p++)
+    {
+        Mutation mSubs(SUBSTITUTION, p, 'G');
+        Mutation mDel (DELETION, p, '-');
+        Mutation mIns (INSERTION, p, 'G');
+
+        if (p < mr.TemplateStart)
+        {
+            EXPECT_TRUE(!ReadScoresMutation(mr, mSubs) &&
+                        !ReadScoresMutation(mr, mDel)  &&
+                        !ReadScoresMutation(mr, mIns));
+        }
+        else if (p == mr.TemplateStart)
+        {
+            EXPECT_TRUE( ReadScoresMutation(mr, mSubs) &&
+                         ReadScoresMutation(mr, mDel)  &&
+                        !ReadScoresMutation(mr, mIns));
+        }
+        else if (p < mr.TemplateEnd)
+        {
+            EXPECT_TRUE( ReadScoresMutation(mr, mSubs) &&
+                         ReadScoresMutation(mr, mDel)  &&
+                         ReadScoresMutation(mr, mIns));
+        }
+        else if (p == mr.TemplateEnd)
+        {
+            EXPECT_TRUE(!ReadScoresMutation(mr, mSubs) &&
+                        !ReadScoresMutation(mr, mDel)  &&
+                         ReadScoresMutation(mr, mIns));
+
+        }
+        else if (p > mr.TemplateEnd)
+        {
+            EXPECT_TRUE(!ReadScoresMutation(mr, mSubs) &&
+                        !ReadScoresMutation(mr, mDel)  &&
+                        !ReadScoresMutation(mr, mIns));
+        }
+    }
+}
+
+
+TEST(MutationOrientationTests, ReadScoresMutation2)
+{
+    //  012345678901
+    //    >>>>>>>>    mr
+    QvSequenceFeatures f("G");
+    MappedRead mr(f, FORWARD_STRAND,  2, 10);
+
+    for (int p=0; p <= 11; p++)
+    {
+        Mutation mSubs2(SUBSTITUTION, p, p+2, "GG");
+        Mutation mDel2 (DELETION,     p, p+2, "");
+        if (p >= 1 && p <= 9)
+        {
+            EXPECT_TRUE( ReadScoresMutation(mr, mSubs2) &&
+                         ReadScoresMutation(mr, mDel2));
+        }
+        else
+        {
+            EXPECT_TRUE(!ReadScoresMutation(mr, mSubs2) &&
+                        !ReadScoresMutation(mr, mDel2));
+        }
+    }
+}
+
+
+
+TEST(MutationOrientationTests, OrientedMutation)
+{
+    //  012345678901
+    //    >>>>>>>>    mr1
+    //    <<<<<<<<    mr2
+    QvSequenceFeatures f1("G"), f2("G");
+    MappedRead mr1(f1, FORWARD_STRAND, 2, 10);
+    MappedRead mr2(f2, REVERSE_STRAND, 2, 10);
+
+    for (int p=2; p <= 9; p++)
+    {
+        Mutation mSubs (SUBSTITUTION, p, 'G');
+        Mutation mDel  (DELETION, p, '-');
+
+        EXPECT_EQ(Mutation(SUBSTITUTION, p-mr1.TemplateStart, 'G'), OrientedMutation(mr1, mSubs));
+        EXPECT_EQ(Mutation(DELETION,     p-mr1.TemplateStart, '-'), OrientedMutation(mr1, mDel));
+        EXPECT_EQ(Mutation(SUBSTITUTION, mr2.TemplateEnd-1-p, 'C'), OrientedMutation(mr2, mSubs));
+        EXPECT_EQ(Mutation(DELETION,     mr2.TemplateEnd-1-p, '-'), OrientedMutation(mr2, mDel));
+    }
+
+    for (int p=3; p <= 10; p++)
+    {
+        Mutation mIns  (INSERTION, p, 'G');
+        Mutation mIns2 (INSERTION, p, p, "GT");
+
+        EXPECT_EQ(Mutation(INSERTION, p-mr1.TemplateStart, 'G'),
+                  OrientedMutation(mr1, mIns));
+        EXPECT_EQ(Mutation(INSERTION, p-mr1.TemplateStart, p-mr1.TemplateStart, "GT"),
+                  OrientedMutation(mr1, mIns2));
+        EXPECT_EQ(Mutation(INSERTION, mr2.TemplateEnd-p, 'C'),
+                  OrientedMutation(mr2, mIns));
+        EXPECT_EQ(Mutation(INSERTION, mr2.TemplateEnd-p, mr2.TemplateEnd-p, "AC"),
+                  OrientedMutation(mr2, mIns2));
+
+    }
+
+    for (int p=1; p <= 9; p++)
+    {
+        Mutation mSubs2(SUBSTITUTION, p, p+2, "GG");
+        Mutation mDel2 (DELETION,     p, p+2, "");
+
+        if (p == 1)
+        {
+            EXPECT_EQ(Mutation(SUBSTITUTION, 0, 1, "G"),    OrientedMutation(mr1, mSubs2));
+            EXPECT_EQ(Mutation(DELETION,     0, 1, ""),     OrientedMutation(mr1, mDel2));
+            EXPECT_EQ(Mutation(SUBSTITUTION, 7, 8, "C"),    OrientedMutation(mr2, mSubs2));
+            EXPECT_EQ(Mutation(DELETION,     7, 8, ""),     OrientedMutation(mr2, mDel2));
+        }
+        else if (p == 9)
+        {
+            EXPECT_EQ(Mutation(SUBSTITUTION, 7, 8, "G"),    OrientedMutation(mr1, mSubs2));
+            EXPECT_EQ(Mutation(DELETION,     7, 8, ""),     OrientedMutation(mr1, mDel2));
+            EXPECT_EQ(Mutation(SUBSTITUTION, 0, 1, "C"),    OrientedMutation(mr2, mSubs2));
+            EXPECT_EQ(Mutation(DELETION,     0, 1, ""),     OrientedMutation(mr2, mDel2));
+        }
+        else
+        {
+            EXPECT_EQ(Mutation(SUBSTITUTION, p-2, p, "GG"), OrientedMutation(mr1, mSubs2));
+            EXPECT_EQ(Mutation(DELETION,     p-2, p, ""),   OrientedMutation(mr1, mDel2));
+            EXPECT_EQ(Mutation(SUBSTITUTION, mr2.TemplateEnd-p-2, mr2.TemplateEnd-p,  "CC"),
+                      OrientedMutation(mr2, mSubs2));
+            EXPECT_EQ(Mutation(DELETION, mr2.TemplateEnd-p-2, mr2.TemplateEnd-p, ""),
+                      OrientedMutation(mr2, mDel2));
+        }
+    }
+}
+
+
+//
+//  Tests for the multi read mutation scorer itself
+//
+
+TYPED_TEST_CASE(MultiReadMutationScorerTest, testing::Types<SparseSseQvRecursor>);
 
 template <typename R>
 class MultiReadMutationScorerTest : public testing::Test

@@ -69,6 +69,15 @@ namespace ConsensusCore {
         if (!CheckInvariants()) throw InvalidInputError();
     }
 
+    inline
+    Mutation::Mutation(const Mutation& other)
+        : type_(other.type_),
+          start_(other.start_),
+          end_(other.end_),
+          newBases_(other.newBases_)
+    {}
+
+
     inline bool
     Mutation::CheckInvariants() const
     {

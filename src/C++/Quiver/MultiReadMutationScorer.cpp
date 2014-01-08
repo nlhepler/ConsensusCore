@@ -53,23 +53,74 @@ namespace ConsensusCore
     // Could the mutation change the contents of the portion of the
     // template that is mapped to the read?
     //
-    static inline bool readScoresMutation(const MappedRead* read, const Mutation& mut)
+    bool ReadScoresMutation(const MappedRead& read, const Mutation& mut)
     {
-        int ts = read->TemplateStart;
-        int te = read->TemplateEnd;
+        int ts = read.TemplateStart;
+        int te = read.TemplateEnd;
         int ms = mut.Start();
         int me = mut.End();
-
         if (mut.IsInsertion())
         {
-            return (ts < ms && me <= te);
+            return (ts < ms && me <= te);   // Insertion starts within?
         }
         else {
-            // Intervals intersect?
-            return (ts < me && ms < te);
+            return (ts < me && ms < te);    // Intervals intersect?
+        }
+    }
+
+    //
+    // Logic for turning a mutation to the global template space to
+    // one in the coordinates understood by each individual mutation
+    // scorer.  This involves translation, complementation, and also
+    // possible clipping, if the mutation is not wholly within the
+    // mapped read.
+    //
+    Mutation OrientedMutation(const MappedRead& mr,
+                              const Mutation& mut)
+    {
+        using std::min;
+        using std::max;
+
+        // Clip mutation to bounds of mapped read, so that overhanging
+        // multibase changes are handled correctly
+        Mutation cmut(INSERTION, 0, 0, "N");
+        if (mut.End() - mut.Start() > 1)
+        {
+            int cs, ce;
+            cs = max(mut.Start(), mr.TemplateStart);
+            ce = min(mut.End(), mr.TemplateEnd);
+            if (mut.IsSubstitution())
+            {
+                std::string cNewBases = mut.NewBases().substr(cs-mut.Start(), ce-cs);
+                cmut = Mutation(mut.Type(), cs, ce, cNewBases);
+            }
+            else
+            {
+                cmut = Mutation(mut.Type(), cs, ce, mut.NewBases());
+            }
+        }
+        else
+        {
+            cmut = mut;
         }
 
+        // Now orient
+        if (mr.Strand == FORWARD_STRAND)
+        {
+            return Mutation(cmut.Type(),
+                            cmut.Start() - mr.TemplateStart,
+                            cmut.End() - mr.TemplateStart,
+                            cmut.NewBases());
+        }
+        else
+        {
+            // This is tricky business
+            int end   = mr.TemplateEnd - cmut.Start();
+            int start = mr.TemplateEnd - cmut.End();
+            return Mutation(cmut.Type(), start, end, ReverseComplement(cmut.NewBases()));
+        }
     }
+
 
 
     template<typename R>
@@ -217,25 +268,6 @@ namespace ConsensusCore
         DEBUG_ONLY(CheckInvariants());
     }
 
-    static Mutation orientedMutation(const MappedRead* mr,
-                                     const Mutation& mut)
-    {
-        if (mr->Strand == FORWARD_STRAND)
-        {
-            return Mutation(mut.Type(),
-                            mut.Start() - mr->TemplateStart,
-                            mut.End() - mr->TemplateStart,
-                            mut.NewBases());
-        }
-        else
-        {
-            // This is tricky business.  Would be good to write a
-            // focused unit test for this.
-            int end   = mr->TemplateEnd - mut.Start();
-            int start = mr->TemplateEnd - mut.End();
-            return Mutation(mut.Type(), start, end, ReverseComplement(mut.NewBases()));
-        }
-    }
 
     template<typename R>
     float MultiReadMutationScorer<R>::Score(const Mutation& m) const
@@ -243,9 +275,9 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresMutation(kv.first, m))
+            if (ReadScoresMutation(*kv.first, m))
             {
-                Mutation orientedMut = orientedMutation(kv.first, m);
+                Mutation orientedMut = OrientedMutation(*kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
             }
@@ -267,9 +299,9 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresMutation(kv.first, m))
+            if (ReadScoresMutation(*kv.first, m))
             {
-                Mutation orientedMut = orientedMutation(kv.first, m);
+                Mutation orientedMut = OrientedMutation(*kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
                 if (sum < quiverConfig_.FastScoreThreshold)
@@ -287,9 +319,9 @@ namespace ConsensusCore
         std::vector<float> scoreByRead;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresMutation(kv.first, m))
+            if (ReadScoresMutation(*kv.first, m))
             {
-                Mutation orientedMut = orientedMutation(kv.first, m);
+                Mutation orientedMut = OrientedMutation(*kv.first, m);
                 scoreByRead.push_back(kv.second->ScoreMutation(orientedMut) -
                                       kv.second->Score());
             }
@@ -307,9 +339,9 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresMutation(kv.first, m))
+            if (ReadScoresMutation(*kv.first, m))
             {
-                Mutation orientedMut = orientedMutation(kv.first, m);
+                Mutation orientedMut = OrientedMutation(*kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
             }
@@ -323,9 +355,9 @@ namespace ConsensusCore
         float sum = 0;
         foreach (const item_t& kv, readsAndScorers_)
         {
-            if (readScoresMutation(kv.first, m))
+            if (ReadScoresMutation(*kv.first, m))
             {
-                Mutation orientedMut = orientedMutation(kv.first, m);
+                Mutation orientedMut = OrientedMutation(*kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
                 if (sum < quiverConfig_.FastScoreThreshold)

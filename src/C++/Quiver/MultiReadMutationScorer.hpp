@@ -111,6 +111,8 @@ namespace ConsensusCore {
     };
 
 
+    bool ReadScoresMutation(const MappedRead& mr, const Mutation& mut);
+    Mutation OrientedMutation(const MappedRead& mr, const Mutation& mut);
 
     template<typename R>
     class MultiReadMutationScorer : public AbstractMultiReadMutationScorer
