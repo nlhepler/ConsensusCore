@@ -442,8 +442,9 @@ namespace ConsensusCore {
                                         const M& beta, int lastColumn,
                                         M& ext, int numExtColumns) const
     {
-        int I = e.ReadLength();
-        int J = e.TemplateLength();
+        int I = beta.Rows() - 1;
+        int J = beta.Columns() - 1;
+
         int lastExtColumn = numExtColumns - 1;
 
         assert(numExtColumns >= 2);
