@@ -186,6 +186,12 @@ namespace ConsensusCore
             recursor_->ExtendAlpha(*evaluator_, *alpha_,
                                    extendStartCol, *extendBuffer_, extendLength);
             score = (*extendBuffer_)(evaluator_->ReadLength(), extendLength - 1);
+
+            // if (fabs(score - Score()) > 50) {
+            //     // FIXME!  This happens on fluidigm amplicons, figure out why
+            //     Breakpoint();
+            // }
+
         }
         else if (atBegin && !atEnd)
         {
