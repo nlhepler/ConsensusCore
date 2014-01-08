@@ -238,13 +238,13 @@ TYPED_TEST(MutationScorerTest, DinucleotideInsertionTest)
     SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
     SparseSimpleQvMutationScorer ms(e, r);
 
-    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 7, 7, "TT"));
-    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 8, 8, "TT"));
-    EXPECT_EQ(0, ms.ScoreMutation(INSERTION, 9, 9, "TT"));
+    EXPECT_EQ(0, ms.ScoreMutation(Mutation(INSERTION, 7, 7, "TT")));
+    EXPECT_EQ(0, ms.ScoreMutation(Mutation(INSERTION, 8, 8, "TT")));
+    EXPECT_EQ(0, ms.ScoreMutation(Mutation(INSERTION, 9, 9, "TT")));
 
-    EXPECT_EQ(ez.Score(tplGCTT, read), ms.ScoreMutation(INSERTION, 7, 7, "GC"));
-    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(INSERTION, 7, 7, "AA"));
-    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(INSERTION, 6, 6, "AA"));
+    EXPECT_EQ(ez.Score(tplGCTT, read), ms.ScoreMutation(Mutation(INSERTION, 7, 7, "GC")));
+    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(Mutation(INSERTION, 7, 7, "AA")));
+    EXPECT_EQ(ez.Score(tplAATT, read), ms.ScoreMutation(Mutation(INSERTION, 6, 6, "AA")));
 }
 
 TYPED_TEST(MutationScorerTest, DinucleotideDeletionTest)
@@ -263,12 +263,12 @@ TYPED_TEST(MutationScorerTest, DinucleotideDeletionTest)
     SparseSimpleQvRecursor r(config.MovesAvailable, config.Banding);
     SparseSimpleQvMutationScorer ms(e, r);
 
-    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 7, 9, ""));
-    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 8, 10, ""));
-    EXPECT_EQ(scoreTT, ms.ScoreMutation(DELETION, 9, 11, ""));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(Mutation(DELETION, 7, 9, "")));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(Mutation(DELETION, 8, 10, "")));
+    EXPECT_EQ(scoreTT, ms.ScoreMutation(Mutation(DELETION, 9, 11, "")));
 
     QvEvaluator e2(read, tplGCTT, params);
     SparseSimpleQvRecursor r2(config.MovesAvailable, config.Banding);
     SparseSimpleQvMutationScorer ms2(e2, r2);
-    EXPECT_EQ(scoreTT, ms2.ScoreMutation(DELETION, 7, 9, ""));
+    EXPECT_EQ(scoreTT, ms2.ScoreMutation(Mutation(DELETION, 7, 9, "")));
 }

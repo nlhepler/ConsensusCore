@@ -133,23 +133,6 @@ namespace ConsensusCore
 
     template<typename R>
     float
-    MutationScorer<R>::ScoreMutation(MutationType mutationType, int position, char base) const
-    {
-        Mutation m(mutationType, position, base);
-        return ScoreMutation(m);
-    }
-
-    template<typename R>
-    float
-    MutationScorer<R>::ScoreMutation(MutationType mutationType, int start, int end,
-                                     std::string newBases) const
-    {
-        Mutation m(mutationType, start, end, newBases);
-        return ScoreMutation(m);
-    }
-
-    template<typename R>
-    float
     MutationScorer<R>::ScoreMutation(const Mutation& m) const
     {
         int betaLinkCol = 1 + m.End();

@@ -69,12 +69,6 @@ namespace ConsensusCore
         float Score() const;
         float ScoreMutation(const Mutation& m) const;
 
-        // APIs that allow C# users to avoid allocating lots of
-        // tiny objects.
-        float ScoreMutation(MutationType mutationType, int position, char base) const;
-        float ScoreMutation(MutationType mutationType, int start, int end,
-                            std::string newBases) const;
-
     public:
         // Accessors that are handy for debugging.
         const MatrixType* Alpha() const;
