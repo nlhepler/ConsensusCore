@@ -108,12 +108,14 @@ namespace ConsensusCore {
     inline std::pair<int, int>
     SparseMatrix::UsedRowRange(int j) const
     {
+        assert(0 <= j && j < (int)usedRanges_.size());
         return usedRanges_[j];
     }
 
     inline bool
     SparseMatrix::IsColumnEmpty(int j) const
     {
+        assert(0 <= j && j < (int)usedRanges_.size());
         return (usedRanges_[j].first >= usedRanges_[j].second);
     }
 

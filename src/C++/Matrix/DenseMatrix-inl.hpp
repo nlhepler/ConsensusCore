@@ -104,12 +104,14 @@ namespace ConsensusCore {
     inline std::pair<int, int>
     DenseMatrix::UsedRowRange(int j) const
     {
+        assert(0 <= j && j < (int)usedRanges_.size());
         return usedRanges_[j];
     }
 
     inline bool
     DenseMatrix::IsColumnEmpty(int j) const
     {
+        assert(0 <= j && j < (int)usedRanges_.size());
         return (usedRanges_[j].first >= usedRanges_[j].second);
     }
 
@@ -168,4 +170,3 @@ namespace ConsensusCore {
         _mm_storeu_ps(&boost_dense_matrix::operator()(i, j).value, v4);
     }
 }
-
