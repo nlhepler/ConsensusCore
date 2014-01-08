@@ -45,18 +45,30 @@
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Utils.hpp"
 
-#define MARGIN 3
 #define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
 
 namespace ConsensusCore
 {
     //
-    // Is the mutation within the bounds of the read?
+    // Could the mutation change the contents of the portion of the
+    // template that is mapped to the read?
     //
-    static bool readScoresMutation(const MappedRead* read, const Mutation& mut)
+    static inline bool readScoresMutation(const MappedRead* read, const Mutation& mut)
     {
-        return (read->TemplateStart + MARGIN <= mut.Start() &&
-                read->TemplateEnd   - MARGIN >= mut.End());
+        int ts = read->TemplateStart;
+        int te = read->TemplateEnd;
+        int ms = mut.Start();
+        int me = mut.End();
+
+        if (mut.IsInsertion())
+        {
+            return (ts < ms && me <= te);
+        }
+        else {
+            // Intervals intersect?
+            return (ts < me && ms < te);
+        }
+
     }
 
 

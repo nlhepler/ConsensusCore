@@ -90,13 +90,17 @@ protected:
 #define MS MutationScorer<TypeParam>
 #define E  typename TypeParam::EvaluatorType
 
+#define params    (this->testingParams_)
+#define recursor  (this->recursor_)
+
 TYPED_TEST(MutationScorerTest, BasicTest)
 {
     std::string tpl = "GATTACA";
     QvSequenceFeatures read("GATTACA");
-    E ev(read, tpl, this->testingParams_, true, true);
-    MS ms(ev, this->recursor_);
-    Mutation insertMutation(INSERTION, 4, 'A');
+    E ev(read, tpl, params, true, true);
+    MS ms(ev, recursor);
+    Mutation mergeableInsertMutation(INSERTION, 4, 'A');
+    Mutation unmergeableInsertMutation(INSERTION, 4, 'G');
     Mutation substitutionMutation(SUBSTITUTION, 4, 'T');
     Mutation deletionMutation(DELETION, 4, '-');
 
@@ -105,7 +109,9 @@ TYPED_TEST(MutationScorerTest, BasicTest)
     EXPECT_EQ("GATTACA", ms.Template());
     EXPECT_EQ(0, ms.Score());
     EXPECT_EQ("GATTACA", ms.Template());
-    EXPECT_EQ(-2, ms.ScoreMutation(insertMutation));
+    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ("GATTACA", ms.Template());
+    EXPECT_EQ(-4, ms.ScoreMutation(unmergeableInsertMutation));
     EXPECT_EQ("GATTACA", ms.Template());
     EXPECT_EQ(-10, ms.ScoreMutation(substitutionMutation));
     EXPECT_EQ("GATTACA", ms.Template());
@@ -118,10 +124,77 @@ TYPED_TEST(MutationScorerTest, CopyTest)
 {
     std::string tpl = "GATTACA";
     QvSequenceFeatures read("GATTACA");
-    E ev(read, tpl, this->testingParams_, true, true);
-    MS ms(ev, this->recursor_);
+    E ev(read, tpl, params, true, true);
+    MS ms(ev, recursor);
     MS msCopy(ms);
     ASSERT_EQ(ms.Score(), msCopy.Score());
+}
+
+
+TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
+{
+    std::string tpl = "GATTACA";
+    QvSequenceFeatures read("GATTACA");
+    E ev(read, tpl, params, true, true);
+    MS ms(ev, recursor);
+    Mutation insertBefore(INSERTION, 0, 'A');
+    Mutation mergeableInsertMutation1(INSERTION, 1, 'G');
+    Mutation mergeableInsertMutation2(INSERTION, 1, 'A');
+    Mutation unmergeableInsertMutation(INSERTION, 1, 'T');
+    Mutation substitutionMutation(SUBSTITUTION, 0, 'T');
+    Mutation deletionMutation(DELETION, 0, '-');
+
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ(-4, ms.ScoreMutation(insertBefore));
+    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation1));
+    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation2));
+    EXPECT_EQ(-4, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(-10, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(-8, ms.ScoreMutation(deletionMutation));
+}
+
+TYPED_TEST(MutationScorerTest, MutationsAtEnd)
+{
+    std::string tpl = "GATTACA";
+    QvSequenceFeatures read("GATTACA");
+    E ev(read, tpl, params, true, true);
+    MS ms(ev, recursor);
+    Mutation mergeableInsertMutation(INSERTION, 7, 'A');
+    Mutation unmergeableInsertMutation(INSERTION, 7, 'G');
+    Mutation substitutionMutation(SUBSTITUTION, 6, 'T');
+    Mutation deletionMutation(DELETION, 6, '-');
+
+    EXPECT_EQ(0, ms.Score());
+    EXPECT_EQ(-2, ms.ScoreMutation(mergeableInsertMutation));
+    EXPECT_EQ(-4, ms.ScoreMutation(unmergeableInsertMutation));
+    EXPECT_EQ(-10, ms.ScoreMutation(substitutionMutation));
+    EXPECT_EQ(-8, ms.ScoreMutation(deletionMutation));
+}
+
+
+TYPED_TEST(MutationScorerTest, TinyTemplate)
+{
+    std::string tpl = "GTGC";
+    QvSequenceFeatures read("GTGC");
+    E ev(read, tpl, params, true, true);
+    MS ms(ev, recursor);
+
+    Mutation deletionAtBeginning(DELETION, 0, '-');
+    Mutation deletionAtEnd(DELETION, 3, '-');
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionAtBeginning));
+    EXPECT_EQ(params.Nce, ms.ScoreMutation(deletionAtEnd));
+
+
+    Mutation insertAtBeginning(INSERTION, 0, 'T');
+    Mutation insertAtEnd(INSERTION, 4, 'T');
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertAtBeginning));
+    EXPECT_EQ(params.DeletionN, ms.ScoreMutation(insertAtEnd));
+
+    for (int pos=0; pos < tpl.length(); pos++)
+    {
+        Mutation m(SUBSTITUTION, pos, 'A');
+        EXPECT_EQ(params.Mismatch, ms.ScoreMutation(m));
+    }
 }
 
 
@@ -129,8 +202,8 @@ TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
 {
     std::string tpl = "GATTACA";
     QvSequenceFeatures read("GATTACA");
-    E ev(read, tpl, this->testingParams_, true, true);
-    MS ms(ev, this->recursor_);
+    E ev(read, tpl, params, true, true);
+    MS ms(ev, recursor);
     Mutation insertMutation(INSERTION, 4, 'A');
 
     EXPECT_EQ("GATTACA", ms.Template());
@@ -352,6 +425,30 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
 
     Mutation newNoOpMutation(SUBSTITUTION, 4, 'T');
     EXPECT_EQ(0, mScorer.Score(newNoOpMutation));
+}
+
+
+TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtEnds)
+{
+    std::string tpl = "TTGATTACATT";
+    std::string revTpl = ReverseComplement(tpl);
+
+    MMS mScorer(this->testingConfig_, tpl);
+    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+
+    Mutation noOpMutation(SUBSTITUTION, 0, 'T');
+    Mutation deletionMutation(DELETION, 0, '-');
+    Mutation insertMutation(INSERTION, 0, 'A');
+    Mutation insertMutation2(INSERTION, 1, 'A');
+
+    EXPECT_EQ(0, mScorer.Score(noOpMutation));
+
+    // Note that there is no actual way to test an insertion before
+    // the first base ... the alignment just slides over.
+    EXPECT_EQ(0, mScorer.Score(insertMutation));
+    EXPECT_EQ(-4, mScorer.Score(insertMutation2));
+
+    EXPECT_EQ(-5, mScorer.Score(deletionMutation));  // now there is a branch...
 }
 
 

@@ -47,6 +47,8 @@
 #include "Quiver/SseRecursor.hpp"
 #include "Mutation.hpp"
 
+#define EXTEND_BUFFER_COLUMNS 8
+
 namespace ConsensusCore
 {
     template<typename R>
@@ -60,7 +62,7 @@ namespace ConsensusCore
         beta_ = new MatrixType(evaluator.ReadLength() + 1,
                                evaluator.TemplateLength() + 1);
         // Buffer where we extend into
-        extendBuffer_ = new MatrixType(evaluator.ReadLength() + 1, 8);
+        extendBuffer_ = new MatrixType(evaluator.ReadLength() + 1, EXTEND_BUFFER_COLUMNS);
         // Initial alpha and beta
         numFlipFlops_ = recursor.FillAlphaBeta(*evaluator_, *alpha_, *beta_);
     }
@@ -152,49 +154,104 @@ namespace ConsensusCore
     {
         int betaLinkCol = 1 + m.End();
         int absoluteLinkColumn = 1 + m.End() + m.LengthDiff();
+        std::string oldTpl = evaluator_->Template();
+        std::string newTpl = ApplyMutation(m, oldTpl);
+        float score;
 
-        if (m.Start() > 2 && m.End() < (int)(Template().length()) - 1)
+        bool canExtend = (3 <= m.Start());
+        bool canLink = \
+            ((0 <= betaLinkCol && betaLinkCol < (int)oldTpl.length()) &&
+             (2 <= absoluteLinkColumn && absoluteLinkColumn < (int)newTpl.length()));
+
+        if (canExtend && canLink)
         {
             // Install mutated template
-            std::string oldTpl = evaluator_->Template();
-            std::string newTpl = ApplyMutation(m, oldTpl);
             evaluator_->Template(newTpl);
 
-            float score;
+            int extendStartCol, extendLength;
+
             if (m.Type() == DELETION)
             {
-                // If we revise the semantic of Extra, we can remove the extend and just
-                // link alpha and beta directly.
-                int extendStartCol = m.Start() - 1;
-                int extendLength = 2;
-                recursor_->ExtendAlpha(*evaluator_, *alpha_,
-                                       extendStartCol, *extendBuffer_, extendLength);
-                score = recursor_->LinkAlphaBeta(*evaluator_,
-                                                 *extendBuffer_, extendLength,
-                                                 *beta_, betaLinkCol,
-                                                 absoluteLinkColumn);
+                // Future thought: If we revise the semantic of Extra,
+                // we can remove the extend and just link alpha and
+                // beta directly.
+                extendStartCol = m.Start() - 1;
+                extendLength = 2;
             }
             else
             {
-                int extendStartCol = m.Start();
-                int extendLength   = 1 + m.NewBases().length();
-                assert(extendLength <= 8);
-
-                recursor_->ExtendAlpha(*evaluator_, *alpha_,
-                                       extendStartCol, *extendBuffer_, extendLength);
-                score = recursor_->LinkAlphaBeta(*evaluator_,
-                                                 *extendBuffer_, extendLength,
-                                                 *beta_, betaLinkCol,
-                                                 absoluteLinkColumn);
+                extendStartCol = m.Start();
+                extendLength   = 1 + m.NewBases().length();
+                assert(extendLength <= EXTEND_BUFFER_COLUMNS);
             }
-            // Restore the original template.
-            evaluator_->Template(oldTpl);
-            return score;
+
+            // Requirements: 2 <= extendStartCol < newTpl.length()
+            recursor_->ExtendAlpha(*evaluator_, *alpha_,
+                                   extendStartCol, *extendBuffer_, extendLength);
+
+            // Requirements:  0 <= betaLinkCol < oldTpl.length()
+            //                2 <=  absoluteLinkColumn < newTpl.length()
+            score = recursor_->LinkAlphaBeta(*evaluator_,
+                                             *extendBuffer_, extendLength,
+                                             *beta_, betaLinkCol,
+                                             absoluteLinkColumn);
         }
-        else
+        else if (!canExtend && canLink)
         {
-            return Score();
+            //
+            // FillAlpha for first few columns, then link (alternately
+            //  could do a backwards extend of beta, but that would
+            //  require some additional code)
+            //
+
+            // Use a new matrix rather than extendBuffer_ ... otherwise
+            // we have to weaken helpful assertions in recursors
+            // Actually I think I would rather weaken those assertions anyway.
+            MatrixType miniAlpha(evaluator_->ReadLength() + 1, absoluteLinkColumn + 1);
+
+            // Install mutated template
+            std::string newTplTrunc = newTpl.substr(0, absoluteLinkColumn);
+            assert((int)newTplTrunc.length() == absoluteLinkColumn);
+
+            evaluator_->Template(newTplTrunc);
+            recursor_->FillAlpha(*evaluator_, MatrixType::Null(), miniAlpha);
+
+            evaluator_->Template(newTpl);
+            score = recursor_->LinkAlphaBeta(*evaluator_,
+                                             miniAlpha, absoluteLinkColumn,
+                                             *beta_, betaLinkCol,
+                                             absoluteLinkColumn);
         }
+        else if (canExtend && !canLink)
+        {
+            //
+            // Extend to the end and read off the last entry--no link required
+            //
+            evaluator_->Template(newTpl);
+
+            int extendStartCol = m.Start() - 1;
+            int extendLength = newTpl.length() - extendStartCol + 1;
+
+            recursor_->ExtendAlpha(*evaluator_, *alpha_,
+                                   extendStartCol, *extendBuffer_, extendLength);
+            score = (*extendBuffer_)(evaluator_->ReadLength(), extendLength - 1);
+        }
+        else if (!canExtend && !canLink)
+        {
+            //
+            // Just do the whole FillAlpha.  Don't bother with beta.
+            //
+            MatrixType alphaP(evaluator_->ReadLength() + 1,
+                              newTpl.length() + 1);
+            evaluator_->Template(newTpl);
+            recursor_->FillAlpha(*evaluator_, MatrixType::Null(), alphaP);
+            score = alphaP(evaluator_->ReadLength(), newTpl.length());
+        }
+
+
+        // Restore the original template.
+        evaluator_->Template(oldTpl);
+        return score;
     }
 
 

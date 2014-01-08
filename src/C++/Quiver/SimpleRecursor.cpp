@@ -352,19 +352,32 @@ namespace ConsensusCore {
         {
             int j = beginColumn + extCol;
             int beginRow, endRow;
-            boost::tie(beginRow, endRow) = alpha.UsedRowRange(j);
+
+            //
+            // If this extend is contained within the column bounds of
+            // the original alpha, we use the row range that was
+            // previously determined.  Otherwise start at alpha's last
+            // UsedRow beginRow and go to the end.
+            //
+            if (j < alpha.Columns())
+            {
+                boost::tie(beginRow, endRow) = alpha.UsedRowRange(j);
+            }
+            else
+            {
+                beginRow = alpha.UsedRowRange(alpha.Columns() - 1).first;
+                endRow = alpha.Rows();
+            }
 
             ext.StartEditingColumn(extCol, beginRow, endRow);
 
             int i;
-            float score = NEG_INF;
-            float thresholdScore = NEG_INF;
-            float maxScore = NEG_INF;
+            float score;
 
             for (i = beginRow; i < endRow; i++)
             {
                 float thisMoveScore;
-                maxScore = thresholdScore = score = NEG_INF;
+                score = NEG_INF;
 
                 // Start:
                 if (i == 0 && j == 0)
