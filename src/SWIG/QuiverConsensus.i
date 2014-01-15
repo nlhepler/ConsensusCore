@@ -1,5 +1,8 @@
 %{
 /* Includes the header in the wrapper code */
+#include "Sequence.hpp"
+#include "Mutation.hpp"
+#include "Read.hpp"
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Quiver/MutationScorer.hpp"
 #include "Quiver/QuiverConfig.hpp"
@@ -7,9 +10,6 @@
 #include "Quiver/SseRecursor.hpp"
 #include "Quiver/ReadScorer.hpp"
 #include "Quiver/Diploid.hpp"
-#include "Sequence.hpp"
-#include "Mutation.hpp"
-#include "Read.hpp"
 
 using namespace ConsensusCore;
 %}
@@ -29,6 +29,9 @@ using namespace ConsensusCore;
  // is an abstract class, so we have to tell it otherwise
 %feature("notabstract") MultiReadMutationScorer;
 
+%include "Sequence.hpp"
+%include "Mutation.hpp"
+%include "Read.hpp"
 %include "Quiver/detail/Combiner.hpp"
 %include "Quiver/detail/RecursorBase.hpp"
 %include "Quiver/MultiReadMutationScorer.hpp"
@@ -38,10 +41,6 @@ using namespace ConsensusCore;
 %include "Quiver/SseRecursor.hpp"
 %include "Quiver/ReadScorer.hpp"
 %include "Quiver/Diploid.hpp"
-%include "Sequence.hpp"
-%include "Mutation.hpp"
-%include "Read.hpp"
-
 
 namespace ConsensusCore {
     //
@@ -78,7 +77,7 @@ namespace ConsensusCore {
     //
     // Edna evaluator support
     //
-    %template(SparseEdnaRecursorBase)          detail::RecursorBase<SparseMatrix, EdnaEvaluator, detail::SumProductCombiner>;
+    %template(SparseEdnaRecursorBase)           detail::RecursorBase<SparseMatrix, EdnaEvaluator, detail::SumProductCombiner>;
     %template(SparseSseEdnaRecursor)            SseRecursor<SparseMatrix, EdnaEvaluator, detail::SumProductCombiner>;
     %template(SparseSseEdnaMutationScorer)      MutationScorer<SparseSseEdnaRecursor>;
 }

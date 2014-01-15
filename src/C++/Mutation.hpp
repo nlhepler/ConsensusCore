@@ -46,7 +46,7 @@ namespace ConsensusCore
 {
     enum MutationType
     {
-        INSERTION, DELETION, SUBSTITUTION
+        INSERTION = 0, DELETION = 1, SUBSTITUTION = 2
     };
 
     /// \brief Single mutation to a template sequence.

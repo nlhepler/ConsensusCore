@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -56,6 +56,7 @@
     <Compile Include="build\CSharp\ConsensusCore.cs" />
     <Compile Include="build\CSharp\ConsensusCorePINVOKE.cs" />
     <Compile Include="build\CSharp\DenseMatrix.cs" />
+    <Compile Include="build\CSharp\DiploidSite.cs" />
     <Compile Include="build\CSharp\EdnaCounts.cs" />
     <Compile Include="build\CSharp\EdnaEvaluator.cs" />
     <Compile Include="build\CSharp\EdnaModelParams.cs" />
@@ -90,49 +91,47 @@
     <Compile Include="build\CSharp\QvModelParams.cs" />
     <Compile Include="build\CSharp\QvRecursorBase.cs" />
     <Compile Include="build\CSharp\QvSequenceFeatures.cs" />
+    <Compile Include="build\CSharp\RandomNumberGenerator.cs" />
     <Compile Include="build\CSharp\Read.cs" />
+    <Compile Include="build\CSharp\ReadScorer.cs" />
     <Compile Include="build\CSharp\ScoredMutation.cs" />
     <Compile Include="build\CSharp\ScoredMutationVector.cs" />
     <Compile Include="build\CSharp\SequenceFeatures.cs" />
+    <Compile Include="build\CSharp\SequencingParameters.cs" />
     <Compile Include="build\CSharp\SimpleQvMutationScorer.cs" />
     <Compile Include="build\CSharp\SimpleQvRecursor.cs" />
     <Compile Include="build\CSharp\SparseEdnaRecursorBase.cs" />
     <Compile Include="build\CSharp\SparseMatrix.cs" />
     <Compile Include="build\CSharp\SparseQvRecursorBase.cs" />
+    <Compile Include="build\CSharp\SparseQvSumProductRecursorBase.cs" />
     <Compile Include="build\CSharp\SparseSimpleQvMutationScorer.cs" />
     <Compile Include="build\CSharp\SparseSimpleQvRecursor.cs" />
+    <Compile Include="build\CSharp\SparseSimpleQvSumProductMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSimpleQvSumProductRecursor.cs" />
     <Compile Include="build\CSharp\SparseSseEdnaMutationScorer.cs" />
     <Compile Include="build\CSharp\SparseSseEdnaRecursor.cs" />
     <Compile Include="build\CSharp\SparseSseQvMultiReadMutationScorer.cs" />
     <Compile Include="build\CSharp\SparseSseQvMutationScorer.cs" />
     <Compile Include="build\CSharp\SparseSseQvRecursor.cs" />
+    <Compile Include="build\CSharp\SparseSseQvSumProductMultiReadMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSseQvSumProductMutationScorer.cs" />
+    <Compile Include="build\CSharp\SparseSseQvSumProductRecursor.cs" />
     <Compile Include="build\CSharp\SseQvMutationScorer.cs" />
     <Compile Include="build\CSharp\SseQvRecursor.cs" />
     <Compile Include="build\CSharp\StrandEnum.cs" />
     <Compile Include="build\CSharp\StringVector.cs" />
     <Compile Include="build\CSharp\SumProductCombiner.cs" />
-    <Compile Include="build\CSharp\SWIGTYPE_p_float.cs" />
-    <Compile Include="build\CSharp\SWIGTYPE_p_int.cs" />
-    <Compile Include="build\CSharp\SWIGTYPE_p___m128.cs" />
-    <Compile Include="build\CSharp\SWIGTYPE_p_p_float.cs" />
-    <Compile Include="build\CSharp\Version.cs" />
-    <Compile Include="build\CSharp\ViterbiCombiner.cs" />
-    <Compile Include="build\CSharp\RandomNumberGenerator.cs" />
-    <Compile Include="build\CSharp\SequencingParameters.cs" />
     <Compile Include="build\CSharp\SWIGTYPE_p_a_4__double.cs" />
     <Compile Include="build\CSharp\SWIGTYPE_p_double.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_float.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_int.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_p_float.cs" />
     <Compile Include="build\CSharp\SWIGTYPE_p_std__vectorT_double_t.cs" />
-    <Compile Include="build\CSharp\DiploidSite.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p___m128.cs" />
+    <Compile Include="build\CSharp\Version.cs" />
+    <Compile Include="build\CSharp\ViterbiCombiner.cs" />
     <Compile Include="src\CSharp\Demo.cs" />
     <Compile Include="src\CSharp\Test.cs" />
-    <Compile Include="build\CSharp\SparseQvSumProductRecursorBase.cs" />
-    <Compile Include="build\CSharp\SparseSimpleQvSumProductMutationScorer.cs" />
-    <Compile Include="build\CSharp\SparseSimpleQvSumProductRecursor.cs" />
-    <Compile Include="build\CSharp\SparseSseQvSumProductMultiReadMutationScorer.cs" />
-    <Compile Include="build\CSharp\SparseSseQvSumProductMutationScorer.cs" />
-    <Compile Include="build\CSharp\SparseSseQvSumProductRecursor.cs" />
-    <Compile Include="build\CSharp\SWIGTYPE_p_MappedRead.cs"/>
-    <Compile Include="build\CSharp\SWIGTYPE_p_StrandEnum.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -74,9 +74,6 @@
     <ClCompile Include="src\C++\Quiver\MutationScorer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\C++\Quiver\PBFeatures.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\C++\Quiver\QuiverConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="build\CSharp\ConsensusCore_wrap.cxx">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\C++\Read.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,16 +181,10 @@
     <ClInclude Include="src\C++\Quiver\EdnaEvaluator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\C++\Quiver\MappedRead.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\C++\Quiver\MultiReadMutationScorer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\C++\Quiver\MutationScorer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\C++\Quiver\PBFeatures.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\C++\Quiver\QuiverConfig.hpp">
@@ -229,10 +223,7 @@
     <ClInclude Include="src\C++\Statistics\Binomial.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\C++\Quiver\KineticEvaluator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\C++\Quiver\KineticModel.hpp">
+    <ClInclude Include="src\C++\Read.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
