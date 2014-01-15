@@ -1,15 +1,16 @@
 %{
 /* Includes the header in the wrapper code */
-#include "Mutation.hpp"
-#include "Quiver/MappedRead.hpp"
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Quiver/MutationScorer.hpp"
-#include "Quiver/QuiverConfig.hpp"    
+#include "Quiver/QuiverConfig.hpp"
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
 #include "Quiver/ReadScorer.hpp"
 #include "Quiver/Diploid.hpp"
 #include "Sequence.hpp"
+#include "Mutation.hpp"
+#include "Read.hpp"
+
 using namespace ConsensusCore;
 %}
 
@@ -24,9 +25,6 @@ using namespace ConsensusCore;
 #endif // SWIGPYTHON
 
 
-%include "Sequence.hpp"
-%include "Mutation.hpp"
-%include "Quiver/MappedRead.hpp"
 %include "Quiver/detail/Combiner.hpp"
 %include "Quiver/detail/RecursorBase.hpp"
 %include "Quiver/MultiReadMutationScorer.hpp"
@@ -36,6 +34,9 @@ using namespace ConsensusCore;
 %include "Quiver/SseRecursor.hpp"
 %include "Quiver/ReadScorer.hpp"
 %include "Quiver/Diploid.hpp"
+%include "Sequence.hpp"
+%include "Mutation.hpp"
+%include "Read.hpp"
 
 
 namespace ConsensusCore {
