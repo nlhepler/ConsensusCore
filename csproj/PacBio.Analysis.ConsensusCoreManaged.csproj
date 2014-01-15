@@ -85,10 +85,12 @@
     <Compile Include="build\CSharp\PoaGraph.cs" />
     <Compile Include="build\CSharp\PoaParameterSet.cs" />
     <Compile Include="build\CSharp\QuiverConfig.cs" />
+    <Compile Include="build\CSharp\QuiverConfigTable.cs" />
     <Compile Include="build\CSharp\QvEvaluator.cs" />
     <Compile Include="build\CSharp\QvModelParams.cs" />
     <Compile Include="build\CSharp\QvRecursorBase.cs" />
     <Compile Include="build\CSharp\QvSequenceFeatures.cs" />
+    <Compile Include="build\CSharp\Read.cs" />
     <Compile Include="build\CSharp\ScoredMutation.cs" />
     <Compile Include="build\CSharp\ScoredMutationVector.cs" />
     <Compile Include="build\CSharp\SequenceFeatures.cs" />
@@ -129,6 +131,8 @@
     <Compile Include="build\CSharp\SparseSseQvSumProductMultiReadMutationScorer.cs" />
     <Compile Include="build\CSharp\SparseSseQvSumProductMutationScorer.cs" />
     <Compile Include="build\CSharp\SparseSseQvSumProductRecursor.cs" />
+    <Compile Include="build\CSharp\SWIGTYPE_p_MappedRead.cs"/>
+    <Compile Include="build\CSharp\SWIGTYPE_p_StrandEnum.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
