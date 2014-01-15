@@ -41,9 +41,6 @@
 #include <string>
 #include <utility>
 
-
-
-
 //
 // Forward declarations
 //
