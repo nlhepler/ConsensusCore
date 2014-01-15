@@ -25,6 +25,10 @@ using namespace ConsensusCore;
 #endif // SWIGPYTHON
 
 
+ // SWIG now seems to be incorrectly deciding that MultiReadMutationScorer
+ // is an abstract class, so we have to tell it otherwise
+%feature("notabstract") MultiReadMutationScorer;
+
 %include "Quiver/detail/Combiner.hpp"
 %include "Quiver/detail/RecursorBase.hpp"
 %include "Quiver/MultiReadMutationScorer.hpp"
