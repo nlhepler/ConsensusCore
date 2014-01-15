@@ -226,12 +226,15 @@ protected:
                          ALL_MOVES,
                          BandingOptions(4, 200),
                          -500)
-    {}
+    {
+        testingConfigs_["unknown"] = &testingConfig_;
+    }
 
     virtual ~MultiReadMutationScorerTest() {}
 
 protected:
     QuiverConfig testingConfig_;
+    QuiverConfigTable testingConfigs_;
 };
 
 
@@ -250,7 +253,7 @@ TYPED_TEST(MultiReadMutationScorerTest, Template)
     std::string rev = ReverseComplement(fwd);
 
     // Make sure the Template function works right
-    MMS mScorer(this->testingConfig_, fwd);
+    MMS mScorer(this->testingConfigs_, fwd);
     ASSERT_EQ(fwd, mScorer.Template());
     ASSERT_EQ(fwd, mScorer.Template(FORWARD_STRAND));
     ASSERT_EQ(rev, mScorer.Template(REVERSE_STRAND));
@@ -269,7 +272,7 @@ TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
     int tStart = 0;
     int tEnd = tpl.length();
 
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, tStart, tEnd);
     mScorer.AddRead(mr);
 
@@ -314,7 +317,7 @@ TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
     std::string tpl = "TTGACGTACGTGTGACACAGTACAGATTACAAACCGGTAGACATTACATT";
     std::string revTpl = ReverseComplement(tpl);
 
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
     mScorer.AddRead(mr);
 
@@ -342,7 +345,7 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyConstructorTest)
     std::string tpl = "TTGATTACATT";
     std::string revTpl = ReverseComplement(tpl);
 
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
     mScorer.AddRead(mr);
 
@@ -392,7 +395,7 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
     // Just make sure if we reverse complemented the universe,
     // everything would come out the same.
     std::string tpl = "AATGTAATCAA";
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     MappedRead mr(AnonymousRead("TTGATTACATT"), REVERSE_STRAND, 0, tpl.length());
     mScorer.AddRead(mr);
 
@@ -436,7 +439,7 @@ TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtBeginning)
 {
     std::string tpl = "TTGATTACATT";
 
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
     mScorer.AddRead(mr);
 
@@ -459,7 +462,7 @@ TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtEnd)
     //                 01234567890
     std::string tpl = "TTGATTACATT";
 
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
     mScorer.AddRead(mr);
 
@@ -486,7 +489,7 @@ TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)
     // read2:          <<<<<<<<<<<
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
 
     // mutations in the latter half
     Mutation noOpMutation1(SUBSTITUTION, 17, 'A');
@@ -528,7 +531,7 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyTest)
     // read2:          <<<<<<<<<<<
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     mScorer.AddRead(AnonymousMappedRead("TTGATTACATT", FORWARD_STRAND, 11, 22));
     mScorer.AddRead(AnonymousMappedRead("TTGATTACATT", REVERSE_STRAND,  0, 11));
     MMS mScorerCopy(mScorer);
@@ -543,7 +546,7 @@ TYPED_TEST(MultiReadMutationScorerTest, MultiBaseSubstitutionsAtBounds)
     // read2:            <<<<<<<<<
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     mScorer.AddRead(AnonymousMappedRead("TTGATTACA", FORWARD_STRAND, 11, 20));
     mScorer.AddRead(AnonymousMappedRead("TTGATTACA", REVERSE_STRAND,  2, 11));
 
@@ -564,7 +567,7 @@ TYPED_TEST(MultiReadMutationScorerTest, MultiBaseIndelsAtBounds)
     // read2:            <<<<<<<<<
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
-    MMS mScorer(this->testingConfig_, tpl);
+    MMS mScorer(this->testingConfigs_, tpl);
     mScorer.AddRead(AnonymousMappedRead("TTGATTACA", FORWARD_STRAND, 11, 20));
     mScorer.AddRead(AnonymousMappedRead("TTGATTACA", REVERSE_STRAND,  2, 11));
 

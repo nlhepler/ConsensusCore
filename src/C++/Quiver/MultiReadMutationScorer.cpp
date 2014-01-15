@@ -125,21 +125,25 @@ namespace ConsensusCore
 
 
     template<typename R>
-    MultiReadMutationScorer<R>::MultiReadMutationScorer(const QuiverConfig& quiverConfig,
+    MultiReadMutationScorer<R>::MultiReadMutationScorer(const QuiverConfigTable& quiverConfigByChemistry,
                                                         std::string tpl)
-        : recursor_(quiverConfig.MovesAvailable, quiverConfig.Banding),
-          quiverConfig_(quiverConfig),
+        : quiverConfigByChemistry_(quiverConfigByChemistry),
           fwdTemplate_(tpl),
           revTemplate_(ReverseComplement(tpl)),
           readsAndScorers_()
     {
         DEBUG_ONLY(CheckInvariants());
+        fastScoreThreshold_ = 0;
+        foreach (const QuiverConfigTable::value_type& kv, quiverConfigByChemistry)
+        {
+            fastScoreThreshold_ = std::min(fastScoreThreshold_, kv.second->FastScoreThreshold);
+        }
     }
 
     template<typename R>
     MultiReadMutationScorer<R>::MultiReadMutationScorer(const MultiReadMutationScorer<R>& other)
-        : recursor_(other.recursor_),
-          quiverConfig_(other.quiverConfig_),
+        : quiverConfigByChemistry_(other.quiverConfigByChemistry_),
+          fastScoreThreshold_(other.fastScoreThreshold_),
           fwdTemplate_(other.fwdTemplate_),
           revTemplate_(other.revTemplate_),
           readsAndScorers_()
@@ -237,11 +241,13 @@ namespace ConsensusCore
     void MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
     {
         DEBUG_ONLY(CheckInvariants());
+        const QuiverConfig* config = quiverConfigByChemistry_.at(mr.Chemistry);
         EvaluatorType ev(mr.Features,
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
-                         quiverConfig_.QvParams);
+                         config->QvParams);
+        RecursorType recursor(config->MovesAvailable, config->Banding);
         readsAndScorers_.push_back(std::make_pair(new MappedRead(mr),
-                                                  new MutationScorer<R>(ev, recursor_)));
+                                                  new MutationScorer<R>(ev, recursor)));
         DEBUG_ONLY(CheckInvariants());
     }
 
@@ -281,7 +287,7 @@ namespace ConsensusCore
                 Mutation orientedMut = OrientedMutation(*kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
-                if (sum < quiverConfig_.FastScoreThreshold)
+                if (sum < fastScoreThreshold_)
                 {
                     return sum;
                 }
@@ -337,7 +343,7 @@ namespace ConsensusCore
                 Mutation orientedMut = OrientedMutation(*kv.first, m);
                 sum += (kv.second->ScoreMutation(orientedMut) -
                         kv.second->Score());
-                if (sum < quiverConfig_.FastScoreThreshold)
+                if (sum < fastScoreThreshold_)
                 {
                     return false;
                 }
