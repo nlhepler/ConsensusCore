@@ -37,10 +37,10 @@
 
 #pragma once
 
-#include "Quiver/PBFeatures.hpp"
+#include "Features.hpp"
+#include "Types.hpp"
 #include "Quiver/EdnaEvaluator.hpp"
 #include "Quiver/MutationScorer.hpp"
-#include "Types.hpp"
 
 namespace ConsensusCore
 {

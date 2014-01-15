@@ -49,11 +49,11 @@
 #include <string>
 #include <utility>
 
+#include "Features.hpp"
 #include "LFloat.hpp"
-#include "Quiver/EdnaConfig.hpp"
-#include "Quiver/PBFeatures.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
+#include "Quiver/EdnaConfig.hpp"
 
 #ifndef SWIG
 using std::min;

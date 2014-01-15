@@ -46,9 +46,9 @@
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Quiver/QuiverConfig.hpp"
-#include "Quiver/PBFeatures.hpp"
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
+#include "Features.hpp"
 #include "PairwiseAlignment.hpp"
 
 #include "MatrixPrinting.hpp"

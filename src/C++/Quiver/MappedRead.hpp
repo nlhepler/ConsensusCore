@@ -40,7 +40,7 @@
 #include <string>
 
 #include "Types.hpp"
-#include "PBFeatures.hpp"
+#include "Features.hpp"
 #include "Sequence.hpp"
 
 namespace ConsensusCore {

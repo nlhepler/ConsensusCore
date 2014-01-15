@@ -49,7 +49,6 @@
 #include "Features.hpp"
 #include "Poa/PoaConfig.hpp"
 #include "Poa/PoaConsensus.hpp"
-#include "Quiver/PBFeatures.hpp"
 #include "Quiver/SseRecursor.hpp"
 
 

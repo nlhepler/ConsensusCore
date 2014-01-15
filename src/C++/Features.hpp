@@ -64,5 +64,42 @@ namespace ConsensusCore
     private:
         Feature<char> sequence_;
     };
-}
 
+    /// \brief A features object that contains PulseToBase QV metrics
+    struct QvSequenceFeatures : public SequenceFeatures
+    {
+        Feature<float> SequenceAsFloat;
+        Feature<float> InsQv;
+        Feature<float> SubsQv;
+        Feature<float> DelQv;
+        Feature<float> DelTag;
+        Feature<float> MergeQv;
+
+        explicit QvSequenceFeatures(const std::string& seq);
+
+        QvSequenceFeatures(const std::string& seq,
+                           const float* insQv,
+                           const float* subsQv,
+                           const float* delQv,
+                           const float* delTag,
+                           const float* mergeQv);
+
+        QvSequenceFeatures(const std::string& seq,
+                           const Feature<float> insQv,
+                           const Feature<float> subsQv,
+                           const Feature<float> delQv,
+                           const Feature<float> delTag,
+                           const Feature<float> mergeQv);
+    };
+
+
+    /// \brief A features object that contains sequence in channel space.
+    struct ChannelSequenceFeatures : SequenceFeatures
+    {
+        Feature<int> Channel;
+
+        explicit ChannelSequenceFeatures(const std::string& seq);
+
+        ChannelSequenceFeatures(const std::string& seq, const std::vector<int>& channel);
+    };
+}

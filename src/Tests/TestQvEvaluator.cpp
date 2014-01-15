@@ -44,7 +44,7 @@
 #include <vector>
 
 #include "Quiver/QvEvaluator.hpp"
-#include "Quiver/PBFeatures.hpp"
+#include "Features.hpp"
 #include "Utils.hpp"
 
 #include "ParameterSettings.hpp"

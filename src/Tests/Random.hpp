@@ -44,8 +44,8 @@
 #include <vector>
 
 #include "Mutation.hpp"
+#include "Features.hpp"
 #include "Quiver/QvEvaluator.hpp"
-#include "Quiver/PBFeatures.hpp"
 #include "Utils.hpp"
 
 using ConsensusCore::Mutation;

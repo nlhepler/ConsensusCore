@@ -40,10 +40,10 @@
 #include <string>
 #include <vector>
 
+#include "Features.hpp"
 #include "Mutation.hpp"
 #include "Sequence.hpp"
 #include "Quiver/MutationScorer.hpp"
-#include "Quiver/PBFeatures.hpp"
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Quiver/ReadScorer.hpp"

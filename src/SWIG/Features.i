@@ -2,7 +2,6 @@
 /* Includes the header in the wrapper code */
 #include "Feature.hpp"
 #include "Features.hpp"
-#include "Quiver/PBFeatures.hpp"
 using namespace ConsensusCore;
 %}
 
@@ -18,7 +17,6 @@ using namespace ConsensusCore;
 
 %include "Feature.hpp"
 %include "Features.hpp"
-%include "Quiver/PBFeatures.hpp"
 
 namespace ConsensusCore {
     %template(CharFeature) Feature<char>;
