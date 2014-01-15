@@ -76,6 +76,8 @@ namespace ConsensusCore
                    int templateEnd,
                    bool pinStart=true,
                    bool pinEnd=true);
+
+        MappedRead(const MappedRead& other);
     };
 
 

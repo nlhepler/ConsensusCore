@@ -70,4 +70,13 @@ namespace ConsensusCore {
           PinStart(pinStart),
           PinEnd(pinEnd)
     {}
+
+    MappedRead::MappedRead(const MappedRead& other)
+        : Read(other),
+          Strand(other.Strand),
+          TemplateStart(other.TemplateStart),
+          TemplateEnd(other.TemplateEnd),
+          PinStart(other.PinStart),
+          PinEnd(other.PinEnd)
+    {}
 }
