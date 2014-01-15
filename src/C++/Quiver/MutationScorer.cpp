@@ -208,8 +208,9 @@ namespace ConsensusCore
                                   m.LengthDiff());
             score = (*extendBuffer_)(0, 0);
         }
-        else if (atBegin && atEnd)
+        else
         {
+            assert(atBegin && atEnd);
             //
             // Just do the whole fill
             //

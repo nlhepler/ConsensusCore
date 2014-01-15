@@ -39,10 +39,47 @@
 
 #include <string>
 
+#include "Features.hpp"
+#include "Types.hpp"
+
 namespace ConsensusCore
 {
-    char ComplementaryBase(char base);
-    std::string Complement(const std::string& input);
-    std::string Reverse(const std::string& input);
-    std::string ReverseComplement(const std::string& input);
+    struct Read {
+        QvSequenceFeatures Features;
+        std::string Name;
+        std::string Chemistry;
+
+        Read(const QvSequenceFeatures& features,
+             std::string name,
+             std::string chemistry);
+
+        Read(const Read& other);
+    };
+
+    enum StrandEnum
+    {
+        FORWARD_STRAND = 0,
+        REVERSE_STRAND = 1
+    };
+
+    struct MappedRead : public Read
+    {
+        StrandEnum Strand;
+        int TemplateStart;
+        int TemplateEnd;
+        bool PinStart;
+        bool PinEnd;
+
+        MappedRead(const Read& read,
+                   StrandEnum strand,
+                   int templateStart,
+                   int templateEnd,
+                   bool pinStart=true,
+                   bool pinEnd=true);
+    };
+
+
+
+
+
 }

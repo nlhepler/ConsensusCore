@@ -35,46 +35,39 @@
 
 // Author: David Alexander
 
-#pragma once
-
 #include <string>
 
-#include "Types.hpp"
 #include "Features.hpp"
-#include "Sequence.hpp"
+#include "Types.hpp"
+#include "Read.hpp"
 
 namespace ConsensusCore {
 
-    struct MappedRead
-    {
-        QvSequenceFeatures Features;
-        StrandEnum Strand;
-        int TemplateStart;
-        int TemplateEnd;
-        std::string ReadIdentifier;
+    Read::Read(const QvSequenceFeatures& features,
+               std::string name,
+               std::string chemistry)
+        : Features(features),
+          Name(name),
+          Chemistry(chemistry)
+    {}
 
-        MappedRead(const QvSequenceFeatures& features,
-                   StrandEnum strand,
-                   int templateStart,
-                   int templateEnd)
-            : Features(features),
-              Strand(strand),
-              TemplateStart(templateStart),
-              TemplateEnd(templateEnd),
-              ReadIdentifier("anonymous")
-        {}
+    Read::Read(const Read& other)
+        : Features(other.Features),
+          Name(other.Name),
+          Chemistry(other.Chemistry)
+    {}
 
-
-        MappedRead(const QvSequenceFeatures& features,
-                   StrandEnum strand,
-                   int templateStart,
-                   int templateEnd,
-                   const std::string& readIdentifier)
-            : Features(features),
-              Strand(strand),
-              TemplateStart(templateStart),
-              TemplateEnd(templateEnd),
-              ReadIdentifier(readIdentifier)
-        {}
-    };
+    MappedRead::MappedRead(const Read& read,
+                           StrandEnum strand,
+                           int templateStart,
+                           int templateEnd,
+                           bool pinStart,
+                           bool pinEnd)
+        : Read(read),
+          Strand(strand),
+          TemplateStart(templateStart),
+          TemplateEnd(templateEnd),
+          PinStart(pinStart),
+          PinEnd(pinEnd)
+    {}
 }

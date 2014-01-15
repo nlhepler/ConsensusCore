@@ -45,12 +45,25 @@
 #include "Quiver/ReadScorer.hpp"
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
+#include "Sequence.hpp"
 
 #include "ParameterSettings.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 using namespace boost::assign;  // NOLINT
 
+//
+// Convenience routines for testing
+//
+Read AnonymousRead(std::string seq)
+{
+    return Read(QvSequenceFeatures(seq), "anonymous", "unknown");
+}
+
+MappedRead AnonymousMappedRead(std::string seq, StrandEnum strand, int tStart, int tEnd)
+{
+    return MappedRead(AnonymousRead(seq), strand, tStart, tEnd);
+}
 
 //
 // Tests for supporting code: OrientedMutation, ReadScoresMutation
@@ -60,8 +73,7 @@ TEST(MutationOrientationTests, ReadScoresMutation1)
 {
     //  012345678901
     //    >>>>>>>>    mr
-    QvSequenceFeatures f("G");
-    MappedRead mr(f, FORWARD_STRAND,  2, 10);
+    MappedRead mr(AnonymousRead("G"), FORWARD_STRAND,  2, 10);
 
     for (int p=0; p <= 11; p++)
     {
@@ -108,8 +120,7 @@ TEST(MutationOrientationTests, ReadScoresMutation2)
 {
     //  012345678901
     //    >>>>>>>>    mr
-    QvSequenceFeatures f("G");
-    MappedRead mr(f, FORWARD_STRAND,  2, 10);
+    MappedRead mr(AnonymousRead("G"), FORWARD_STRAND,  2, 10);
 
     for (int p=0; p <= 11; p++)
     {
@@ -135,9 +146,8 @@ TEST(MutationOrientationTests, OrientedMutation)
     //  012345678901
     //    >>>>>>>>    mr1
     //    <<<<<<<<    mr2
-    QvSequenceFeatures f1("G"), f2("G");
-    MappedRead mr1(f1, FORWARD_STRAND, 2, 10);
-    MappedRead mr2(f2, REVERSE_STRAND, 2, 10);
+    MappedRead mr1(AnonymousRead("G"), FORWARD_STRAND, 2, 10);
+    MappedRead mr2(AnonymousRead("G"), REVERSE_STRAND, 2, 10);
 
     for (int p=2; p <= 9; p++)
     {
@@ -256,9 +266,12 @@ TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
 {
     std::string tpl = "TTGATTACATT";
     std::string revTpl = ReverseComplement(tpl);
+    int tStart = 0;
+    int tEnd = tpl.length();
 
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+    MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, tStart, tEnd);
+    mScorer.AddRead(mr);
 
     Mutation noOpMutation(SUBSTITUTION, 6, 'A');
     Mutation insertMutation(INSERTION, 6, 'A');
@@ -274,7 +287,8 @@ TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
     EXPECT_EQ(params.Nce, mScorer.Score(deletionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
 
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+    MappedRead mr2(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, tStart, tEnd);
+    mScorer.AddRead(mr2);
 
     EXPECT_EQ(0, mScorer.Score(noOpMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
@@ -301,7 +315,8 @@ TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
     std::string revTpl = ReverseComplement(tpl);
 
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+    MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
+    mScorer.AddRead(mr);
 
 
     std::vector<Mutation*> muts;
@@ -328,7 +343,8 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyConstructorTest)
     std::string revTpl = ReverseComplement(tpl);
 
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+    MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
+    mScorer.AddRead(mr);
 
     // Run the copy constructor of MultiReadMutationScorer
     MMS mCopy(mScorer);
@@ -377,7 +393,8 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
     // everything would come out the same.
     std::string tpl = "AATGTAATCAA";
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND);
+    MappedRead mr(AnonymousRead("TTGATTACATT"), REVERSE_STRAND, 0, tpl.length());
+    mScorer.AddRead(mr);
 
     Mutation noOpMutation(SUBSTITUTION, 4, 'T');
     Mutation insertMutation(INSERTION, 5, 'T');
@@ -393,7 +410,8 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
     EXPECT_EQ(params.Nce      , mScorer.Score(deletionMutation));
     EXPECT_EQ("AATGTAATCAA"   , mScorer.Template());
 
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND);
+    MappedRead mr2(AnonymousRead("TTGATTACATT"), REVERSE_STRAND, 0, tpl.length());
+    mScorer.AddRead(mr2);
 
     EXPECT_EQ(0                 , mScorer.Score(noOpMutation));
     EXPECT_EQ("AATGTAATCAA"     , mScorer.Template());
@@ -419,7 +437,8 @@ TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtBeginning)
     std::string tpl = "TTGATTACATT";
 
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+    MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
+    mScorer.AddRead(mr);
 
     Mutation noOpMutation     (SUBSTITUTION , 0, 'T');
     Mutation deletionMutation (DELETION     , 0, '-');
@@ -441,7 +460,8 @@ TYPED_TEST(MultiReadMutationScorerTest, TestMutationsAtEnd)
     std::string tpl = "TTGATTACATT";
 
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND);
+    MappedRead mr(AnonymousRead("TTGATTACATT"), FORWARD_STRAND, 0, tpl.length());
+    mScorer.AddRead(mr);
 
     Mutation noOpMutation     (SUBSTITUTION , 10, 'T');
     Mutation deletionMutation (DELETION     , 10, '-');
@@ -480,8 +500,8 @@ TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)
     Mutation substitutionMutation2(SUBSTITUTION, 4, 'A');
     Mutation deletionMutation2(DELETION, 4, '-');
 
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND, 11, 22);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND,  0, 11);
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACATT", FORWARD_STRAND, 11, 22));
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACATT", REVERSE_STRAND,  0, 11));
 
     EXPECT_EQ(0               , mScorer.Score(noOpMutation1));
     EXPECT_EQ(params.Merge[0] , mScorer.Score(insertMutation1));
@@ -509,8 +529,8 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyTest)
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), FORWARD_STRAND, 11, 22);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACATT"), REVERSE_STRAND,  0, 11);
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACATT", FORWARD_STRAND, 11, 22));
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACATT", REVERSE_STRAND,  0, 11));
     MMS mScorerCopy(mScorer);
 
     ASSERT_EQ(mScorer.BaselineScore(), mScorerCopy.BaselineScore());
@@ -524,8 +544,8 @@ TYPED_TEST(MultiReadMutationScorerTest, MultiBaseSubstitutionsAtBounds)
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), FORWARD_STRAND, 11, 20);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), REVERSE_STRAND,  2, 11);
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACA", FORWARD_STRAND, 11, 20));
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACA", REVERSE_STRAND,  2, 11));
 
     EXPECT_EQ(0                 , mScorer.Score(Mutation(SUBSTITUTION, 0, 2, "MN")));
     EXPECT_EQ(params.Mismatch   , mScorer.Score(Mutation(SUBSTITUTION, 1, 3, "MN")));
@@ -545,8 +565,8 @@ TYPED_TEST(MultiReadMutationScorerTest, MultiBaseIndelsAtBounds)
     //                 0123456789012345678901
     std::string tpl = "AATGTAATCAATTGATTACATT";
     MMS mScorer(this->testingConfig_, tpl);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), FORWARD_STRAND, 11, 20);
-    mScorer.AddRead(QvSequenceFeatures("TTGATTACA"), REVERSE_STRAND,  2, 11);
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACA", FORWARD_STRAND, 11, 20));
+    mScorer.AddRead(AnonymousMappedRead("TTGATTACA", REVERSE_STRAND,  2, 11));
 
     // Insertions
     EXPECT_EQ(0                  , mScorer.Score(Mutation(INSERTION,  2,  2, "MN")));

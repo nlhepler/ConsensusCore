@@ -40,9 +40,10 @@
 #include <string>
 #include <vector>
 
-#include "Mutation.hpp"
 #include "Quiver/MutationScorer.hpp"
 #include "Quiver/MultiReadMutationScorer.hpp"
+#include "Mutation.hpp"
+#include "Sequence.hpp"
 #include "Utils.hpp"
 
 #define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
@@ -229,30 +230,6 @@ namespace ConsensusCore
             kv.first->TemplateStart = newTemplateStart;
             kv.first->TemplateEnd   = newTemplateEnd;
         }
-        DEBUG_ONLY(CheckInvariants());
-    }
-
-    template<typename R>
-    void MultiReadMutationScorer<R>::AddRead(const QvSequenceFeatures& features,
-                                             StrandEnum strand)
-    {
-        AddRead(features, strand, 0, TemplateLength());
-    }
-
-    template<typename R>
-    void MultiReadMutationScorer<R>::AddRead(const QvSequenceFeatures & features,
-                                             StrandEnum strand,
-                                             int templateStart,
-                                             int templateEnd,
-                                             bool pinStart,
-                                             bool pinEnd)
-    {
-        DEBUG_ONLY(CheckInvariants());
-        MappedRead* mr = new MappedRead(features, strand, templateStart, templateEnd);
-        EvaluatorType ev(features,
-                         Template(strand, templateStart, templateEnd),
-                         quiverConfig_.QvParams, pinStart, pinEnd);
-        readsAndScorers_.push_back(std::make_pair(mr, new MutationScorer<R>(ev, recursor_)));
         DEBUG_ONLY(CheckInvariants());
     }
 
