@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ConsensusCore;
 
-namespace PacBio.Analysis.ConsensusCoreManaged.src.CSharp
+namespace PacBio.ConsensusCoreManaged.CSharp
 {
     class TestConsensusCore
     {
@@ -31,7 +28,7 @@ namespace PacBio.Analysis.ConsensusCoreManaged.src.CSharp
                                      -0.30647f,
                                      -3.26889f,
                                      -0.899265f,
-                                     0.0403404f,
+                                      0.0403404f,
                                      -0.377961f,
                                      -0.328803f,
                                      -2.65419f,
@@ -46,7 +43,7 @@ namespace PacBio.Analysis.ConsensusCoreManaged.src.CSharp
             var strandTpl = "ACGTACGTACGTACGT";
 
             QvModelParams modelParams = ModelParams();
-            QvSequenceFeatures features = new QvSequenceFeatures("ACGTACGTCGT");
+            var features = new QvSequenceFeatures("ACGTACGTCGT");
 
             var evaluator = new QvEvaluator(features, strandTpl, modelParams);
 
