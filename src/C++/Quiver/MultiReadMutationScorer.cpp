@@ -134,9 +134,10 @@ namespace ConsensusCore
     {
         DEBUG_ONLY(CheckInvariants());
         fastScoreThreshold_ = 0;
-        foreach (const QuiverConfigTable::value_type& kv, quiverConfigByChemistry)
+        QuiverConfigTable::const_iterator it;
+        for (it = quiverConfigByChemistry_.begin(); it != quiverConfigByChemistry_.end(); it++)
         {
-            fastScoreThreshold_ = std::min(fastScoreThreshold_, kv.second->FastScoreThreshold);
+            fastScoreThreshold_ = std::min(fastScoreThreshold_, it->second.FastScoreThreshold);
         }
     }
 
@@ -241,7 +242,7 @@ namespace ConsensusCore
     void MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
     {
         DEBUG_ONLY(CheckInvariants());
-        const QuiverConfig* config = quiverConfigByChemistry_.at(mr.Chemistry);
+        const QuiverConfig* config = &quiverConfigByChemistry_.at(mr.Chemistry);
         EvaluatorType ev(mr.Features,
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
                          config->QvParams);

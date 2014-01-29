@@ -26,7 +26,4 @@ namespace std {
   %template(ScoredMutation)         std::pair<ConsensusCore::Mutation*, float>;
   %template(ScoredMutationVector)   std::vector< std::pair<ConsensusCore::Mutation*, float> >;
   %template(MutationVector)         std::vector<ConsensusCore::Mutation*>;
-
-  %template() std::pair<std::string, ConsensusCore::QuiverConfig*>;
-  %template(QuiverConfigTable) std::map<std::string, ConsensusCore::QuiverConfig*>;
 };

@@ -79,9 +79,4 @@ namespace ConsensusCore
 
         MappedRead(const MappedRead& other);
     };
-
-
-
-
-
 }

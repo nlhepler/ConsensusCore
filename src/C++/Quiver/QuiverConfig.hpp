@@ -37,6 +37,10 @@
 
 #pragma once
 
+#include <list>
+#include <string>
+#include <utility>
+
 #include "Utils.hpp"
 
 namespace ConsensusCore
@@ -202,5 +206,30 @@ namespace ConsensusCore
                      int movesAvailable,
                      const BandingOptions& bandingOptions,
                      float fastScoreThreshold);
+
+        QuiverConfig(const QuiverConfig& qvConfig);
+    };
+
+
+
+    class QuiverConfigTable
+    {
+    private:
+        typedef std::pair<const std::string, const QuiverConfig> QuiverConfigTableEntry;
+
+        std::list<QuiverConfigTableEntry> table;
+
+    public:
+        QuiverConfigTable();
+
+        typedef std::list<QuiverConfigTableEntry>::const_iterator const_iterator;
+
+        bool insert(const std::string& name, const QuiverConfig& config);
+        const QuiverConfig& at(const std::string& name) const;
+        
+#ifndef SWIG
+        const_iterator begin() const;
+        const_iterator end() const;
+#endif
     };
 }

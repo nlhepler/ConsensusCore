@@ -43,15 +43,21 @@ namespace ConsensusCore {
 
 #ifndef SWIG
     template<>
+    Feature<char>::operator std::string() const
+    {
+        return std::string(get(), Length());
+    }
+
+    template<>
     Feature<float>::operator std::string() const
     {
         return "<Float feature>";
     }
 
     template<>
-    Feature<char>::operator std::string() const
+    Feature<int>::operator std::string() const
     {
-        return std::string(get(), Length());
+        return "<Int feature>";
     }
 #endif  // !SWIG
 

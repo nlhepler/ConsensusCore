@@ -105,8 +105,6 @@ namespace ConsensusCore {
     bool ReadScoresMutation(const MappedRead& mr, const Mutation& mut);
     Mutation OrientedMutation(const MappedRead& mr, const Mutation& mut);
 
-    typedef std::map<std::string, QuiverConfig*> QuiverConfigTable;
-
     template<typename R>
     class MultiReadMutationScorer : public AbstractMultiReadMutationScorer
     {

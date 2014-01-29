@@ -35,6 +35,8 @@
 
 // Author: David Alexander
 
+#include <stdexcept>
+
 #include "Quiver/QuiverConfig.hpp"
 
 namespace ConsensusCore {
@@ -47,4 +49,49 @@ namespace ConsensusCore {
           Banding(bandingOptions),
           FastScoreThreshold(fastScoreThreshold)
     {}
+
+    QuiverConfig::QuiverConfig(const QuiverConfig& qvConfig)
+        : QvParams(qvConfig.QvParams),
+          MovesAvailable(qvConfig.MovesAvailable),
+          Banding(qvConfig.Banding),
+          FastScoreThreshold(qvConfig.FastScoreThreshold)
+    {}
+
+
+    QuiverConfigTable::QuiverConfigTable()
+    {}
+
+    bool QuiverConfigTable::insert(const std::string& name, const QuiverConfig& config)
+    {
+        const_iterator it;
+
+        for (it = table.begin(); it != table.end(); it++)
+            if (name.compare(it->first) == 0)
+                return false;
+
+        table.push_front(std::make_pair(name, config));
+
+        return true;
+    }
+
+    const QuiverConfig& QuiverConfigTable::at(const std::string& name) const
+    {
+        const_iterator it;
+
+        for (it = table.begin(); it != table.end(); it++)
+            if (name.compare(it->first) == 0)
+                return it->second;
+
+        throw new std::out_of_range(name);
+    }
+
+    QuiverConfigTable::const_iterator QuiverConfigTable::begin() const
+    {
+        return table.begin();
+    }
+
+    QuiverConfigTable::const_iterator QuiverConfigTable::end() const
+    {
+        return table.end();
+    }
 }
