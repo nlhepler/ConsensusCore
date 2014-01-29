@@ -94,6 +94,12 @@ namespace ConsensusCore {
         virtual std::vector<int> NumFlipFlops() const = 0;
 
     public:
+#if !defined(SWIG) || defined(SWIGCSHARP)
+        // Alternate entry point for C# code, not requiring zillions of object
+        // allocations.
+        virtual float Score(MutationType mutationType, int position, char base) const = 0;
+#endif
+
         // Return the actual sum of scores for the current template.
         // TODO(dalexander): need to refactor to make the semantics of
         // the various "Score" functions clearer.
