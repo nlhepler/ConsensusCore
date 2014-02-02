@@ -227,7 +227,7 @@ protected:
                          BandingOptions(4, 200),
                          -500)
     {
-        testingConfigs_["unknown"] = &testingConfig_;
+        testingConfigs_.insert("unknown", testingConfig_);
     }
 
     virtual ~MultiReadMutationScorerTest() {}
