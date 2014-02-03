@@ -75,7 +75,7 @@ TEST(MutationOrientationTests, ReadScoresMutation1)
     //    >>>>>>>>    mr
     MappedRead mr(AnonymousRead("G"), FORWARD_STRAND,  2, 10);
 
-    for (int p=0; p <= 11; p++)
+    for (int p = 0; p <= 11; p++)
     {
         Mutation mSubs(SUBSTITUTION, p, 'G');
         Mutation mDel (DELETION, p, '-');
@@ -89,22 +89,21 @@ TEST(MutationOrientationTests, ReadScoresMutation1)
         }
         else if (p == mr.TemplateStart)
         {
-            EXPECT_TRUE( ReadScoresMutation(mr, mSubs) &&
-                         ReadScoresMutation(mr, mDel)  &&
+            EXPECT_TRUE(ReadScoresMutation(mr, mSubs) &&
+                        ReadScoresMutation(mr, mDel)  &&
                         !ReadScoresMutation(mr, mIns));
         }
         else if (p < mr.TemplateEnd)
         {
-            EXPECT_TRUE( ReadScoresMutation(mr, mSubs) &&
-                         ReadScoresMutation(mr, mDel)  &&
-                         ReadScoresMutation(mr, mIns));
+            EXPECT_TRUE(ReadScoresMutation(mr, mSubs) &&
+                        ReadScoresMutation(mr, mDel)  &&
+                        ReadScoresMutation(mr, mIns));
         }
         else if (p == mr.TemplateEnd)
         {
             EXPECT_TRUE(!ReadScoresMutation(mr, mSubs) &&
                         !ReadScoresMutation(mr, mDel)  &&
-                         ReadScoresMutation(mr, mIns));
-
+                        ReadScoresMutation(mr, mIns));
         }
         else if (p > mr.TemplateEnd)
         {
@@ -122,14 +121,14 @@ TEST(MutationOrientationTests, ReadScoresMutation2)
     //    >>>>>>>>    mr
     MappedRead mr(AnonymousRead("G"), FORWARD_STRAND,  2, 10);
 
-    for (int p=0; p <= 11; p++)
+    for (int p = 0; p <= 11; p++)
     {
         Mutation mSubs2(SUBSTITUTION, p, p+2, "GG");
         Mutation mDel2 (DELETION,     p, p+2, "");
         if (p >= 1 && p <= 9)
         {
-            EXPECT_TRUE( ReadScoresMutation(mr, mSubs2) &&
-                         ReadScoresMutation(mr, mDel2));
+            EXPECT_TRUE(ReadScoresMutation(mr, mSubs2) &&
+                        ReadScoresMutation(mr, mDel2));
         }
         else
         {
@@ -149,7 +148,7 @@ TEST(MutationOrientationTests, OrientedMutation)
     MappedRead mr1(AnonymousRead("G"), FORWARD_STRAND, 2, 10);
     MappedRead mr2(AnonymousRead("G"), REVERSE_STRAND, 2, 10);
 
-    for (int p=2; p <= 9; p++)
+    for (int p = 2; p <= 9; p++)
     {
         Mutation mSubs (SUBSTITUTION, p, 'G');
         Mutation mDel  (DELETION, p, '-');
@@ -160,7 +159,7 @@ TEST(MutationOrientationTests, OrientedMutation)
         EXPECT_EQ(Mutation(DELETION,     mr2.TemplateEnd-1-p, '-'), OrientedMutation(mr2, mDel));
     }
 
-    for (int p=3; p <= 10; p++)
+    for (int p = 3; p <= 10; p++)
     {
         Mutation mIns  (INSERTION, p, 'G');
         Mutation mIns2 (INSERTION, p, p, "GT");
@@ -173,10 +172,9 @@ TEST(MutationOrientationTests, OrientedMutation)
                   OrientedMutation(mr2, mIns));
         EXPECT_EQ(Mutation(INSERTION, mr2.TemplateEnd-p, mr2.TemplateEnd-p, "AC"),
                   OrientedMutation(mr2, mIns2));
-
     }
 
-    for (int p=1; p <= 9; p++)
+    for (int p = 1; p <= 9; p++)
     {
         Mutation mSubs2(SUBSTITUTION, p, p+2, "GG");
         Mutation mDel2 (DELETION,     p, p+2, "");
@@ -550,15 +548,15 @@ TYPED_TEST(MultiReadMutationScorerTest, MultiBaseSubstitutionsAtBounds)
     mScorer.AddRead(AnonymousMappedRead("TTGATTACA", FORWARD_STRAND, 11, 20));
     mScorer.AddRead(AnonymousMappedRead("TTGATTACA", REVERSE_STRAND,  2, 11));
 
-    EXPECT_EQ(0                 , mScorer.Score(Mutation(SUBSTITUTION, 0, 2, "MN")));
-    EXPECT_EQ(params.Mismatch   , mScorer.Score(Mutation(SUBSTITUTION, 1, 3, "MN")));
-    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION, 2, 4, "MN")));
-    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION, 9,11, "MN")));
-    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,10,12, "MN")));
-    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,11,13, "MN")));
-    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,18,20, "MN")));
-    EXPECT_EQ(params.Mismatch   , mScorer.Score(Mutation(SUBSTITUTION,19,21, "MN")));
-    EXPECT_EQ(0                 , mScorer.Score(Mutation(SUBSTITUTION,20,22, "MN")));
+    EXPECT_EQ(0                 , mScorer.Score(Mutation(SUBSTITUTION,  0,  2, "MN")));
+    EXPECT_EQ(params.Mismatch   , mScorer.Score(Mutation(SUBSTITUTION,  1,  3, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,  2,  4, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION,  9, 11, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION, 10, 12, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION, 11, 13, "MN")));
+    EXPECT_EQ(2*params.Mismatch , mScorer.Score(Mutation(SUBSTITUTION, 18, 20, "MN")));
+    EXPECT_EQ(params.Mismatch   , mScorer.Score(Mutation(SUBSTITUTION, 19, 21, "MN")));
+    EXPECT_EQ(0                 , mScorer.Score(Mutation(SUBSTITUTION, 20, 22, "MN")));
 }
 
 TYPED_TEST(MultiReadMutationScorerTest, MultiBaseIndelsAtBounds)
@@ -581,12 +579,12 @@ TYPED_TEST(MultiReadMutationScorerTest, MultiBaseIndelsAtBounds)
     EXPECT_EQ(0                  , mScorer.Score(Mutation(INSERTION, 21, 21, "MN")));
 
     // Deletions
-    EXPECT_EQ(0                          , mScorer.Score(Mutation(DELETION, 0, 2, "")));
-    EXPECT_EQ(params.Nce                 , mScorer.Score(Mutation(DELETION, 1, 3, "")));
-    EXPECT_EQ(params.Nce + params.Branch , mScorer.Score(Mutation(DELETION, 2, 4, "")));
-    EXPECT_EQ(2*params.Nce               ,  mScorer.Score(Mutation(DELETION, 9, 11, "")));
-    EXPECT_EQ(2*params.Branch            ,  mScorer.Score(Mutation(DELETION,10, 12, "")));
-    EXPECT_EQ(2*params.Nce               ,  mScorer.Score(Mutation(DELETION,11, 13, "")));
+    EXPECT_EQ(0                          , mScorer.Score(Mutation(DELETION,   0, 2, "")));
+    EXPECT_EQ(params.Nce                 , mScorer.Score(Mutation(DELETION,   1, 3, "")));
+    EXPECT_EQ(params.Nce + params.Branch , mScorer.Score(Mutation(DELETION,   2, 4, "")));
+    EXPECT_EQ(2*params.Nce               ,  mScorer.Score(Mutation(DELETION,  9, 11, "")));
+    EXPECT_EQ(2*params.Branch            ,  mScorer.Score(Mutation(DELETION, 10, 12, "")));
+    EXPECT_EQ(2*params.Nce               ,  mScorer.Score(Mutation(DELETION, 11, 13, "")));
     EXPECT_EQ(params.Nce + params.Branch ,  mScorer.Score(Mutation(DELETION, 18, 20, "")));
     EXPECT_EQ(params.Nce                 ,  mScorer.Score(Mutation(DELETION, 19, 21, "")));
     EXPECT_EQ(0                          ,  mScorer.Score(Mutation(DELETION, 20, 22, "")));

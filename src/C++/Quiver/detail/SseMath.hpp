@@ -69,10 +69,10 @@ namespace detail {
         __m128 min = _mm_min_ps(aa, bb);
         __m128 diff = _mm_sub_ps(min, max);
         return _mm_add_ps(max, log_ps(_mm_add_ps(ones, exp_ps(diff))));
-         
-		// Precision of this is currently too low -- causes problems w/ Edna
-		// need a more accurate impl.
-        //return logAddApprox_ps(aa, bb);
+
+        // Precision of this is currently too low -- causes problems w/ Edna
+        // need a more accurate impl.
+        // return logAddApprox_ps(aa, bb);
     }
 
     inline float logAdd(float a, float b)
@@ -87,4 +87,3 @@ namespace detail {
         return buf[0];
     }
 }}
-

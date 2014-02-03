@@ -36,7 +36,6 @@
 // Author: David Alexander
 
 #include "Quiver/SseRecursor.hpp"
-#include "Quiver/SimpleRecursor.hpp"
 
 #include <algorithm>
 #include <boost/tuple/tuple.hpp>
@@ -51,6 +50,7 @@
 #include "Quiver/detail/Combiner.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Quiver/EdnaEvaluator.hpp"
+#include "Quiver/SimpleRecursor.hpp"
 
 using std::max;
 using std::min;

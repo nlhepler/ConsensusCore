@@ -144,8 +144,6 @@ TEST(MutationTest, MutationsToTranscript)
 
 TEST(MutationTest, MutatedTemplatePositionsTest)
 {
-
-
     {
         // Test spec comment:
         //               01234567                           0123456

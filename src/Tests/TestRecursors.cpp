@@ -175,7 +175,6 @@ TYPED_TEST(RecursorTest, SmallMergeTest)
     EXPECT_FLOAT_EQ(-2.0f, beta(0, 0));
     //    std::cout << std::endl;
     //    std::cout << ConsensusCore::detail::PrintMatrix(beta) << std::endl;
-
 }
 
 
@@ -282,7 +281,6 @@ TYPED_TEST(RecursorTest, ExtendBetaTest)
                 << i << " " << j-1 << std::endl;
         }
     }
-
 }
 
 

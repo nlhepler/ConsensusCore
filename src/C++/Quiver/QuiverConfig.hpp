@@ -226,7 +226,7 @@ namespace ConsensusCore
 
         bool insert(const std::string& name, const QuiverConfig& config);
         const QuiverConfig& at(const std::string& name) const;
-        
+
 #ifndef SWIG
         const_iterator begin() const;
         const_iterator end() const;

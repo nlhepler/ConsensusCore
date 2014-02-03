@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "Feature.hpp"
 #include "Types.hpp"
@@ -133,7 +134,8 @@ namespace ConsensusCore
           Channel(Length())
     {}
 
-    ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq, const std::vector<int>& channel)
+    ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq,
+                                                     const std::vector<int>& channel)
         : SequenceFeatures(seq),
           Channel(&(channel[0]), Length())
     {}

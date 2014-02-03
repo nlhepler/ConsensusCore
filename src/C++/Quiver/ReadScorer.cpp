@@ -97,8 +97,4 @@ namespace ConsensusCore
         r.FillAlphaBeta(e, *alpha, *beta);
         return alpha;
     }
-
-
-
-
 }

@@ -74,8 +74,8 @@ namespace ConsensusCore
                    StrandEnum strand,
                    int templateStart,
                    int templateEnd,
-                   bool pinStart=true,
-                   bool pinEnd=true);
+                   bool pinStart = true,
+                   bool pinEnd = true);
 
         MappedRead(const MappedRead& other);
     };

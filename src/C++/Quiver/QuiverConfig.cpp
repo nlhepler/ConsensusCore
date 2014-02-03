@@ -36,6 +36,7 @@
 // Author: David Alexander
 
 #include <stdexcept>
+#include <string>
 
 #include "Quiver/QuiverConfig.hpp"
 

@@ -99,7 +99,7 @@ TEST(SparseVector, CopyTest)
     SparseVector svCopy(sv);
     ASSERT_EQ(5, svCopy(4));
 
-    for (int i=0; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
         ASSERT_EQ(sv(i), svCopy(i));
     }

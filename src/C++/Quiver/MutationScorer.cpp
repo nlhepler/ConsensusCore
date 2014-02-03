@@ -191,7 +191,6 @@ namespace ConsensusCore
             //     // FIXME!  This happens on fluidigm amplicons, figure out why
             //     Breakpoint();
             // }
-
         }
         else if (atBegin && !atEnd)
         {
@@ -224,7 +223,7 @@ namespace ConsensusCore
         // Restore the original template.
         evaluator_->Template(oldTpl);
 
-        //if (fabs(score - Score()) > 50) { Breakpoint(); }
+        // if (fabs(score - Score()) > 50) { Breakpoint(); }
 
         return score;
     }

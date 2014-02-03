@@ -39,6 +39,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdio>
+#include <vector>
 
 #include "Random.hpp"
 
@@ -82,7 +83,7 @@ vector<Mutation*> allSingleBaseMutations(string tpl)
     vector<Mutation*> muts;
     const char* otherBases[] = { "A", "C", "G", "T" };
 
-    for (int i=0; i < tpl.length(); i++)
+    for (int i = 0; i < tpl.length(); i++)
     {
         muts.push_back(new Mutation(DELETION, i, i+1, ""));
         foreach (const char* otherBase, otherBases)
@@ -97,15 +98,12 @@ vector<Mutation*> allSingleBaseMutations(string tpl)
 
 float getTime()
 {
-    return float(clock())/CLOCKS_PER_SEC;
+    return static_cast<float>(clock())/CLOCKS_PER_SEC;
 }
 
 
-float BenchmarkLoop(int tplLength, int readDepth, int nIters=20)
+float BenchmarkLoop(int tplLength, int readDepth, int nIters = 20)
 {
-
-
-
     //
     // Build random template and reads (no QVs)
     //
@@ -143,7 +141,6 @@ float BenchmarkLoop(int tplLength, int readDepth, int nIters=20)
         {
             //        volatile bool isFavorable = mms.FastIsFavorable(*m);
             volatile bool isFavorable = mms.IsFavorable(*m);
-
         }
     }
     float stop  = getTime();

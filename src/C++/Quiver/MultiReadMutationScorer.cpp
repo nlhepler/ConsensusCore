@@ -35,6 +35,7 @@
 
 // Author: David Alexander
 
+#include <algorithm>
 #include <cfloat>
 #include <map>
 #include <string>
@@ -60,11 +61,9 @@ namespace ConsensusCore
         int te = read.TemplateEnd;
         int ms = mut.Start();
         int me = mut.End();
-        if (mut.IsInsertion())
-        {
+        if (mut.IsInsertion()) {
             return (ts < ms && me <= te);   // Insertion starts within?
-        }
-        else {
+        } else {
             return (ts < me && ms < te);    // Intervals intersect?
         }
     }
@@ -125,8 +124,9 @@ namespace ConsensusCore
 
 
     template<typename R>
-    MultiReadMutationScorer<R>::MultiReadMutationScorer(const QuiverConfigTable& quiverConfigByChemistry,
-                                                        std::string tpl)
+    MultiReadMutationScorer<R>::MultiReadMutationScorer
+    (const QuiverConfigTable& quiverConfigByChemistry,
+     std::string tpl)
         : quiverConfigByChemistry_(quiverConfigByChemistry),
           fwdTemplate_(tpl),
           revTemplate_(ReverseComplement(tpl)),

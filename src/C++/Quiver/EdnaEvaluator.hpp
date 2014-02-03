@@ -48,6 +48,7 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "Features.hpp"
 #include "LFloat.hpp"
@@ -73,9 +74,9 @@ namespace ConsensusCore
 
     public:
         EdnaEvaluator(const ChannelSequenceFeatures& features,
-                    const std::string& tpl,
-                    const std::vector<int> channelTpl,
-                    const EdnaModelParams& params)
+                      const std::string& tpl,
+                      const std::vector<int> channelTpl,
+                      const EdnaModelParams& params)
             : features_(features),
               params_(params),
               tpl_(tpl),

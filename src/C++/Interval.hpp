@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <utility>
 
 namespace ConsensusCore {
@@ -64,5 +65,4 @@ namespace ConsensusCore {
         return RangeUnion(RangeUnion(range1, range2),
                           RangeUnion(range3, range4));
     }
-
 }
