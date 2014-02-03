@@ -46,6 +46,7 @@ def find_boost():
         glob("/usr/local/boost*/")         + \
         glob("/opt/local/include/boost/")  + \
         glob("/opt/local/include/boost*/") + \
+        glob("/usr/local/include")         + \
         glob("/home/UNIXHOME/dalexander/Packages/boost_1_47_0/boost/version.hpp")
 
     boosts_found = [ (boost, boost_version(boost))
