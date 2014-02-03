@@ -15,7 +15,7 @@ CXX_LIB         := $(abspath $(OBJDIR)/libConsensusCore.a)
 GXX             ?= g++
 
 ifeq ($(GXX),clang++)
-    CXX_FLAGS           = $(CXX_OPT_FLAGS) -msse3 -fPIC -Qunused-arguments -fcolor-diagnostics -fno-omit-frame-pointer
+    CXX_FLAGS           = $(CXX_OPT_FLAGS) -stdlib=libstdc++ -msse3 -fPIC -Qunused-arguments -fcolor-diagnostics -fno-omit-frame-pointer
     CXX_STRICT_FLAGS    = $(CXX_FLAGS)
 else
     CXX_FLAGS           = $(CXX_OPT_FLAGS) $(CXX_EXTRA_ARGS) -msse3 -fPIC -fno-omit-frame-pointer
