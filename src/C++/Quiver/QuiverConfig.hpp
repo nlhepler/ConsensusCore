@@ -225,7 +225,8 @@ namespace ConsensusCore
         typedef std::list<QuiverConfigTableEntry>::const_iterator const_iterator;
 
         bool insert(const std::string& name, const QuiverConfig& config);
-        const QuiverConfig& at(const std::string& name) const;
+
+        const QuiverConfig& at(const std::string& name) const throw(InvalidInputError);
 
 #ifndef SWIG
         const_iterator begin() const;

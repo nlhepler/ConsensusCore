@@ -76,14 +76,21 @@ namespace ConsensusCore {
     }
 
     const QuiverConfig& QuiverConfigTable::at(const std::string& name) const
+        throw(InvalidInputError)
     {
         const_iterator it;
 
+        // If we find a direct match for the chemistry, use it
         for (it = table.begin(); it != table.end(); it++)
-            if (name.compare(it->first) == 0)
+            if (it->first.compare(name) == 0)
                 return it->second;
 
-        throw new std::out_of_range(name);
+        // Fallback is "*"
+        for (it = table.begin(); it != table.end(); it++)
+            if (it->first.compare("*") == 0)
+                return it->second;
+
+        throw new InvalidInputError("Chemistry not found in QuiverConfigTable");
     }
 
     QuiverConfigTable::const_iterator QuiverConfigTable::begin() const
