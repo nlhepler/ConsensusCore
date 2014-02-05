@@ -9,7 +9,7 @@ SWIG                ?= swig
 SWIG_LIB	    ?= $(shell $(SWIG) -swiglib)
 export SWIG_LIB
 
-GXX = clang++
+GXX ?= clang++
 
 BOOST_INCLUDE_PATH  ?= /usr/local/boost_1_47_0
 NUMPY_INCLUDE_PATH  ?= /opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/
