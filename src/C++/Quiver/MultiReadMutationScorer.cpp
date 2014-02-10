@@ -208,11 +208,11 @@ namespace ConsensusCore
         int len = templateEnd - templateStart;
         if (strand == FORWARD_STRAND)
         {
-            return fwdTemplate_.substr(templateStart, len);
+			return fwdTemplate_.substr(templateStart, len);
         }
         else
         {
-            return revTemplate_.substr(TemplateLength() - templateEnd, len);
+			return revTemplate_.substr(TemplateLength() - templateEnd, len);
         }
     }
 
@@ -298,7 +298,7 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m) const
+    std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m, const float unscoredValue = 0) const
     {
         std::vector<float> scoreByRead;
         foreach (const item_t& kv, readsAndScorers_)
@@ -311,7 +311,7 @@ namespace ConsensusCore
             }
             else
             {
-                scoreByRead.push_back(0);
+				scoreByRead.push_back(unscoredValue);
             }
         }
         return scoreByRead;

@@ -84,7 +84,7 @@ namespace ConsensusCore {
         // (i.e., it is too close to the end of the template, or the
         // read does not span the mutation site) that entry in the
         // vector is -FLT_MAX, which is to be interpreted as NA.
-        virtual std::vector<float> Scores(const Mutation& m) const = 0;
+        virtual std::vector<float> Scores(const Mutation& m, const float unscoredValue = 0) const = 0;
 
         virtual bool IsFavorable(const Mutation& m) const = 0;
         virtual bool FastIsFavorable(const Mutation& m) const = 0;
@@ -146,7 +146,7 @@ namespace ConsensusCore {
         // (i.e., it is too close to the end of the template, or the
         // read does not span the mutation site) that entry in the
         // vector is -FLT_MAX, which is to be interpreted as NA.
-        std::vector<float> Scores(const Mutation& m) const;
+		std::vector<float> Scores(const Mutation& m, const float unscoredValue = 0) const;
 
         bool IsFavorable(const Mutation& m) const;
         bool FastIsFavorable(const Mutation& m) const;
