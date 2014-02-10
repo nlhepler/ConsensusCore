@@ -298,7 +298,7 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m, const float unscoredValue = 0) const
+    std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m, const float unscoredValue) const
     {
         std::vector<float> scoreByRead;
         foreach (const item_t& kv, readsAndScorers_)
