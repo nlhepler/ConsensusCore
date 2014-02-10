@@ -83,8 +83,9 @@ namespace ConsensusCore {
         // the case where the mutation cannot be scored for a read
         // (i.e., it is too close to the end of the template, or the
         // read does not span the mutation site) that entry in the
-        // vector is -FLT_MAX, which is to be interpreted as NA.
-        virtual std::vector<float> Scores(const Mutation& m, const float unscoredValue = 0) const = 0;
+        // vector is 0
+        virtual std::vector<float> Scores(const Mutation& m, const float unscoredValue) const = 0;
+        virtual std::vector<float> Scores(const Mutation& m) const = 0;
 
         virtual bool IsFavorable(const Mutation& m) const = 0;
         virtual bool FastIsFavorable(const Mutation& m) const = 0;
@@ -93,7 +94,6 @@ namespace ConsensusCore {
         virtual std::vector<int> AllocatedMatrixEntries() const = 0;
         virtual std::vector<int> NumFlipFlops() const = 0;
 
-    public:
 #if !defined(SWIG) || defined(SWIGCSHARP)
         // Alternate entry point for C# code, not requiring zillions of object
         // allocations.
@@ -146,7 +146,8 @@ namespace ConsensusCore {
         // (i.e., it is too close to the end of the template, or the
         // read does not span the mutation site) that entry in the
         // vector is -FLT_MAX, which is to be interpreted as NA.
-		std::vector<float> Scores(const Mutation& m, const float unscoredValue) const;
+        std::vector<float> Scores(const Mutation& m, const float unscoredValue) const;
+        std::vector<float> Scores(const Mutation& m) const { return Scores(m, 0); }
 
         bool IsFavorable(const Mutation& m) const;
         bool FastIsFavorable(const Mutation& m) const;
@@ -155,10 +156,11 @@ namespace ConsensusCore {
         std::vector<int> AllocatedMatrixEntries() const;
         std::vector<int> NumFlipFlops() const;
 
-    public:
+#if !defined(SWIG) || defined(SWIGCSHARP)
         // Alternate entry point for C# code, not requiring zillions of object
         // allocations.
         float Score(MutationType mutationType, int position, char base) const;
+#endif
 
     public:
         // Return the actual sum of scores for the current template.
