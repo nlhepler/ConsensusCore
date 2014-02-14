@@ -84,7 +84,7 @@ namespace ConsensusCore {
         // (i.e., it is too close to the end of the template, or the
         // read does not span the mutation site) that entry in the
         // vector is 0
-        virtual std::vector<float> Scores(const Mutation& m, const float unscoredValue) const = 0;
+        virtual std::vector<float> Scores(const Mutation& m, float unscoredValue) const = 0;
         virtual std::vector<float> Scores(const Mutation& m) const = 0;
 
         virtual bool IsFavorable(const Mutation& m) const = 0;
@@ -95,9 +95,14 @@ namespace ConsensusCore {
         virtual std::vector<int> NumFlipFlops() const = 0;
 
 #if !defined(SWIG) || defined(SWIGCSHARP)
-        // Alternate entry point for C# code, not requiring zillions of object
+        // Alternate entry points for C# code, not requiring zillions of object
         // allocations.
         virtual float Score(MutationType mutationType, int position, char base) const = 0;
+		virtual std::vector<float> Scores(MutationType mutationType,
+										  int position, char base,
+										  float unscoredValue) const = 0;
+		virtual std::vector<float> Scores(MutationType mutationType,
+										  int position, char base) const = 0;
 #endif
 
         // Return the actual sum of scores for the current template.
@@ -146,8 +151,11 @@ namespace ConsensusCore {
         // (i.e., it is too close to the end of the template, or the
         // read does not span the mutation site) that entry in the
         // vector is -FLT_MAX, which is to be interpreted as NA.
-        std::vector<float> Scores(const Mutation& m, const float unscoredValue) const;
-        std::vector<float> Scores(const Mutation& m) const { return Scores(m, 0); }
+        std::vector<float> Scores(const Mutation& m, float unscoredValue) const;
+        std::vector<float> Scores(const Mutation& m) const
+		{
+			return Scores(m, 0.0f);
+		}
 
         bool IsFavorable(const Mutation& m) const;
         bool FastIsFavorable(const Mutation& m) const;
@@ -157,9 +165,17 @@ namespace ConsensusCore {
         std::vector<int> NumFlipFlops() const;
 
 #if !defined(SWIG) || defined(SWIGCSHARP)
-        // Alternate entry point for C# code, not requiring zillions of object
+        // Alternate entry points for C# code, not requiring zillions of object
         // allocations.
         float Score(MutationType mutationType, int position, char base) const;
+		std::vector<float> Scores(MutationType mutationType,
+								  int position, char base,
+								  float unscoredValue) const;
+		std::vector<float> Scores(MutationType mutationType,
+								  int position, char base) const
+		{ 
+			return Scores(mutationType, position, base, 0.0f);
+		}
 #endif
 
     public:
@@ -173,13 +189,14 @@ namespace ConsensusCore {
         void CheckInvariants() const;
 
     private:
+		typedef typename std::pair<MappedRead*, ScorerType*> item_t;
+
         QuiverConfigTable quiverConfigByChemistry_;
         float fastScoreThreshold_;
         std::string fwdTemplate_;
         std::string revTemplate_;
-        std::vector<std::pair<MappedRead*, ScorerType*> > readsAndScorers_;
+        std::vector<item_t> readsAndScorers_;
 
-        typedef typename std::pair<MappedRead*, ScorerType*>  item_t;
     };
 
     typedef MultiReadMutationScorer<SparseSseQvRecursor> \

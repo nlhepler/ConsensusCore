@@ -298,7 +298,7 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m, const float unscoredValue) const
+    std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m, float unscoredValue) const
     {
         std::vector<float> scoreByRead;
         foreach (const item_t& kv, readsAndScorers_)
@@ -316,6 +316,15 @@ namespace ConsensusCore
         }
         return scoreByRead;
     }
+
+	template<typename R>
+	std::vector<float> MultiReadMutationScorer<R>::Scores(MutationType mutationType,
+														  int position, char base,
+														  float unscoredValue) const
+	{
+		Mutation m(mutationType, position, base);
+		return Scores(m, unscoredValue);
+	}
 
     template<typename R>
     bool MultiReadMutationScorer<R>::IsFavorable(const Mutation& m) const
