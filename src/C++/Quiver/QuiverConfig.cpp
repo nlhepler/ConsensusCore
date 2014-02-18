@@ -90,7 +90,7 @@ namespace ConsensusCore {
             if (it->first.compare("*") == 0)
                 return it->second;
 
-        throw new InvalidInputError("Chemistry not found in QuiverConfigTable");
+        throw InvalidInputError("Chemistry not found in QuiverConfigTable");
     }
 
     QuiverConfigTable::const_iterator QuiverConfigTable::begin() const
