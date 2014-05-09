@@ -1,0 +1,4 @@
+make/Config.mk
+*.o
+*.d
+build/
