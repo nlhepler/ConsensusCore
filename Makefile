@@ -15,7 +15,7 @@ include make/Defs.mk
 
 lib: $(CXX_LIB)
 
-$(CXX_LIB):
+$(CXX_LIB): $(CXX_SRCS)
 	${MAKE} -f make/Cpp.mk
 
 #

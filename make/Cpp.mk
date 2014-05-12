@@ -8,15 +8,6 @@ $(error Run ./configure first!)
 endif
 
 
-VPATH           := src/C++/                     \
-                  :src/C++/Matrix/              \
-                  :src/C++/Quiver/              \
-                  :src/C++/Quiver/detail        \
-                  :src/C++/Poa/                 \
-                  :src/C++/Statistics           \
-                  :src/C++/Simulation
-
-CXX_SRCS        := $(notdir $(shell find src/C++/ -name "*.cpp" | grep -v '\#'))
 CXX_OBJS        := $(addprefix $(OBJDIR)/, $(CXX_SRCS:.cpp=.o))
 SWIG_SRCS       := $(shell find src/SWIG/ -name "*.i")
 
@@ -41,4 +32,3 @@ check: tests
 
 check-syntax:
 	$(CXX) -Wall -Wextra -pedantic -fsyntax-only $(CHK_SOURCES)
-

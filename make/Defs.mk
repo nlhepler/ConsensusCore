@@ -13,7 +13,16 @@ else
 OBJDIR          := $(BUILD_ROOT)/C++
 endif
 
+VPATH           := src/C++/                     \
+                  :src/C++/Matrix/              \
+                  :src/C++/Quiver/              \
+                  :src/C++/Quiver/detail        \
+                  :src/C++/Poa/                 \
+                  :src/C++/Statistics           \
+                  :src/C++/Simulation
+
 CXX_LIB         := $(abspath $(OBJDIR)/libConsensusCore.a)
+CXX_SRCS        := $(notdir $(shell find src/C++/ -name "*.cpp" | grep -v '\#'))
 
 CXX_OPT_FLAGS_DEBUG   := -O0 -g
 CXX_OPT_FLAGS_RELEASE := -O3 -DNDEBUG -g
