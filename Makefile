@@ -63,7 +63,7 @@ test-python:
 test-csharp:
 	@make -f make/CSharp.mk test-csharp
 
-test:
+test: $(CXX_LIB)
 	@make -f make/Tests.mk
 
 check: test
