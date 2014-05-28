@@ -14,7 +14,7 @@ OBJDIR          := $(BUILD_ROOT)/C++
 endif
 
 VPATH           := src/C++/                     \
-	 			  :src/C++/Edna                 \
+                  :src/C++/Edna                 \
                   :src/C++/Matrix/              \
                   :src/C++/Quiver/              \
                   :src/C++/Quiver/detail        \
