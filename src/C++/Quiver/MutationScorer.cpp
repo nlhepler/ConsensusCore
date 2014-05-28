@@ -39,10 +39,10 @@
 
 #include <string>
 
+#include "Edna/EdnaEvaluator.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/QvEvaluator.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
 #include "Quiver/SimpleRecursor.hpp"
 #include "Quiver/SseRecursor.hpp"
 #include "Mutation.hpp"

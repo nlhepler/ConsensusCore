@@ -54,7 +54,7 @@
 #include "LFloat.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
-#include "Quiver/EdnaConfig.hpp"
+#include "EdnaConfig.hpp"
 
 #ifndef SWIG
 using std::min;

@@ -42,11 +42,11 @@
 #include <climits>
 #include <utility>
 
+#include "Edna/EdnaEvaluator.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/detail/Combiner.hpp"
 #include "Quiver/detail/RecursorBase.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Interval.hpp"
 #include "Utils.hpp"

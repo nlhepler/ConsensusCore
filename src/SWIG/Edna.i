@@ -1,12 +1,12 @@
 
 %{
 /* Includes the header in the wrapper code */
-#include "Quiver/EdnaConfig.hpp"
-#include "Quiver/EdnaCounts.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
+#include "Edna/EdnaConfig.hpp"
+#include "Edna/EdnaCounts.hpp"
+#include "Edna/EdnaEvaluator.hpp"
 using namespace ConsensusCore;
 %}
 
-%include "Quiver/EdnaConfig.hpp"
-%include "Quiver/EdnaCounts.hpp"
-%include "Quiver/EdnaEvaluator.hpp"
+%include "Edna/EdnaConfig.hpp"
+%include "Edna/EdnaCounts.hpp"
+%include "Edna/EdnaEvaluator.hpp"

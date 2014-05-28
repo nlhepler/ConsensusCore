@@ -40,7 +40,7 @@
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/QvEvaluator.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
+#include "Edna/EdnaEvaluator.hpp"
 #include "Quiver/detail/Combiner.hpp"
 #include "Quiver/detail/RecursorBase.hpp"
 #include "Quiver/SimpleRecursor.hpp"

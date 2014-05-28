@@ -47,7 +47,7 @@
 #include "Matrix/SparseMatrix.hpp"
 #include "PairwiseAlignment.hpp"
 #include "Quiver/detail/Combiner.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
+#include "Edna/EdnaEvaluator.hpp"
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/QvEvaluator.hpp"
 #include "Types.hpp"

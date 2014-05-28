@@ -45,11 +45,11 @@
 
 #include "Interval.hpp"
 #include "Utils.hpp"
+#include "Edna/EdnaEvaluator.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/detail/Combiner.hpp"
 #include "Quiver/QvEvaluator.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
 #include "Quiver/SimpleRecursor.hpp"
 
 using std::max;

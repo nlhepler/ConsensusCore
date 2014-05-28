@@ -39,7 +39,7 @@
 
 #include "Features.hpp"
 #include "Types.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
+#include "Edna/EdnaEvaluator.hpp"
 #include "Quiver/MutationScorer.hpp"
 
 namespace ConsensusCore

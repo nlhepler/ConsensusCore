@@ -46,17 +46,16 @@
 #include <utility>
 
 #include "EdnaCounts.hpp"
+#include "EdnaEvaluator.hpp"
 #include "Features.hpp"
+#include "Interval.hpp"
 #include "LFloat.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "Quiver/detail/Combiner.hpp"
 #include "Quiver/detail/RecursorBase.hpp"
-#include "Quiver/EdnaEvaluator.hpp"
 #include "Quiver/MutationScorer.hpp"
-
 #include "Quiver/QuiverConfig.hpp"
 #include "Quiver/SimpleRecursor.hpp"
-#include "Interval.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
 
