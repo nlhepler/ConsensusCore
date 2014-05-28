@@ -13,6 +13,8 @@
 
 include make/Defs.mk
 
+all: lib
+
 lib: $(CXX_LIB)
 
 $(CXX_LIB): $(CXX_SRCS)
@@ -97,7 +99,7 @@ pip-install: $(shell which pip > /dev/null)
           --install-option="--boost=$(BOOST)" \
           ./
 
-.PHONY: lib clean-cxx clean test tests check python clean-python \
+.PHONY: all lib clean-cxx clean test tests check python clean-python \
 	csharp clean-csharp echo-python-build-directory \
 	test-python test-csharp pip-uninstall pip-install \
 	lint pre-commit-hook

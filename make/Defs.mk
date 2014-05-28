@@ -14,6 +14,7 @@ OBJDIR          := $(BUILD_ROOT)/C++
 endif
 
 VPATH           := src/C++/                     \
+	 			  :src/C++/Edna                 \
                   :src/C++/Matrix/              \
                   :src/C++/Quiver/              \
                   :src/C++/Quiver/detail        \
@@ -43,7 +44,7 @@ else
 endif
 
 ifeq ($(GXX),clang++)
-    CXX_FLAGS           = $(GXX_FLAGS) $(CXX_OPT_FLAGS) -stdlib=libstdc++ -msse3 -fPIC -Qunused-arguments -fcolor-diagnostics -fno-omit-frame-pointer
+    CXX_FLAGS           = $(GXX_FLAGS) $(CXX_OPT_FLAGS) -stdlib=libstdc++ -msse3 -fPIC -Qunused-arguments -fno-omit-frame-pointer
     CXX_STRICT_FLAGS    = $(GXX_FLAGS) $(CXX_FLAGS) -pedantic -ansi -Wall
 else
     CXX_FLAGS           = $(CXX_OPT_FLAGS) $(CXX_EXTRA_ARGS) -msse3 -fPIC -fno-omit-frame-pointer
