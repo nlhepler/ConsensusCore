@@ -71,6 +71,19 @@ tests: test
 
 
 #
+# Lint targets
+#
+
+lint:
+	-find src -name "*.[ch]pp" | xargs ./tools/cpplint.py --verbose=0 --counting=toplevel
+
+pre-commit-hook:
+#       for speed, apply cpplint only to changed files.
+	git diff --cached --name-only --diff-filter=ACM | \
+         grep -e  '.*.[ch]pp$$' | xargs tools/cpplint.py --verbose=3
+
+
+#
 # Targets used by PBI internal build
 #
 pip-uninstall: $(shell which pip > /dev/null)
@@ -86,4 +99,5 @@ pip-install: $(shell which pip > /dev/null)
 
 .PHONY: lib clean-cxx clean test tests check python clean-python \
 	csharp clean-csharp echo-python-build-directory \
-	test-python test-csharp pip-uninstall pip-install
+	test-python test-csharp pip-uninstall pip-install \
+	lint pre-commit-hook
