@@ -208,11 +208,11 @@ namespace ConsensusCore
         int len = templateEnd - templateStart;
         if (strand == FORWARD_STRAND)
         {
-			return fwdTemplate_.substr(templateStart, len);
+            return fwdTemplate_.substr(templateStart, len);
         }
         else
         {
-			return revTemplate_.substr(TemplateLength() - templateEnd, len);
+            return revTemplate_.substr(TemplateLength() - templateEnd, len);
         }
     }
 
@@ -298,7 +298,8 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    std::vector<float> MultiReadMutationScorer<R>::Scores(const Mutation& m, float unscoredValue) const
+    std::vector<float>
+    MultiReadMutationScorer<R>::Scores(const Mutation& m, float unscoredValue) const
     {
         std::vector<float> scoreByRead;
         foreach (const item_t& kv, readsAndScorers_)
@@ -311,20 +312,20 @@ namespace ConsensusCore
             }
             else
             {
-				scoreByRead.push_back(unscoredValue);
+                scoreByRead.push_back(unscoredValue);
             }
         }
         return scoreByRead;
     }
 
-	template<typename R>
-	std::vector<float> MultiReadMutationScorer<R>::Scores(MutationType mutationType,
-														  int position, char base,
-														  float unscoredValue) const
-	{
-		Mutation m(mutationType, position, base);
-		return Scores(m, unscoredValue);
-	}
+    template<typename R>
+    std::vector<float> MultiReadMutationScorer<R>::Scores(MutationType mutationType,
+                                                          int position, char base,
+                                                          float unscoredValue) const
+    {
+        Mutation m(mutationType, position, base);
+        return Scores(m, unscoredValue);
+    }
 
     template<typename R>
     bool MultiReadMutationScorer<R>::IsFavorable(const Mutation& m) const

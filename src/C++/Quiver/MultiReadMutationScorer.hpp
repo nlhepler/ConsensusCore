@@ -98,11 +98,11 @@ namespace ConsensusCore {
         // Alternate entry points for C# code, not requiring zillions of object
         // allocations.
         virtual float Score(MutationType mutationType, int position, char base) const = 0;
-		virtual std::vector<float> Scores(MutationType mutationType,
-										  int position, char base,
-										  float unscoredValue) const = 0;
-		virtual std::vector<float> Scores(MutationType mutationType,
-										  int position, char base) const = 0;
+        virtual std::vector<float> Scores(MutationType mutationType,
+                                          int position, char base,
+                                          float unscoredValue) const = 0;
+        virtual std::vector<float> Scores(MutationType mutationType,
+                                          int position, char base) const = 0;
 #endif
 
         // Return the actual sum of scores for the current template.
@@ -153,9 +153,9 @@ namespace ConsensusCore {
         // vector is -FLT_MAX, which is to be interpreted as NA.
         std::vector<float> Scores(const Mutation& m, float unscoredValue) const;
         std::vector<float> Scores(const Mutation& m) const
-		{
-			return Scores(m, 0.0f);
-		}
+        {
+            return Scores(m, 0.0f);
+        }
 
         bool IsFavorable(const Mutation& m) const;
         bool FastIsFavorable(const Mutation& m) const;
@@ -168,14 +168,14 @@ namespace ConsensusCore {
         // Alternate entry points for C# code, not requiring zillions of object
         // allocations.
         float Score(MutationType mutationType, int position, char base) const;
-		std::vector<float> Scores(MutationType mutationType,
-								  int position, char base,
-								  float unscoredValue) const;
-		std::vector<float> Scores(MutationType mutationType,
-								  int position, char base) const
-		{ 
-			return Scores(mutationType, position, base, 0.0f);
-		}
+        std::vector<float> Scores(MutationType mutationType,
+                                  int position, char base,
+                                  float unscoredValue) const;
+        std::vector<float> Scores(MutationType mutationType,
+                                  int position, char base) const
+        {
+            return Scores(mutationType, position, base, 0.0f);
+        }
 #endif
 
     public:
@@ -189,14 +189,13 @@ namespace ConsensusCore {
         void CheckInvariants() const;
 
     private:
-		typedef typename std::pair<MappedRead*, ScorerType*> item_t;
+        typedef typename std::pair<MappedRead*, ScorerType*> item_t;
 
         QuiverConfigTable quiverConfigByChemistry_;
         float fastScoreThreshold_;
         std::string fwdTemplate_;
         std::string revTemplate_;
         std::vector<item_t> readsAndScorers_;
-
     };
 
     typedef MultiReadMutationScorer<SparseSseQvRecursor> \
