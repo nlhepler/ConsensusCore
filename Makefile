@@ -10,26 +10,23 @@
 #  - debug build:
 #      % make DEBUG=1
 #
-
 include make/Defs.mk
 
 all: lib
 
-lib: $(CXX_LIB)
-
-$(CXX_LIB): $(CXX_SRCS)
+lib:
 	${MAKE} -f make/Cpp.mk
 
 #
 # SWIG targets
 #
-python: $(CXX_LIB)
+python: lib
 	make -f make/Python.mk
 
 echo-python-build-directory:
 	@echo $(PYTHON_BUILD_DIR)
 
-csharp: $(CXX_LIB)
+csharp: lib
 	make -f make/CSharp.mk
 
 before-xbuild: csharp
@@ -65,7 +62,7 @@ test-python:
 test-csharp:
 	@make -f make/CSharp.mk test-csharp
 
-test: $(CXX_LIB)
+test: lib
 	@make -f make/Tests.mk
 
 check: test
@@ -102,4 +99,4 @@ pip-install: $(shell which pip > /dev/null)
 .PHONY: all lib clean-cxx clean test tests check python clean-python \
 	csharp clean-csharp echo-python-build-directory \
 	test-python test-csharp pip-uninstall pip-install \
-	lint pre-commit-hook
+	lint pre-commit-hook 
