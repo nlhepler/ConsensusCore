@@ -23,4 +23,4 @@ $(PYTHON_DLL): $(SWIG_INTERFACE) $(CXX_LIB)
 test-python: $(PYTHON_DLL)
 	@PYTHONPATH=$(PYTHON_BUILD_DIR) python src/Demos/Demo.py && echo "Python build is OK!"
 
-.PHONY: all test-python
+.PHONY: all test-python $(PYTHON_DLL)

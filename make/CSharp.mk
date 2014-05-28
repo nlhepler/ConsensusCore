@@ -24,4 +24,4 @@ test-csharp: $(PINVOKE_LIB)
 	 mono Demo.exe && \
 	 echo "CSharp build OK!")
 
-.PHONY: all clean test-csharp
+.PHONY: all clean test-csharp $(PINVOKE_LIB)
