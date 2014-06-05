@@ -67,6 +67,8 @@ GTEST_INCLUDE := $(GMOCK)/gtest/include
 GTEST_LIB     := $(GMOCK)/gtest/lib/.libs/libgtest.a
 GTEST_MAIN    := $(GMOCK)/gtest/lib/.libs/libgtest_main.a
 
-SWIG_INTERFACE   := src/SWIG/ConsensusCore.i
 PYTHON_BUILD_DIR := $(BUILD_ROOT)/Python
 CSHARP_BUILD_DIR := $(BUILD_ROOT)/CSharp
+
+SWIG_INTERFACE  = src/SWIG/ConsensusCore.i
+SWIG_INTERFACES = $(shell find src/SWIG/ -name "*.i" | grep -v '\#')
