@@ -64,7 +64,7 @@ typedef boost::numeric::ublas::vector<float> fvec;
 typedef boost::numeric::ublas::matrix<float> fmat;
 typedef boost::numeric::ublas::matrix_column<const fmat> fmat_column;
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && _MSC_VER < 1800
 
 // compute log(1+x) without losing precision for small values of x
 float log1p(float x)
