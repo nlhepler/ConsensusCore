@@ -373,7 +373,7 @@ namespace ConsensusCore
         {
             int n = 0;
             n += kv.second->Alpha()->AllocatedEntries();
-            n += kv.second->Alpha()->AllocatedEntries();
+            n += kv.second->Beta()->AllocatedEntries();
 
             allocatedCounts.push_back(n);
         }
