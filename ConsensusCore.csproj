@@ -42,4 +42,7 @@
   <Target Name="BeforeBuild">
     <Exec Command="make before-xbuild" Condition=" '$(OS)' != 'Windows_NT' " />
   </Target>
+  <Target Name="BeforeClean" BeforeTargets="Clean">
+    <Exec Command="make clean" Condition=" '$(OS)' != 'Windows_NT' " />
+  </Target>
 </Project>
