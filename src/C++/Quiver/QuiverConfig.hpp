@@ -57,34 +57,17 @@ namespace ConsensusCore
     };
 
     /// \brief The banding optimizations to be used by a recursor
-    ///
-    /// The recursors may implement a dynamic adjustment of the ScoreDiff:
-    /// dynamicScoreDiff = max(ScoreDiff, min(10*ScoreDiff, dynamicScoreDiff - adjustment))
-    /// where
-    ///   adjustment = DynamicAdjustFactor * (columnBestScoreChange - DynamicAdjustOffset)
-    ///   columnBestScoreChange = the difference between best scores obtained in the current and
-    ///                           previous columns.
-    ///
     struct BandingOptions
     {
-        int DiagonalCross;
         float ScoreDiff;
-        float DynamicAdjustFactor;
-        float DynamicAdjustOffset;
 
         BandingOptions(int diagonalCross, float scoreDiff)
-            : DiagonalCross(diagonalCross),
-              ScoreDiff(scoreDiff),
-              DynamicAdjustFactor(0.0f),
-              DynamicAdjustOffset(0.0f)
+            : ScoreDiff(scoreDiff)
         {}
 
         BandingOptions(int diagonalCross, float scoreDiff,
                        float dynamicAdjustFactor, float dynamicAdjustOffset)
-            : DiagonalCross(diagonalCross),
-              ScoreDiff(scoreDiff),
-              DynamicAdjustFactor(dynamicAdjustFactor),
-              DynamicAdjustOffset(dynamicAdjustOffset)
+            : ScoreDiff(scoreDiff)
         {}
     };
 

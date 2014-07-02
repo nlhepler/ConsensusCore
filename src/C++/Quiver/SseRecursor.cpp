@@ -80,21 +80,11 @@ namespace ConsensusCore {
         assert(guide.IsNull() ||
                (guide.Rows() == alpha.Rows() && guide.Columns() == alpha.Columns()));
 
-        bool useGuide = !guide.IsNull();
         int hintBeginRow = 0, hintEndRow = 0;
-
-        float lastColBestScore = 0;
-        float dynamicScoreDiff = this->bandingOptions_.ScoreDiff;
 
         for (int j = 0; j <= J; ++j)
         {
-            if (useGuide && !guide.IsColumnEmpty(j))
-            {
-                int guideBegin, guideEnd;
-                boost::tie(guideBegin, guideEnd) = guide.UsedRowRange(j);
-                hintBeginRow = min(hintBeginRow, guideBegin);
-                hintEndRow   = max(hintEndRow, guideEnd);
-            }
+            this->RangeGuide(j, guide, alpha, hintBeginRow, hintEndRow);
 
             int requiredEndRow = min(I + 1, hintEndRow);
 
@@ -152,7 +142,7 @@ namespace ConsensusCore {
                 if (score > maxScore)
                 {
                     maxScore = score;
-                    thresholdScore = maxScore - dynamicScoreDiff;
+                    thresholdScore = maxScore - this->bandingOptions_.ScoreDiff;
                 }
             }
             //
@@ -206,28 +196,12 @@ namespace ConsensusCore {
                 if (potentialNewMax > maxScore)
                 {
                     maxScore = potentialNewMax;
-                    thresholdScore = maxScore - dynamicScoreDiff;
+                    thresholdScore = maxScore - this->bandingOptions_.ScoreDiff;
                 }
             }
+
             endRow = i;
             alpha.FinishEditingColumn(j, beginRow, endRow);
-
-            // Adjust the dymanic scoreDiff
-            // If best score from this column is worse that the best
-            // score from last column, then the band grows. Otherwise
-            // it shrinks.  We keep the band in reasonable range above
-            // the selected value.  The constants were manually
-            // adjusted to give good behaviour -- unclear how robust
-            // they are, or if there's any way to select them
-            // automatically.
-            float scoreChange = maxScore - lastColBestScore;
-            float adj = this->bandingOptions_.DynamicAdjustFactor * \
-                    (scoreChange - this->bandingOptions_.DynamicAdjustOffset);
-            dynamicScoreDiff -= adj;
-            dynamicScoreDiff = max(this->bandingOptions_.ScoreDiff,
-                                   min(this->bandingOptions_.ScoreDiff * 10, dynamicScoreDiff));
-
-            lastColBestScore = maxScore;
 
             // Now, revise the hints to tell the caller where the mass of the
             // distribution really lived in this column.
@@ -249,18 +223,11 @@ namespace ConsensusCore {
         assert(guide.IsNull() ||
                (guide.Rows() == beta.Rows() && guide.Columns() == beta.Columns()));
 
-        bool useGuide = !guide.IsNull();
         int hintBeginRow = I + 1, hintEndRow = I + 1;
 
         for (int j = J; j >= 0; --j)
         {
-            if (useGuide && !guide.IsColumnEmpty(j))
-            {
-                int guideBegin, guideEnd;
-                boost::tie(guideBegin, guideEnd) = guide.UsedRowRange(j);
-                hintBeginRow = min(hintBeginRow, guideBegin);
-                hintEndRow   = max(hintEndRow, guideEnd);
-            }
+            this->RangeGuide(j, guide, beta, hintBeginRow, hintEndRow);
 
             int requiredBeginRow = max(0, hintBeginRow);
 

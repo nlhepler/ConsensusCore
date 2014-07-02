@@ -85,6 +85,13 @@ namespace ConsensusCore {
         FillAlphaBeta(const E& e, M& alpha, M& beta) const
             throw(AlphaBetaMismatchException);
 
+        /// \brief Reband alpha and beta matrices.
+        /// This routine will reband alpha and beta to the convex hull
+        /// of the maximum paths through each and for contiguity.
+        virtual bool
+        RangeGuide(int j, const M& guide, const M& matrix,
+                   int& beginRow, int& endRow) const;
+
         /// \brief Raw FillAlpha, provided primarily for testing purposes.
         ///        Client code should use FillAlphaBeta.
         virtual void FillAlpha(const E& e, const M& guide, M& alpha) const = 0;
@@ -112,3 +119,5 @@ namespace ConsensusCore {
         BandingOptions bandingOptions_;
     };
 }}
+
+#include "Quiver/detail/RecursorBase-inl.hpp"
