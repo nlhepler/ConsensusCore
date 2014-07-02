@@ -137,11 +137,17 @@ namespace ConsensusCore
         DEBUG_ONLY(CheckInvariants());
     }
 
+    inline bool
+    SparseVector::Exists(int i) const
+    {
+        assert(i >= 0 && i < logicalLength_);
+        return i >= allocatedBeginRow_ && i < allocatedEndRow_;
+    }
+
     inline const float&
     SparseVector::operator()(int i) const
     {
-        assert(i >= 0 && i < logicalLength_);
-        if (i >= allocatedBeginRow_ && i < allocatedEndRow_)
+        if (Exists(i))
         {
             return (*storage_)[i - allocatedBeginRow_];
         }
@@ -163,7 +169,7 @@ namespace ConsensusCore
     {
         DEBUG_ONLY(CheckInvariants());
         assert (i >= 0 && i < logicalLength_);
-        if (i < allocatedBeginRow_ || i >= allocatedEndRow_)
+        if (!Exists(i))
         {
             int newBeginRow = max(min(i - PADDING, allocatedBeginRow_), 0);
             int newEndRow   = min(max(i + PADDING, allocatedEndRow_), logicalLength_);

@@ -125,6 +125,12 @@ namespace ConsensusCore {
         boost_dense_matrix::operator()(i, j) = v;
     }
 
+    inline bool
+    DenseMatrix::Exists(int i, int j) const
+    {
+        return i >= 0 && i < Rows() && j >= 0 && j < Columns();
+    }
+
     inline float
     DenseMatrix::Get(int i, int j) const
     {

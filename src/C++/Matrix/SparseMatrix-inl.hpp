@@ -136,6 +136,12 @@ namespace ConsensusCore {
         }
     }
 
+    inline bool
+    SparseMatrix::Exists(int i, int j) const
+    {
+        return columns_[j] != NULL && columns_[j]->Exists(i);
+    }
+
     inline float
     SparseMatrix::Get(int i, int j) const
     {

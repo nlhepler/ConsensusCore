@@ -38,6 +38,7 @@
 #include "Matrix/SparseMatrix.hpp"
 
 #include <algorithm>
+#include <limits>
 #include <boost/tuple/tuple.hpp>
 
 namespace ConsensusCore {
@@ -115,7 +116,7 @@ namespace ConsensusCore {
         *cols = Columns();
         for (int i = 0; i < Rows(); i++) {
             for (int j = 0; j < Columns(); j++) {
-                (*mat)[i * Columns() + j] = Get(i, j);
+                (*mat)[i * Columns() + j] = Exists(i, j) ? Get(i, j) : std::numeric_limits<float>::quiet_NaN();
             }
         }
     }
