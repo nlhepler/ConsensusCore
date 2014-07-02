@@ -184,11 +184,13 @@ namespace ConsensusCore
         const int MovesAvailable;
         const BandingOptions Banding;
         const float FastScoreThreshold;
+        const float AddThreshold;
 
         QuiverConfig(const QvModelParams& qvParams,
                      int movesAvailable,
                      const BandingOptions& bandingOptions,
-                     float fastScoreThreshold);
+                     float fastScoreThreshold,
+                     float addThreshold = 1.0f);
 
         QuiverConfig(const QuiverConfig& qvConfig);
     };

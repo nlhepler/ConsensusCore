@@ -73,7 +73,8 @@ namespace ConsensusCore {
         // Reads provided must be clipped to the reference/scaffold window implied by the
         // template, however they need not span the window entirely---nonspanning reads
         // must be provided with (0-based) template start/end coordinates.
-        virtual void AddRead(const MappedRead& mappedRead) = 0;
+        virtual bool AddRead(const MappedRead& mappedRead, float threshold) = 0;
+        virtual bool AddRead(const MappedRead& mappedRead) = 0;
 
         virtual float Score(const Mutation& m) const = 0;
         virtual float FastScore(const Mutation& m) const = 0;
@@ -140,7 +141,8 @@ namespace ConsensusCore {
         // Reads provided must be clipped to the reference/scaffold window implied by the
         // template, however they need not span the window entirely---nonspanning reads
         // must be provided with (0-based) template start/end coordinates.
-        void AddRead(const MappedRead& mappedRead);
+        bool AddRead(const MappedRead& mappedRead, float threshold);
+        bool AddRead(const MappedRead& mappedRead);
 
         float Score(const Mutation& m) const;
         float FastScore(const Mutation& m) const;

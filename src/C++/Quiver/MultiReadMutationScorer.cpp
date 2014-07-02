@@ -239,7 +239,7 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    void MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
+    bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr, float threshold)
     {
         DEBUG_ONLY(CheckInvariants());
         const QuiverConfig* config = &quiverConfigByChemistry_.at(mr.Chemistry);
@@ -247,11 +247,35 @@ namespace ConsensusCore
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
                          config->QvParams);
         RecursorType recursor(config->MovesAvailable, config->Banding);
-        readsAndScorers_.push_back(std::make_pair(new MappedRead(mr),
-                                                  new MutationScorer<R>(ev, recursor)));
+
+        ScorerType* scorer = new MutationScorer<R>(ev, recursor);
+
+        if (threshold < 1.0f)
+        {
+            int I = ev.ReadLength();
+            int J = ev.TemplateLength();
+            int maxSize = int(0.5 + threshold * (I + 1) * (J + 1));
+
+            if (scorer->Alpha()->AllocatedEntries() >= maxSize ||
+                scorer->Beta()->AllocatedEntries() >= maxSize)
+            {
+                delete scorer;
+                return false;
+            }
+        }
+
+        readsAndScorers_.push_back(std::make_pair(new MappedRead(mr), scorer));
         DEBUG_ONLY(CheckInvariants());
+        return true;
     }
 
+    template<typename R>
+    bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
+    {
+        DEBUG_ONLY(CheckInvariants());
+        const QuiverConfig* config = &quiverConfigByChemistry_.at(mr.Chemistry);
+        return AddRead(mr, config->AddThreshold);
+    }
 
     template<typename R>
     float MultiReadMutationScorer<R>::Score(const Mutation& m) const
