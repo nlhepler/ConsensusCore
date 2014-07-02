@@ -57,6 +57,7 @@
 // TODO(dalexander): put these into a RecursorConfig struct
 #define MAX_FLIP_FLOPS                  5
 #define ALPHA_BETA_MISMATCH_TOLERANCE   0.2
+#define REBANDING_THRESHOLD             0.04
 
 using std::max;
 using std::min;
@@ -76,6 +77,18 @@ namespace detail {
         int I = e.ReadLength();
         int J = e.TemplateLength();
         int flipflops = 0;
+        int maxSize = int(0.5 + REBANDING_THRESHOLD * (I + 1) * (J + 1));
+
+        // if we use too much space, do at least one more round
+        // to take advantage of rebanding
+        if (a.AllocatedEntries() >= maxSize ||
+            b.AllocatedEntries() >= maxSize)
+        {
+            FillAlpha(e, b, a);
+            FillBeta(e, a, b);
+            FillAlpha(e, b, a);
+            flipflops += 3;
+        }
 
         while (fabs(a(I, J) - b(0, 0)) > ALPHA_BETA_MISMATCH_TOLERANCE
                && flipflops <= MAX_FLIP_FLOPS)
@@ -100,7 +113,7 @@ namespace detail {
             // throw AlphaBetaMismatchException();
         }
 
-                return flipflops;
+        return flipflops;
     }
 
     struct MoveSpec {

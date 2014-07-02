@@ -96,8 +96,14 @@ namespace ConsensusCore
         {
             storage_->resize(newAllocatedEnd - newAllocatedBegin);
             nReallocs_++;
+            Clear();
         }
-        Clear();
+        else if ((newAllocatedEnd - newAllocatedBegin) < (allocatedEndRow_ - allocatedBeginRow_))
+        {
+            // use swap trick to free allocated but unused memory
+            std::vector<float>(newAllocatedEnd - newAllocatedBegin, LZERO).swap(*storage_);
+            nReallocs_++;
+        }
         allocatedBeginRow_ = newAllocatedBegin;
         allocatedEndRow_   = newAllocatedEnd;
         DEBUG_ONLY(CheckInvariants());
