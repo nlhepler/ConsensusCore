@@ -4,6 +4,7 @@
 
 %{
 /* Includes the header in the wrapper code */
+#include "Interval.hpp"
 #include "Types.hpp"
 using namespace ConsensusCore;
 %}

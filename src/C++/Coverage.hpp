@@ -39,6 +39,8 @@
 
 #include <vector>
 #include <utility>
+
+#include "Interval.hpp"
 #include "Types.hpp"
 
 namespace ConsensusCore
