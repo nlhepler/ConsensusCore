@@ -107,6 +107,10 @@ namespace ConsensusCore
             std::vector<float>(newAllocatedEnd - newAllocatedBegin, LZERO).swap(*storage_);
             nReallocs_++;
         }
+        else
+        {
+            Clear();
+        }
         allocatedBeginRow_ = newAllocatedBegin;
         allocatedEndRow_   = newAllocatedEnd;
         DEBUG_ONLY(CheckInvariants());
