@@ -126,9 +126,10 @@ namespace ConsensusCore {
     }
 
     inline bool
-    DenseMatrix::Exists(int i, int j) const
+    DenseMatrix::IsAllocated(int i, int j) const
     {
-        return i >= 0 && i < Rows() && j >= 0 && j < Columns();
+        assert(0 <= i && i < Rows() && 0 <= j && j < Columns());
+        return true;
     }
 
     inline float

@@ -61,7 +61,7 @@ namespace ConsensusCore {
 
     public:
         const float& operator()(int i) const;
-        bool Exists(int i) const;
+        bool IsAllocated(int i) const;
         float Get(int i) const;
         void Set(int i, float v);
         __m128 Get4(int i) const;

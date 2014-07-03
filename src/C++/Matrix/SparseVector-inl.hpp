@@ -41,8 +41,9 @@
 
 #include "Matrix/SparseVector.hpp"
 
-#define PADDING 8
-#define LZERO   (-FLT_MAX)
+#define PADDING          8
+#define LZERO            (-FLT_MAX)
+#define SHRINK_THRESHOLD 0.8
 
 namespace ConsensusCore
 {
@@ -98,9 +99,11 @@ namespace ConsensusCore
             nReallocs_++;
             Clear();
         }
-        else if ((newAllocatedEnd - newAllocatedBegin) < (allocatedEndRow_ - allocatedBeginRow_))
+        else if ((newAllocatedEnd - newAllocatedBegin) <
+                 static_cast<int>(SHRINK_THRESHOLD * (allocatedEndRow_ - allocatedBeginRow_)))
         {
-            // use swap trick to free allocated but unused memory
+            // use swap trick to free allocated but unused memory,
+            // see: http://stackoverflow.com/questions/253157/how-to-downsize-stdvector
             std::vector<float>(newAllocatedEnd - newAllocatedBegin, LZERO).swap(*storage_);
             nReallocs_++;
         }
@@ -144,7 +147,7 @@ namespace ConsensusCore
     }
 
     inline bool
-    SparseVector::Exists(int i) const
+    SparseVector::IsAllocated(int i) const
     {
         assert(i >= 0 && i < logicalLength_);
         return i >= allocatedBeginRow_ && i < allocatedEndRow_;
@@ -153,7 +156,7 @@ namespace ConsensusCore
     inline const float&
     SparseVector::operator()(int i) const
     {
-        if (Exists(i))
+        if (IsAllocated(i))
         {
             return (*storage_)[i - allocatedBeginRow_];
         }
@@ -175,7 +178,7 @@ namespace ConsensusCore
     {
         DEBUG_ONLY(CheckInvariants());
         assert (i >= 0 && i < logicalLength_);
-        if (!Exists(i))
+        if (!IsAllocated(i))
         {
             int newBeginRow = max(min(i - PADDING, allocatedBeginRow_), 0);
             int newEndRow   = min(max(i + PADDING, allocatedEndRow_), logicalLength_);

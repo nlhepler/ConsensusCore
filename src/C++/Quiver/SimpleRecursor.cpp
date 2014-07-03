@@ -73,7 +73,7 @@ namespace ConsensusCore {
 
         for (int j = 0; j <= J; ++j)
         {
-            this->RangeGuide(j, guide, alpha, hintBeginRow, hintEndRow);
+            this->RangeGuide(j, guide, alpha, &hintBeginRow, &hintEndRow);
 
             int requiredEndRow = min(I + 1, hintEndRow);
 
@@ -163,7 +163,7 @@ namespace ConsensusCore {
 
         for (int j = J; j >= 0; --j)
         {
-            this->RangeGuide(j, guide, beta, hintBeginRow, hintEndRow);
+            this->RangeGuide(j, guide, beta, &hintBeginRow, &hintEndRow);
 
             int requiredBeginRow = max(0, hintBeginRow);
 

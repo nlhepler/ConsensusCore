@@ -38,8 +38,9 @@
 #include "Matrix/SparseMatrix.hpp"
 
 #include <algorithm>
-#include <limits>
 #include <boost/tuple/tuple.hpp>
+#include <limits>
+#include <vector>
 
 namespace ConsensusCore {
     // Performance insensitive routines are not inlined
@@ -111,12 +112,13 @@ namespace ConsensusCore {
     void
     SparseMatrix::ToHostMatrix(float** mat, int* rows, int* cols) const
     {
+        const float nan = std::numeric_limits<float>::quiet_NaN();
         *mat = new float[Rows() * Columns()];
         *rows = Rows();
         *cols = Columns();
         for (int i = 0; i < Rows(); i++) {
             for (int j = 0; j < Columns(); j++) {
-                (*mat)[i * Columns() + j] = Exists(i, j) ? Get(i, j) : std::numeric_limits<float>::quiet_NaN();
+                (*mat)[i * Columns() + j] = IsAllocated(i, j) ? Get(i, j) : nan;
             }
         }
     }

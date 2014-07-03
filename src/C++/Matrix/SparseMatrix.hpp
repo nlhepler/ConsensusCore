@@ -72,7 +72,7 @@ namespace ConsensusCore {
 
     public:  // Accessors
         const float& operator()(int i, int j) const;
-        bool Exists(int i, int j) const;
+        bool IsAllocated(int i, int j) const;
         float Get(int i, int j) const;
         void Set(int i, int j, float v);
         void ClearColumn(int j);

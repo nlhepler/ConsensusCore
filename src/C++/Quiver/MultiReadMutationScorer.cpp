@@ -254,7 +254,7 @@ namespace ConsensusCore
         {
             int I = ev.ReadLength();
             int J = ev.TemplateLength();
-            int maxSize = int(0.5 + threshold * (I + 1) * (J + 1));
+            int maxSize = static_cast<int>(0.5 + threshold * (I + 1) * (J + 1));
 
             if (scorer->Alpha()->AllocatedEntries() >= maxSize ||
                 scorer->Beta()->AllocatedEntries() >= maxSize)

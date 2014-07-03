@@ -87,10 +87,10 @@ namespace ConsensusCore {
 
         /// \brief Reband alpha and beta matrices.
         /// This routine will reband alpha and beta to the convex hull
-        /// of the maximum paths through each and for contiguity.
+        /// of the maximum path through each and the inputs for column j.
         virtual bool
         RangeGuide(int j, const M& guide, const M& matrix,
-                   int& beginRow, int& endRow) const;
+                   int* beginRow, int* endRow) const;
 
         /// \brief Raw FillAlpha, provided primarily for testing purposes.
         ///        Client code should use FillAlphaBeta.

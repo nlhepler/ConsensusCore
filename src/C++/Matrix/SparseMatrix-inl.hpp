@@ -137,9 +137,9 @@ namespace ConsensusCore {
     }
 
     inline bool
-    SparseMatrix::Exists(int i, int j) const
+    SparseMatrix::IsAllocated(int i, int j) const
     {
-        return columns_[j] != NULL && columns_[j]->Exists(i);
+        return columns_[j] != NULL && columns_[j]->IsAllocated(i);
     }
 
     inline float

@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <boost/tuple/tuple.hpp>
 #include <cassert>
+#include <vector>
 
 #include "LFloat.hpp"
 

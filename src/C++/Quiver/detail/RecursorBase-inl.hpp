@@ -41,12 +41,14 @@
 #include <boost/tuple/tuple.hpp>
 #include <utility>
 
+#include "Interval.hpp"
+
 namespace ConsensusCore {
 namespace detail {
 
     template<typename M>
-    inline std::pair<int, int> RowRange(int j, const M& matrix,
-                                        float scoreDiff)
+    inline Interval RowRange(int j, const M& matrix,
+                             float scoreDiff)
     {
         int beginRow, endRow;
         boost::tie(beginRow, endRow) = matrix.UsedRowRange(j);
@@ -77,13 +79,13 @@ namespace detail {
              i--);
         endRow = i + 1;
 
-        return std::make_pair(beginRow, endRow);
+        return Interval(beginRow, endRow);
     }
 
     template<typename M, typename E, typename C>
     inline bool
     RecursorBase<M, E, C>::RangeGuide(int j, const M& guide, const M& matrix,
-                                      int& beginRow, int& endRow) const
+                                      int* beginRow, int* endRow) const
     {
         bool useGuide = !(guide.IsNull() || guide.IsColumnEmpty(j));
         bool useMatrix = !(matrix.IsNull() || matrix.IsColumnEmpty(j));
@@ -94,22 +96,19 @@ namespace detail {
         }
 
         float scoreDiff = bandingOptions_.ScoreDiff;
+        Interval interval(*beginRow, *endRow);
 
         if (useGuide)
         {
-            int start, end;
-            boost::tie(start, end) = RowRange(j, guide, scoreDiff);
-            beginRow = std::min(beginRow, start);
-            endRow = std::max(endRow, end);
+            interval = RangeUnion(RowRange(j, guide, scoreDiff), interval);
         }
 
         if (useMatrix)
         {
-            int start, end;
-            boost::tie(start, end) = RowRange(j, matrix, scoreDiff);
-            beginRow = std::min(beginRow, start);
-            endRow = std::max(endRow, end);
+            interval = RangeUnion(RowRange(j, matrix, scoreDiff), interval);
         }
+
+        boost::tie(*beginRow, *endRow) = interval;
 
         return true;
     }

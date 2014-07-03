@@ -77,7 +77,7 @@ namespace detail {
         int I = e.ReadLength();
         int J = e.TemplateLength();
         int flipflops = 0;
-        int maxSize = int(0.5 + REBANDING_THRESHOLD * (I + 1) * (J + 1));
+        int maxSize = static_cast<int>(0.5 + REBANDING_THRESHOLD * (I + 1) * (J + 1));
 
         // if we use too much space, do at least one more round
         // to take advantage of rebanding
