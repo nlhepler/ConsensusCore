@@ -42,13 +42,25 @@
 
 namespace ConsensusCore {
 
-    typedef std::pair<int, int> Interval;
+    class Interval : public std::pair<int, int>
+    {
+    public:
+        Interval() : std::pair<int, int>() {}
+        Interval(const int& a, const int& b) : std::pair<int, int>(a, b) {}
+
+        inline
+        Interval& operator=(const std::pair<int, int>& p)
+        {
+            std::pair<int, int>::operator=(p);
+            return *this;
+        }
+    };
 
     inline Interval
     RangeUnion(const Interval& range1, const Interval& range2)
     {
-        return std::make_pair(std::min(range1.first, range2.first),
-                              std::max(range1.second, range2.second));
+        return Interval(std::min(range1.first, range2.first),
+                        std::max(range1.second, range2.second));
     }
 
     inline Interval

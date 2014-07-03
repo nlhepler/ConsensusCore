@@ -39,12 +39,13 @@
 #include <gtest/gtest.h>
 
 #include "Coverage.hpp"
+#include "Interval.hpp"
 
 using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 
-#define t(a, b) std::pair<int, int>((a), (b))
+#define t(a, b) Interval((a), (b))
 
 TEST(CoverageTests, CoverageInWindowTest)
 {

@@ -37,7 +37,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <utility>
 #include <vector>
 
 #include "Coverage.hpp"
@@ -84,8 +83,6 @@ namespace ConsensusCore {
                                       int winStart,
                                       int winLen)
     {
-        using std::make_pair;
-
         assert (tStartDim == tEndDim);
         // assert(isSorted(tStart));  // find out how to get this ... it's C++11
 
@@ -132,7 +129,7 @@ namespace ConsensusCore {
                 {
                     if (currentIntervalStart != -1)
                     {
-                        intervals.push_back(make_pair(currentIntervalStart, chunkStart + j));
+                        intervals.push_back(Interval(currentIntervalStart, chunkStart + j));
                         currentIntervalStart = -1;
                     }
                 }
@@ -141,7 +138,7 @@ namespace ConsensusCore {
         }
         if (currentIntervalStart != -1)
         {
-            intervals.push_back(make_pair(currentIntervalStart, winEnd));
+            intervals.push_back(Interval(currentIntervalStart, winEnd));
         }
         return intervals;
     }

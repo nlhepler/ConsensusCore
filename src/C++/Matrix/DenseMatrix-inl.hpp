@@ -41,8 +41,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <cassert>
-#include <utility>
 
+#include "Interval.hpp"
 #include "Matrix/DenseMatrix.hpp"
 #include "Utils.hpp"
 
@@ -96,12 +96,12 @@ namespace ConsensusCore {
     DenseMatrix::FinishEditingColumn(int j, int usedRowsBegin, int usedRowsEnd)
     {
         assert(columnBeingEdited_ == j);
-        usedRanges_[j] = std::make_pair(usedRowsBegin, usedRowsEnd);
+        usedRanges_[j] = Interval(usedRowsBegin, usedRowsEnd);
         DEBUG_ONLY(CheckInvariants(columnBeingEdited_));
         columnBeingEdited_ = -1;
     }
 
-    inline std::pair<int, int>
+    inline Interval
     DenseMatrix::UsedRowRange(int j) const
     {
         assert(0 <= j && j < (int)usedRanges_.size());
@@ -155,7 +155,7 @@ namespace ConsensusCore {
         std::fill_n((float*)&boost_dense_matrix::operator()(begin, j),  // NOLINT
                     end - begin,
                     value_type());
-        usedRanges_[j] = std::make_pair(0, 0);
+        usedRanges_[j] = Interval(0, 0);
         DEBUG_ONLY(CheckInvariants(j);)
     }
 

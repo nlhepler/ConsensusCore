@@ -43,6 +43,7 @@
 #include <utility>
 #include <vector>
 
+#include "Interval.hpp"
 #include "LFloat.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
@@ -74,7 +75,7 @@ namespace ConsensusCore {
     public:  // Information about entries filled by column
         void StartEditingColumn(int j, int hintBegin, int hintEnd);
         void FinishEditingColumn(int j, int usedBegin, int usedEnd);
-        std::pair<int, int> UsedRowRange(int j) const;
+        Interval UsedRowRange(int j) const;
         bool IsColumnEmpty(int j) const;
         int UsedEntries() const;
         int AllocatedEntries() const;  // an entry may be stored but not filled
@@ -106,7 +107,7 @@ namespace ConsensusCore {
         void ToHostMatrix(float** mat, int* rows, int* cols) const;
 
     private:
-        std::vector<std::pair<int, int> > usedRanges_;
+        std::vector<Interval> usedRanges_;
         int columnBeingEdited_;
         void CheckInvariants(int column) const;
     };

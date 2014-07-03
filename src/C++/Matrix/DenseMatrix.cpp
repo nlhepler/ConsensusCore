@@ -54,7 +54,7 @@ namespace ConsensusCore {
 
     DenseMatrix::DenseMatrix(int rows, int cols)
         : boost_dense_matrix(rows, cols),
-          usedRanges_(cols, std::make_pair(0, 0)),
+          usedRanges_(cols, Interval(0, 0)),
           columnBeingEdited_(-1)
     {
         for (int j = 0; j < cols; j++)

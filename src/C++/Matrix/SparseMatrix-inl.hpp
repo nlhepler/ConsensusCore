@@ -40,8 +40,8 @@
 #include <algorithm>
 #include <boost/tuple/tuple.hpp>
 #include <cassert>
-#include <utility>
 
+#include "Interval.hpp"
 #include "Matrix/SparseMatrix.hpp"
 #include "LFloat.hpp"
 
@@ -100,12 +100,12 @@ namespace ConsensusCore {
     SparseMatrix::FinishEditingColumn(int j, int usedRowsBegin, int usedRowsEnd)
     {
         assert(columnBeingEdited_ == j);
-        usedRanges_[j] = std::make_pair(usedRowsBegin, usedRowsEnd);
+        usedRanges_[j] = Interval(usedRowsBegin, usedRowsEnd);
         DEBUG_ONLY(CheckInvariants(columnBeingEdited_));
         columnBeingEdited_ = -1;
     }
 
-    inline std::pair<int, int>
+    inline Interval
     SparseMatrix::UsedRowRange(int j) const
     {
         assert(0 <= j && j < (int)usedRanges_.size());
@@ -158,7 +158,7 @@ namespace ConsensusCore {
     inline void
     SparseMatrix::ClearColumn(int j)
     {
-        usedRanges_[j] = std::make_pair(0, 0);
+        usedRanges_[j] = Interval(0, 0);
         columns_[j]->Clear();
         DEBUG_ONLY(CheckInvariants(j);)
     }

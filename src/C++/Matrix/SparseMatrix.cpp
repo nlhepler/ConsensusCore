@@ -35,19 +35,19 @@
 
 // Author: David Alexander
 
-#include "Matrix/SparseMatrix.hpp"
-
 #include <algorithm>
 #include <boost/tuple/tuple.hpp>
 #include <limits>
 #include <vector>
+
+#include "Matrix/SparseMatrix.hpp"
 
 namespace ConsensusCore {
     // Performance insensitive routines are not inlined
 
     SparseMatrix::SparseMatrix(int rows, int cols)
         : columns_(cols),  nCols_(cols), nRows_(rows), columnBeingEdited_(-1),
-          usedRanges_(cols, std::make_pair(0, 0))
+          usedRanges_(cols, Interval(0, 0))
     {
         for (int j = 0; j < nCols_; j++)
         {
