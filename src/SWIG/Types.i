@@ -17,9 +17,15 @@ using namespace ConsensusCore;
 
 %include "Types.hpp"
 
+// Need to see this definition before we see intervals.
 namespace std {
-  %template(Interval)               std::pair<int, int>;
-  %template(IntervalVector)         std::vector<Interval>;
+  %template(IntPair)                std::pair<int, int>;
+};
+
+%include "Interval.hpp"
+
+namespace std {
+  %template(IntervalVector)         std::vector<ConsensusCore::Interval>;
   %template(IntVector)              std::vector<int>;
   %template(FloatVector)            std::vector<float>;
   %template(StringVector)           std::vector<string>;
