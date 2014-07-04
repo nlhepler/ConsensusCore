@@ -97,4 +97,21 @@ namespace ConsensusCore
         r.FillAlphaBeta(e, *alpha, *beta);
         return alpha;
     }
+
+    const SparseMatrix*
+    ReadScorer::Beta(const string& tpl, const QvSequenceFeatures & read) const
+    {
+        int I, J;
+        SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
+        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+
+        I = read.Length();
+        J = tpl.length();
+        SparseMatrix *alpha = new SparseMatrix(I+1, J+1);
+        SparseMatrix *beta  = new SparseMatrix(I+1, J+1);
+        r.FillAlphaBeta(e, *alpha, *beta);
+        return beta;
+    }
+
+
 }

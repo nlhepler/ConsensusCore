@@ -61,6 +61,10 @@ namespace ConsensusCore
         const SparseMatrix* Alpha
         (const std::string& tpl, const QvSequenceFeatures& read) const;
 
+        const SparseMatrix* Beta
+        (const std::string& tpl, const QvSequenceFeatures& read) const;
+
+
     private:
         QuiverConfig _quiverConfig;
     };
