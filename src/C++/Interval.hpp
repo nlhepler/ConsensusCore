@@ -40,27 +40,44 @@
 #include <algorithm>
 #include <utility>
 
+#include <boost/tuple/tuple.hpp>
+
 namespace ConsensusCore {
 
-    class Interval : public std::pair<int, int>
+    struct Interval
     {
-    public:
-        Interval() : std::pair<int, int>() {}
-        Interval(const int& a, const int& b) : std::pair<int, int>(a, b) {}
+        int Begin;
+        int End;
 
-        inline
-        Interval& operator=(const std::pair<int, int>& p)
+        Interval() : Begin(0), End(0) {}
+        Interval(const int& b, const int& e) : Begin(b), End(e) {}
+
+        bool operator==(const Interval& other) const
         {
-            std::pair<int, int>::operator=(p);
-            return *this;
+            return (Begin == other.Begin &&
+                    End   == other.End);
         }
+
+#ifndef SWIG
+        operator boost::tuple<int, int>()
+        {
+            return boost::make_tuple(Begin, End);
+        }
+
+        operator boost::tuple<int&, int&>()
+        {
+            return boost::make_tuple(boost::ref(Begin), boost::ref(End));
+        }
+#endif
     };
+
+
 
     inline Interval
     RangeUnion(const Interval& range1, const Interval& range2)
     {
-        return Interval(std::min(range1.first, range2.first),
-                        std::max(range1.second, range2.second));
+        return Interval(std::min(range1.Begin, range2.Begin),
+                        std::max(range1.End, range2.End));
     }
 
     inline Interval

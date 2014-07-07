@@ -337,7 +337,7 @@ namespace ConsensusCore {
             }
             else
             {
-                beginRow = alpha.UsedRowRange(alpha.Columns() - 1).first;
+                beginRow = alpha.UsedRowRange(alpha.Columns() - 1).Begin;
                 endRow = alpha.Rows();
             }
 
@@ -434,7 +434,7 @@ namespace ConsensusCore {
             if (j < 0)
             {
                 beginRow = 0;
-                endRow = beta.UsedRowRange(0).second;
+                endRow = beta.UsedRowRange(0).End;
             }
             else
             {

@@ -41,6 +41,7 @@
 #include "Types.hpp"
 #include "Edna/EdnaEvaluator.hpp"
 #include "Quiver/MutationScorer.hpp"
+#include "Interval.hpp"
 
 namespace ConsensusCore
 {

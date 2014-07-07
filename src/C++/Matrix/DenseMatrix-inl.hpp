@@ -112,7 +112,7 @@ namespace ConsensusCore {
     DenseMatrix::IsColumnEmpty(int j) const
     {
         assert(0 <= j && j < (int)usedRanges_.size());
-        return (usedRanges_[j].first >= usedRanges_[j].second);
+        return (usedRanges_[j].Begin >= usedRanges_[j].End);
     }
 
     //

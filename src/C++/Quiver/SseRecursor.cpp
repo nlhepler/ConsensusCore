@@ -462,7 +462,7 @@ namespace ConsensusCore {
             }
             else
             {
-                beginRow = alpha.UsedRowRange(alpha.Columns() - 1).first;
+                beginRow = alpha.UsedRowRange(alpha.Columns() - 1).Begin;
                 endRow = alpha.Rows();
             }
 

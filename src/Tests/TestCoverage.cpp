@@ -45,7 +45,7 @@ using namespace ConsensusCore;  // NOLINT
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 
-#define t(a, b) Interval((a), (b))
+#define t(a, b) (Interval((a), (b)))
 
 TEST(CoverageTests, CoverageInWindowTest)
 {

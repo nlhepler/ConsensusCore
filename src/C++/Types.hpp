@@ -58,7 +58,7 @@ namespace ConsensusCore {
     struct SequenceFeatures;
     class SparseMatrix;
     class Mutation;
-    class Interval;
+    struct Interval;
 }
 
 namespace ConsensusCore {
