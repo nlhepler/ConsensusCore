@@ -33,6 +33,7 @@ namespace boost {
 %include "Simulation.i"
 %include "Statistics.i"
 %include "Version.i"
+%include "Mutation.i"
 
 %include "Edna.i"
 

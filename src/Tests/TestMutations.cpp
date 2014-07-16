@@ -100,8 +100,8 @@ TEST(MutationTest, ApplyMutationsTest)
     EXPECT_TRUE(m3 < m4);
     EXPECT_TRUE(m4 < m5);
 
-    std::vector<Mutation*> muts;
-    muts += &m3, &m2, &m1, &m5, &m4;  // put in arbitrary order
+    std::vector<Mutation> muts;
+    muts += m3, m2, m1, m5, m4;  // put in arbitrary order
 
     EXPECT_EQ("GGATTCTCT", ApplyMutations(muts, tpl));
     EXPECT_EQ("GATTACA", tpl);
@@ -115,8 +115,8 @@ TEST(MutationTest, ApplyMutationsToSamePositionTest)
     Mutation m1(INSERTION, 2, 'T');
     Mutation m2(SUBSTITUTION, 2, 'A');
 
-    std::vector<Mutation*> muts;
-    muts += &m2, &m1;
+    std::vector<Mutation> muts;
+    muts += m2, m1;
 
     EXPECT_EQ("GATATACA", ApplyMutations(muts, tpl));
 }
@@ -128,17 +128,17 @@ TEST(MutationTest, MutationsToTranscript)
     Mutation insertMutation1(INSERTION, 1, 'T');
     Mutation insertMutation2(INSERTION, 5, 'C');
 
-    std::vector<Mutation*> muts;
+    std::vector<Mutation> muts;
     ASSERT_EQ("MMMMMMM", MutationsToTranscript(muts, tpl));
 
-    muts += &insertMutation2, &insertMutation1;
+    muts += insertMutation2, insertMutation1;
     ASSERT_EQ("MIMMMMIMM", MutationsToTranscript(muts, tpl));
 
     Mutation m1(DELETION, 2, '-');
     Mutation m2(INSERTION, 5, 'C');
     Mutation m3(SUBSTITUTION, 4, 'G');
-    std::vector<Mutation*> muts2;
-    muts2 += &m1, &m2, &m3;
+    std::vector<Mutation> muts2;
+    muts2 += m1, m2, m3;
     ASSERT_EQ("MMDMRIMM", MutationsToTranscript(muts2, tpl));
 }
 
@@ -150,11 +150,11 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
         //              "GATTACA" -> (Del T@2, Ins C@5) -> "GATACCA";
         //    here mtp = 01223567.
         string tpl = "GATTACA";
-        std::vector<Mutation*> muts;
+        std::vector<Mutation> muts;
         Mutation m1(DELETION, 2, '-');
         Mutation m2(INSERTION, 5, 'C');
         Mutation m3(SUBSTITUTION, 4, 'G');
-        muts += &m1, &m2, &m3;
+        muts += m1, m2, m3;
         int expectedMtp[] = { 0, 1, 2, 2, 3, 5, 6, 7 };
         ASSERT_THAT(TargetToQueryPositions(muts, tpl), ElementsAreArray(expectedMtp));
     }
@@ -162,9 +162,9 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
     // "GG" -> (Ins A@0) -> "AGG": mtp = 123
     {
         std::string tpl2 = "GG";
-        std::vector<Mutation*> muts2;
+        std::vector<Mutation> muts2;
         Mutation m(INSERTION, 0, 'A');
-        muts2 += &m;
+        muts2 += m;
         int expectedMtp2[] = { 1, 2, 3 };
         ASSERT_THAT(TargetToQueryPositions(muts2, tpl2), ElementsAreArray(expectedMtp2));
     }
@@ -172,9 +172,9 @@ TEST(MutationTest, MutatedTemplatePositionsTest)
     // "AGG" -> (Del A@0) -> "GG": mtp = 0012
     {
         std::string tpl3 = "AGG";
-        std::vector<Mutation*> muts3;
+        std::vector<Mutation> muts3;
         Mutation m(DELETION, 0, '-');
-        muts3 += &m;
+        muts3 += m;
         int expectedMtp3[] = { 0, 0, 1, 2 };
         ASSERT_THAT(TargetToQueryPositions(muts3, tpl3), ElementsAreArray(expectedMtp3));
     }

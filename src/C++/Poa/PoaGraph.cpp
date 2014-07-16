@@ -238,7 +238,7 @@ namespace ConsensusCore
         void AddSequence(const std::string& sequence, const PoaConfig& config);
 
         // TODO(dalexander): make this const
-        tuple<string, float, vector< pair<Mutation*, float> >*>
+        tuple<string, float, vector<ScoredMutation>*>
         FindConsensus(const PoaConfig& config);
 
         int NumSequences() const;
@@ -721,7 +721,7 @@ namespace ConsensusCore
     }
 
 
-    tuple<string, float, vector< pair<Mutation*, float> >* >
+    tuple<string, float, vector<ScoredMutation>* >
     PoaGraph::Impl::FindConsensus(const PoaConfig& config)
     {
         std::stringstream ss;
@@ -736,7 +736,7 @@ namespace ConsensusCore
         // if requested, identify likely sequence variants
 
         // will be deallocated by PoaConsensus destructor.
-        vector< pair<Mutation*, float> >* variants = new vector< pair<Mutation*, float> >();
+        vector<ScoredMutation>* variants = new vector<ScoredMutation>();
 
         if (true)  // TODO(dalexander): Add a flag to PoaConfig
         {
@@ -751,7 +751,7 @@ namespace ConsensusCore
                 if (children.find(bestPath[i + 2]) != children.end())
                 {
                     float score = -vertexInfoMap_[bestPath[i + 1]]->Score;
-                    variants->push_back(make_pair(new Mutation(DELETION, i + 1, '-'), score));
+                    variants->push_back(make_pair(Mutation(DELETION, i + 1, '-'), score));
                 }
 
                 // Look for a child node that connects immediately back to i + 1.
@@ -784,7 +784,7 @@ namespace ConsensusCore
                 {
                     char base = vertexInfoMap_[bestInsertVertex]->Base;
                     variants->push_back(
-                            make_pair(new Mutation(INSERTION, i + 1, base), bestInsertScore));
+                            make_pair(Mutation(INSERTION, i + 1, base), bestInsertScore));
                 }
 
                 // Look for a child node not in the consensus that connects immediately
@@ -819,7 +819,7 @@ namespace ConsensusCore
                     // difference, no?
                     char base = vertexInfoMap_[bestMismatchVertex]->Base;
                     variants->push_back(
-                            make_pair(new Mutation(SUBSTITUTION, i + 1, base), bestMismatchScore));
+                            make_pair(Mutation(SUBSTITUTION, i + 1, base), bestMismatchScore));
                 }
             }
         }
@@ -866,7 +866,7 @@ namespace ConsensusCore
         return impl->NumSequences();
     }
 
-    tuple<string, float, std::vector< std::pair<Mutation*, float> >* >
+    tuple<string, float, std::vector<ScoredMutation>* >
     PoaGraph::FindConsensus(const PoaConfig& config) const
     {
         return impl->FindConsensus(config);

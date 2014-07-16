@@ -300,8 +300,8 @@ TYPED_TEST(MultiReadMutationScorerTest, BasicTest)
     EXPECT_EQ(-16, mScorer.Score(deletionMutation));
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
 
-    std::vector<Mutation*> muts;
-    muts += &insertMutation;
+    std::vector<Mutation> muts;
+    muts += insertMutation;
     mScorer.ApplyMutations(muts);
     EXPECT_EQ("TTGATTAACATT", mScorer.Template());
 
@@ -320,20 +320,15 @@ TYPED_TEST(MultiReadMutationScorerTest, ManyMutationTest)
     mScorer.AddRead(mr);
 
 
-    std::vector<Mutation*> muts;
+    std::vector<Mutation> muts;
     for (int i = 0; i < tpl.length(); i+=2)
     {
-        Mutation* mutation = new Mutation(SUBSTITUTION, i, 'A');
+        Mutation mutation(SUBSTITUTION, i, 'A');
         muts += mutation;
     }
 
     mScorer.ApplyMutations(muts);
     EXPECT_EQ(tpl.length(), mScorer.Template().length());
-
-    foreach (Mutation* mut, muts)
-    {
-        delete mut;
-    }
 }
 
 
@@ -365,8 +360,8 @@ TYPED_TEST(MultiReadMutationScorerTest, CopyConstructorTest)
     EXPECT_EQ("TTGATTACATT", mScorer.Template());
 
     // Apply mutation to copy
-    std::vector<Mutation*> muts;
-    muts += &insertMutation;
+    std::vector<Mutation> muts;
+    muts += insertMutation;
     mCopy.ApplyMutations(muts);
 
     // copy template should change
@@ -423,8 +418,8 @@ TYPED_TEST(MultiReadMutationScorerTest, ReverseStrandTest)
     EXPECT_EQ(2*params.Nce      , mScorer.Score(deletionMutation));
     EXPECT_EQ("AATGTAATCAA"     , mScorer.Template());
 
-    std::vector<Mutation*> muts;
-    muts += &insertMutation;
+    std::vector<Mutation> muts;
+    muts += insertMutation;
     mScorer.ApplyMutations(muts);
     EXPECT_EQ("AATGTTAATCAA", mScorer.Template());
 
@@ -516,8 +511,8 @@ TYPED_TEST(MultiReadMutationScorerTest, NonSpanningReadsTest1)
 
     EXPECT_EQ(tpl, mScorer.Template());
 
-    std::vector<Mutation*> muts;
-    muts += &insertMutation1, &insertMutation2;
+    std::vector<Mutation> muts;
+    muts += insertMutation1, insertMutation2;
     mScorer.ApplyMutations(muts);
     EXPECT_EQ("AATGTTAATCAATTGATTAACATT", mScorer.Template());
 }

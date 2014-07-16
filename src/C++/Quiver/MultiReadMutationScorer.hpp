@@ -68,7 +68,7 @@ namespace ConsensusCore {
                                      int templateStart,
                                      int templateEnd) const = 0;
 
-        virtual void ApplyMutations(const std::vector<Mutation*>& mutations) = 0;
+        virtual void ApplyMutations(const std::vector<Mutation>& mutations) = 0;
 
         // Reads provided must be clipped to the reference/scaffold window implied by the
         // template, however they need not span the window entirely---nonspanning reads
@@ -136,7 +136,7 @@ namespace ConsensusCore {
 
         std::string Template(StrandEnum strand = FORWARD_STRAND) const;
         std::string Template(StrandEnum strand, int templateStart, int templateEnd) const;
-        void ApplyMutations(const std::vector<Mutation*>& mutations);
+        void ApplyMutations(const std::vector<Mutation>& mutations);
 
         // Reads provided must be clipped to the reference/scaffold window implied by the
         // template, however they need not span the window entirely---nonspanning reads

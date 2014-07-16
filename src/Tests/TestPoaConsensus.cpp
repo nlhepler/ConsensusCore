@@ -519,7 +519,6 @@ TEST(PoaConsensus, TestVerboseGraphVizOutput)
 TEST(PoaConsensus, TestMutations)
 {
     using ::testing::ElementsAreArray;
-    typedef std::pair<Mutation*, float> ScoredMutation;
 
     vector<std::string> reads;
     reads += "TGATTACAT",
@@ -534,10 +533,10 @@ TEST(PoaConsensus, TestMutations)
     std::vector<string> variantDescriptions;
     foreach (const ScoredMutation& scoredMutation, *scoredMutations)
     {
-        const Mutation* variant;
+        Mutation variant;
         float score;
         boost::tie(variant, score) = scoredMutation;
-        variantDescriptions.push_back(variant->ToString());
+        variantDescriptions.push_back(variant.ToString());
     }
     sort(variantDescriptions.begin(), variantDescriptions.end());
     const char* expectedDescriptions[] = { "Deletion @5:6",

@@ -65,7 +65,7 @@ namespace ConsensusCore
         // TODO(dalexander): move this method to PoaConsensus so we don't have to use a tuple
         // interface here (which was done to avoid a circular dep on PoaConsensus).
 #ifndef SWIG
-        boost::tuple<std::string, float, std::vector< std::pair<Mutation*, float> >* >
+        boost::tuple<std::string, float, std::vector<ScoredMutation>* >
         FindConsensus(const PoaConfig& config) const;
 #endif  // !SWIG
 

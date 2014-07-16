@@ -39,9 +39,11 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 #include <ostream>
 
 #include "Types.hpp"
+#include "Utils.hpp"
 
 namespace ConsensusCore
 {
@@ -62,9 +64,14 @@ namespace ConsensusCore
         bool CheckInvariants() const;
 
     public:
+
         Mutation(MutationType type, int start, int end, std::string newBases);
         Mutation(MutationType type, int position, char base);
         Mutation(const Mutation& other);
+
+        // Note: this defines a default mutation.  This is really only needed to fix
+        // SWIG compilation.
+        Mutation();
 
         MutationType Type() const;
 
@@ -94,13 +101,16 @@ namespace ConsensusCore
     std::ostream& operator<<(std::ostream& out, const Mutation& m);
 
     std::string ApplyMutation(const Mutation& mut, const std::string& tpl);
-    std::string ApplyMutations(const std::vector<Mutation*>& muts, const std::string& tpl);
+    std::string ApplyMutations(const std::vector<Mutation>& muts, const std::string& tpl);
 
-    std::string MutationsToTranscript(const std::vector<Mutation*>& muts,
+    std::string MutationsToTranscript(const std::vector<Mutation>& muts,
                                       const std::string& tpl);
 
-    std::vector<int> TargetToQueryPositions(const std::vector<Mutation*>& mutations,
+    std::vector<int> TargetToQueryPositions(const std::vector<Mutation>& mutations,
                                             const std::string& tpl);
+
+
+    typedef std::pair<Mutation, float> ScoredMutation;
 }
 
 #include "Mutation-inl.hpp"

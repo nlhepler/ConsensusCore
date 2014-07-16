@@ -30,7 +30,4 @@ namespace std {
   %template(FloatVector)            std::vector<float>;
   %template(StringVector)           std::vector<string>;
   %template(FeaturesVector)         std::vector<const ConsensusCore::SequenceFeatures*>;
-  %template(ScoredMutation)         std::pair<ConsensusCore::Mutation*, float>;
-  %template(ScoredMutationVector)   std::vector< std::pair<ConsensusCore::Mutation*, float> >;
-  %template(MutationVector)         std::vector<ConsensusCore::Mutation*>;
 };

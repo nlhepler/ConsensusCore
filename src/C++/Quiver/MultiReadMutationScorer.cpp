@@ -218,7 +218,7 @@ namespace ConsensusCore
 
     template<typename R>
     void
-    MultiReadMutationScorer<R>::ApplyMutations(const std::vector<Mutation*>& mutations)
+    MultiReadMutationScorer<R>::ApplyMutations(const std::vector<Mutation>& mutations)
     {
         DEBUG_ONLY(CheckInvariants());
         std::vector<int> mtp = TargetToQueryPositions(mutations, fwdTemplate_);

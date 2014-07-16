@@ -46,6 +46,14 @@
 namespace ConsensusCore {
 
     inline
+    Mutation::Mutation()
+        : type_(SUBSTITUTION),
+          start_(0),
+          end_(1),
+          newBases_("A")
+    {}
+
+    inline
     Mutation::Mutation(MutationType type, int start, int end, std::string newBases)
         : type_(type),
           start_(start),
@@ -85,6 +93,9 @@ namespace ConsensusCore {
               (type_ == DELETION  && (start_ < end_)  && newBases_.length() == 0) ||
               (type_ == SUBSTITUTION && (start_ < end_) && ((int)(newBases_.length()) == end_ - start_)))) // NOLINT
         {
+            return false;
+        }
+        if (!(type_ == INSERTION || type_ == DELETION || type_ == SUBSTITUTION)) {
             return false;
         }
         return true;

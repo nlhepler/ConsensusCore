@@ -54,7 +54,7 @@ namespace ConsensusCore
     {
         std::string consensusSequence_;
         PoaConfig config_;
-        std::vector< std::pair<Mutation*, float> >* variants_;
+        std::vector< std::pair<Mutation, float> >* variants_;
         PoaGraph* poaGraph_;
         float score_;
 
@@ -78,6 +78,6 @@ namespace ConsensusCore
         std::string ToString() const;
 
         // Mutations interface
-        const std::vector< std::pair<Mutation*, float> >* Mutations() const;
+        const std::vector< std::pair<Mutation, float> >* Mutations() const;
     };
 }

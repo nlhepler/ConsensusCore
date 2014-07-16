@@ -104,53 +104,49 @@ namespace ConsensusCore
         return tplCopy;
     }
 
-    struct compareMutationPointers {
-        bool operator() (Mutation* lhs, Mutation* rhs) { return *lhs < *rhs; }
-    };
-
     std::string
-    ApplyMutations(const std::vector<Mutation*>& muts, const std::string& tpl)
+    ApplyMutations(const std::vector<Mutation>& muts, const std::string& tpl)
     {
         std::string tplCopy(tpl);
-        std::vector<Mutation*> sortedMuts(muts);
-        std::sort(sortedMuts.begin(), sortedMuts.end(), compareMutationPointers());
+        std::vector<Mutation> sortedMuts(muts);
+        std::sort(sortedMuts.begin(), sortedMuts.end());
         int runningLengthDiff = 0;
-        foreach (const Mutation* mut, sortedMuts)
+        foreach (const Mutation& mut, sortedMuts)
         {
-            _ApplyMutationInPlace(*mut, mut->Start() + runningLengthDiff, &tplCopy);
-            runningLengthDiff += mut->LengthDiff();
+            _ApplyMutationInPlace(mut, mut.Start() + runningLengthDiff, &tplCopy);
+            runningLengthDiff += mut.LengthDiff();
         }
         return tplCopy;
     }
 
-    std::string MutationsToTranscript(const std::vector<Mutation*>& mutations,
+    std::string MutationsToTranscript(const std::vector<Mutation>& mutations,
                                       const std::string& tpl)
     {
-        std::vector<Mutation*> sortedMuts(mutations);
-        std::sort(sortedMuts.begin(), sortedMuts.end(), compareMutationPointers());
+        std::vector<Mutation> sortedMuts(mutations);
+        std::sort(sortedMuts.begin(), sortedMuts.end());
 
         // Build an alignnment transcript corresponding to these mutations.
         int tpos = 0;
         std::string transcript = "";
-        foreach (const Mutation* m, sortedMuts)
+        foreach (const Mutation& m, sortedMuts)
         {
-            for (; tpos < m->Start(); ++tpos)
+            for (; tpos < m.Start(); ++tpos)
             {
                 transcript.push_back('M');
             }
 
-            if (m->IsInsertion())
+            if (m.IsInsertion())
             {
-                transcript += std::string(m->LengthDiff(), 'I');
+                transcript += std::string(m.LengthDiff(), 'I');
             }
-            else if (m->IsDeletion())
+            else if (m.IsDeletion())
             {
-                transcript += std::string(-m->LengthDiff(), 'D');
-                tpos += -m->LengthDiff();
+                transcript += std::string(-m.LengthDiff(), 'D');
+                tpos += -m.LengthDiff();
             }
-            else if (m->IsSubstitution())
+            else if (m.IsSubstitution())
             {
-                int len = m->End() - m->Start();
+                int len = m.End() - m.Start();
                 transcript += std::string(len, 'R');
                 tpos += len;
             }
@@ -186,7 +182,7 @@ namespace ConsensusCore
     //      - t[4,7)=="ACA" has become t[3,7)=="ACCA",
     //      - t[5,7)=="CA"  remains "CA"==t'[5,7).
     //
-    std::vector<int> TargetToQueryPositions(const std::vector<Mutation*>& mutations,
+    std::vector<int> TargetToQueryPositions(const std::vector<Mutation>& mutations,
                                             const std::string& tpl)
     {
         return TargetToQueryPositions(MutationsToTranscript(mutations, tpl));
