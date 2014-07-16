@@ -108,31 +108,45 @@ namespace ConsensusCore
 
     bool QuiverConsensus::IterateToConsensus(AbstractMultiReadMutationScorer& mms)
     {
+
+        bool isConverged = false;
+        float score = mms.BaselineScore();
+
         vector<Mutation> favorableMuts;
         vector<ScoredMutation> favorableMutsAndScores;
 
-        bool isConverged = false;
         for (int round = 1; round <= MAX_ROUNDS; round++)
         {
+            vector<Mutation> mutationsToTry;
+
+            if (mms.BaselineScore() < score)
+            {
+                // Usually recoverable, so allow iteration to continue
+                LOG_INFO("Score decrease");
+            }
+            score = mms.BaselineScore();
+
             //
             // Try all mutations in round 1.  In subsequent rounds, try mutations
             // nearby those used in previous round.
             //
-            vector<Mutation> mutationsToTry;
             if (round == 1) {
                 mutationsToTry = AllUniqueMutations(mms.Template());
             } else {
-                mutationsToTry = UniqueMutationsNearby(mms.Template(), mutationsToTry, MUT_NEIGHBORHOOD);
+                mutationsToTry = UniqueMutationsNearby(mms.Template(), favorableMuts, MUT_NEIGHBORHOOD);
             }
 
             //
             // Screen for favorable mutations.  If none, we are done (converged).
             //
+            favorableMuts.clear();
+            favorableMutsAndScores.clear();
             foreach (const Mutation& m, mutationsToTry)
             {
                 if (mms.FastIsFavorable(m)) {
-                    float score = mms.Score(m);
-                    favorableMutsAndScores.push_back(make_pair(m, score));
+                    float mutScore = mms.Score(m);
+                    favorableMutsAndScores.push_back(make_pair(m, mutScore));
+                    favorableMuts.push_back(m);
                 }
             }
             if (favorableMutsAndScores.empty())
