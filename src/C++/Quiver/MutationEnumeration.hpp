@@ -44,9 +44,14 @@
 
 namespace ConsensusCore
 {
-	std::vector<Mutation> AllMutations(std::string tpl, int, int);
-	std::vector<Mutation> AllMutations(std::string tpl);
+    std::vector<Mutation> AllMutations(std::string tpl, int, int);
+    std::vector<Mutation> AllMutations(std::string tpl);
 
-	std::vector<Mutation> AllUniqueMutations(std::string tpl, int, int);
-	std::vector<Mutation> AllUniqueMutations(std::string tpl);
+    std::vector<Mutation> AllUniqueMutations(std::string tpl, int, int);
+    std::vector<Mutation> AllUniqueMutations(std::string tpl);
+
+    std::vector<Mutation> UniqueMutationsNearby(std::string tpl,
+                                                std::vector<Mutation> centers,
+                                                int neighborhoodSize);
+
 }

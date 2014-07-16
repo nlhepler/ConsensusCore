@@ -39,6 +39,7 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 
 #include "Types.hpp"
 
@@ -90,6 +91,7 @@ namespace ConsensusCore
         bool operator<(const Mutation& other) const;
     };
 
+    std::ostream& operator<<(std::ostream& out, const Mutation& m);
 
     std::string ApplyMutation(const Mutation& mut, const std::string& tpl);
     std::string ApplyMutations(const std::vector<Mutation*>& muts, const std::string& tpl);

@@ -38,6 +38,7 @@
 #include <boost/range/as_array.hpp>
 #include <vector>
 #include <string>
+#include <set>
 
 #include <Types.hpp>
 #include <Utils.hpp>
@@ -68,9 +69,9 @@ namespace ConsensusCore
     }
 
     std::vector<Mutation> AllMutations(std::string tpl)
-	{
-    	return AllMutations(tpl, 0, tpl.length());
-	}
+    {
+        return AllMutations(tpl, 0, tpl.length());
+    }
 
     std::vector<Mutation> AllUniqueMutations(std::string tpl, int beginPos, int endPos)
     {
@@ -95,7 +96,31 @@ namespace ConsensusCore
     }
 
     std::vector<Mutation> AllUniqueMutations(std::string tpl)
-	{
-    	return AllUniqueMutations(tpl, 0, tpl.length());
-	}
+    {
+        return AllUniqueMutations(tpl, 0, tpl.length());
+    }
+
+    ///
+    /// Enumerate all mutations within a neighborhood of another set of
+    /// mutations of interest.  Note that the neighborhoods are presently
+    /// lopsided due to the end-exclusive definition for how we do ranges.
+    /// (In other words a neighborhood of size 2 includes two before but one
+    //   after).
+    std::vector<Mutation> UniqueMutationsNearby(std::string tpl,
+                                                std::vector<Mutation> centers,
+                                                int neighborhoodSize)
+    {
+        std::set<Mutation> muts;
+        foreach (const Mutation& center, centers)
+        {
+            int c = center.Start();
+            int l = std::max(c - neighborhoodSize, 0);
+            int r = std::min(c + neighborhoodSize, (int)tpl.length());
+            std::vector<Mutation> mutsInRange = AllUniqueMutations(tpl, l, r);
+            muts.insert(mutsInRange.begin(), mutsInRange.end());
+        }
+        std::vector<Mutation> result;
+        std::copy(muts.begin(), muts.end(), back_inserter(result));
+        return result;
+    }
 }

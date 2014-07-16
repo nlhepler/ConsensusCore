@@ -72,6 +72,13 @@ namespace ConsensusCore
         }
     }
 
+    std::ostream& operator<<(std::ostream& out, const Mutation& m)
+    {
+        out << m.ToString();
+        return out;
+    }
+
+
     static void
     _ApplyMutationInPlace(const Mutation& mut, int start, std::string* tpl)
     {

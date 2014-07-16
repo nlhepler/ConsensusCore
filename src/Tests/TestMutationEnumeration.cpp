@@ -63,14 +63,34 @@ using ::testing::ElementsAreArray;
 
 TEST(MutationEnumerationTest, TestAllMutations)
 {
-	 std::string tpl = "GAATC";
-	 std::vector<Mutation> result = AllMutations(tpl);
-	 EXPECT_EQ(8*tpl.length(), result.size());
+    std::string tpl = "GAATC";
+    std::vector<Mutation> result = AllMutations(tpl);
+    EXPECT_EQ(8*tpl.length(), result.size());
 }
 
 TEST(MutationEnumerationTest, TestUniqueMutations)
 {
-	 std::string tpl = "GAATC";
-	 std::vector<Mutation> result = AllUniqueMutations(tpl);
-	 EXPECT_EQ(7*tpl.length() + 1, result.size());
+    std::string tpl = "GAATC";
+    std::vector<Mutation> result = AllUniqueMutations(tpl);
+    EXPECT_EQ(7*tpl.length() + 1, result.size());
+}
+
+
+TEST(MutationEnumerationTest, TestUniqueMutationsNearby)
+{
+    std::string tpl = "GAATC";
+
+    std::vector<Mutation> centers;
+    centers.push_back(Mutation(SUBSTITUTION, 1, 'T'));
+
+    std::vector<Mutation> result = UniqueMutationsNearby(tpl, centers, 1);
+    EXPECT_EQ(7*2 + 1, result.size());
+
+    result = UniqueMutationsNearby(tpl, centers, 2);
+    EXPECT_EQ(7*3 + 1, result.size());
+
+    centers.push_back(Mutation(SUBSTITUTION, 3, 'G'));
+    result = UniqueMutationsNearby(tpl, centers, 2);
+    std::vector<Mutation> expected = AllUniqueMutations(tpl);
+    EXPECT_THAT(result, ElementsAreArray(expected));
 }
