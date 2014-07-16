@@ -25,6 +25,7 @@ namespace boost {
 %include "Evaluator.i"
 %include "Exceptions.i"
 %include "Features.i"
+%include "Mutation.i"
 %include "QuiverConsensus.i"
 %include "Matrix.i"
 %include "PairwiseAlignment.i"
@@ -33,7 +34,6 @@ namespace boost {
 %include "Simulation.i"
 %include "Statistics.i"
 %include "Version.i"
-%include "Mutation.i"
 
 %include "Edna.i"
 
