@@ -10,6 +10,7 @@
 #include "Quiver/SseRecursor.hpp"
 #include "Quiver/ReadScorer.hpp"
 #include "Quiver/Diploid.hpp"
+#include "Quiver/QuiverConsensus.hpp"
 
 using namespace ConsensusCore;
 %}
@@ -45,6 +46,8 @@ using namespace ConsensusCore;
 %include "Quiver/SseRecursor.hpp"
 %include "Quiver/ReadScorer.hpp"
 %include "Quiver/Diploid.hpp"
+%include "Quiver/QuiverConsensus.hpp"
+
  
 namespace ConsensusCore {
     //
