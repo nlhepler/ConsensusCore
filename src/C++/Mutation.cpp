@@ -79,6 +79,12 @@ namespace ConsensusCore
     }
 
 
+    ScoredMutation Mutation::WithScore(float score) const
+    {
+        return ScoredMutation(*this, score);
+    }
+
+
     static void
     _ApplyMutationInPlace(const Mutation& mut, int start, std::string* tpl)
     {
@@ -186,5 +192,21 @@ namespace ConsensusCore
                                             const std::string& tpl)
     {
         return TargetToQueryPositions(MutationsToTranscript(mutations, tpl));
+    }
+
+
+    ScoredMutation::ScoredMutation(const Mutation& m, float score)
+        : Mutation(m),
+          score_(score)
+    {}
+
+    ScoredMutation::ScoredMutation()
+        : Mutation(),
+          score_(0)
+    {}
+
+    float ScoredMutation::Score() const
+    {
+        return score_;
     }
 }

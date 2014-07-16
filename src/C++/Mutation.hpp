@@ -96,6 +96,9 @@ namespace ConsensusCore
     public:
         bool operator==(const Mutation& other) const;
         bool operator<(const Mutation& other) const;
+
+    public:
+        ScoredMutation WithScore(float score) const;
     };
 
     std::ostream& operator<<(std::ostream& out, const Mutation& m);
@@ -110,7 +113,16 @@ namespace ConsensusCore
                                             const std::string& tpl);
 
 
-    typedef std::pair<Mutation, float> ScoredMutation;
+    class ScoredMutation : public Mutation
+    {
+    private:
+        float score_;
+
+    public:
+        ScoredMutation();
+        ScoredMutation(const Mutation& m, float score);
+        float Score() const;
+    };
 }
 
 #include "Mutation-inl.hpp"

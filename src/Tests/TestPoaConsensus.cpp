@@ -533,10 +533,7 @@ TEST(PoaConsensus, TestMutations)
     std::vector<string> variantDescriptions;
     foreach (const ScoredMutation& scoredMutation, *scoredMutations)
     {
-        Mutation variant;
-        float score;
-        boost::tie(variant, score) = scoredMutation;
-        variantDescriptions.push_back(variant.ToString());
+        variantDescriptions.push_back(scoredMutation.ToString());
     }
     sort(variantDescriptions.begin(), variantDescriptions.end());
     const char* expectedDescriptions[] = { "Deletion @5:6",

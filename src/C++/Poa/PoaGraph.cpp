@@ -751,7 +751,7 @@ namespace ConsensusCore
                 if (children.find(bestPath[i + 2]) != children.end())
                 {
                     float score = -vertexInfoMap_[bestPath[i + 1]]->Score;
-                    variants->push_back(make_pair(Mutation(DELETION, i + 1, '-'), score));
+                    variants->push_back(Mutation(DELETION, i + 1, '-').WithScore(score));
                 }
 
                 // Look for a child node that connects immediately back to i + 1.
@@ -784,7 +784,7 @@ namespace ConsensusCore
                 {
                     char base = vertexInfoMap_[bestInsertVertex]->Base;
                     variants->push_back(
-                            make_pair(Mutation(INSERTION, i + 1, base), bestInsertScore));
+                            Mutation(INSERTION, i + 1, base).WithScore(bestInsertScore));
                 }
 
                 // Look for a child node not in the consensus that connects immediately
@@ -819,7 +819,7 @@ namespace ConsensusCore
                     // difference, no?
                     char base = vertexInfoMap_[bestMismatchVertex]->Base;
                     variants->push_back(
-                            make_pair(Mutation(SUBSTITUTION, i + 1, base), bestMismatchScore));
+                            Mutation(SUBSTITUTION, i + 1, base).WithScore(bestMismatchScore));
                 }
             }
         }

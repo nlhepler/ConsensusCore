@@ -121,7 +121,7 @@ namespace ConsensusCore
         return "Poa Consensus: " + Sequence();
     }
 
-    const std::vector< std::pair<Mutation, float> >*
+    const std::vector<ScoredMutation>*
     PoaConsensus::Mutations() const
     {
         return variants_;

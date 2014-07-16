@@ -9,8 +9,7 @@ using namespace ConsensusCore;
 
 namespace std {
     %template(MutationVector)         std::vector<ConsensusCore::Mutation>;
-    %template(ScoredMutation)         std::pair<ConsensusCore::Mutation, float>;
-    %template(ScoredMutationVector)   std::vector< std::pair<ConsensusCore::Mutation, float> >;
+    %template(ScoredMutationVector)  std::vector<ConsensusCore::ScoredMutation>;
 };
 
 %include "Mutation.hpp"

@@ -66,7 +66,7 @@ namespace ConsensusCore
         vector<ScoredMutation> output;
         foreach (ScoredMutation s, input)
         {
-            int pos = s.first.Start();
+            int pos = s.Start();
             if (!(rStart <= pos &&  pos <= rEnd))
             {
                 output.push_back(s);
@@ -77,7 +77,7 @@ namespace ConsensusCore
 
     static bool ScoreComparer(ScoredMutation i, ScoredMutation j)
     {
-        return i.second < j.second;
+        return i.Score()< j.Score();
     }
 
     //    Given a list of (mutation, score) tuples, this utility method
@@ -97,12 +97,21 @@ namespace ConsensusCore
         {
             ScoredMutation& best = *max_element(input.begin(), input.end(), ScoreComparer);
             output.push_back(best);
-            int nStart = best.first.Start() - mutationSeparation;
-            int nEnd = best.first.Start() + mutationSeparation;
+            int nStart = best.Start() - mutationSeparation;
+            int nEnd = best.Start() + mutationSeparation;
             input = DeleteRange(input, nStart, nEnd);
         }
 
         return output;
+    }
+
+
+    // Sadly and annoyingly there is no covariance on std::vector in C++, so we have
+    // to explicitly project back down to the superclass type to use the APIs as written.
+    static std::vector<Mutation>
+    ProjectBack(const std::vector<ScoredMutation>& smuts)
+    {
+        return std::vector<Mutation>(smuts.begin(), smuts.end());
     }
 
 
@@ -112,13 +121,10 @@ namespace ConsensusCore
         bool isConverged = false;
         float score = mms.BaselineScore();
 
-        vector<Mutation> favorableMuts;
         vector<ScoredMutation> favorableMutsAndScores;
 
         for (int round = 1; round <= MAX_ROUNDS; round++)
         {
-            vector<Mutation> mutationsToTry;
-
             if (mms.BaselineScore() < score)
             {
                 // Usually recoverable, so allow iteration to continue
@@ -130,23 +136,22 @@ namespace ConsensusCore
             // Try all mutations in round 1.  In subsequent rounds, try mutations
             // nearby those used in previous round.
             //
+            vector<Mutation> mutationsToTry;
             if (round == 1) {
                 mutationsToTry = AllUniqueMutations(mms.Template());
             } else {
-                mutationsToTry = UniqueMutationsNearby(mms.Template(), favorableMuts, MUT_NEIGHBORHOOD);
+                mutationsToTry = UniqueMutationsNearby(mms.Template(), ProjectBack(favorableMutsAndScores), MUT_NEIGHBORHOOD);
             }
 
             //
             // Screen for favorable mutations.  If none, we are done (converged).
             //
-            favorableMuts.clear();
             favorableMutsAndScores.clear();
             foreach (const Mutation& m, mutationsToTry)
             {
                 if (mms.FastIsFavorable(m)) {
                     float mutScore = mms.Score(m);
-                    favorableMutsAndScores.push_back(make_pair(m, mutScore));
-                    favorableMuts.push_back(m);
+                    favorableMutsAndScores.push_back(m.WithScore(mutScore));
                 }
             }
             if (favorableMutsAndScores.empty())
@@ -159,12 +164,7 @@ namespace ConsensusCore
             // Go with the "best" subset of well-separated high scoring mutations
             //
             vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, MUT_SEPARATION);
-            vector<Mutation> bestMutations;
-            foreach (const ScoredMutation& ms, bestSubset)
-            {
-                bestMutations.push_back(ms.first);
-            }
-            mms.ApplyMutations(bestMutations);
+            mms.ApplyMutations(ProjectBack(bestSubset));
         }
 
         return isConverged;
