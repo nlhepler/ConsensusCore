@@ -41,7 +41,7 @@
 
 #pragma once
 
-#define API_MAJOR 6
+#define API_MAJOR 7
 #define API_MINOR 8
 #define API_PATCH 0
 
