@@ -60,4 +60,13 @@ namespace ConsensusCore
 
     bool RefineConsensus(AbstractMultiReadMutationScorer& mms,
                          const RefineOptions& = DefaultRefineOptions);
+
+
+    std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms);
+
+    // Lower priority:
+    //
+    // bool RefineDinucleotideRepeats(mms)
+    // Matrix<float> MutationScoresMatrix(mms)
+    // Matrix<float> MutationScoresMatrix(mms, mutationsToScore)
 }

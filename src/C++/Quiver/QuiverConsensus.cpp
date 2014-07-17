@@ -165,4 +165,10 @@ namespace ConsensusCore
 
         return isConverged;
     }
+
+
+    std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms)
+    {
+        NotYetImplemented();
+    }
 }
