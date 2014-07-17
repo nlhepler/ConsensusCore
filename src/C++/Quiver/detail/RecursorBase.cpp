@@ -81,8 +81,8 @@ namespace detail {
 
         // if we use too much space, do at least one more round
         // to take advantage of rebanding
-        if (a.AllocatedEntries() >= maxSize ||
-            b.AllocatedEntries() >= maxSize)
+        if (a.UsedEntries() >= maxSize ||
+            b.UsedEntries() >= maxSize)
         {
             FillAlpha(e, b, a);
             FillBeta(e, a, b);
