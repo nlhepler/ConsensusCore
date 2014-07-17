@@ -49,10 +49,6 @@
 #define LOG_WARN(msg)
 #define LOG_INFO(msg)
 
-#define MAX_ROUNDS       20
-#define MUT_SEPARATION   7
-#define MUT_NEIGHBORHOOD 12
-
 namespace ConsensusCore
 {
     using std::vector;
@@ -77,7 +73,7 @@ namespace ConsensusCore
 
     static bool ScoreComparer(ScoredMutation i, ScoredMutation j)
     {
-        return i.Score()< j.Score();
+        return i.Score() < j.Score();
     }
 
     //    Given a list of (mutation, score) tuples, this utility method
@@ -109,13 +105,13 @@ namespace ConsensusCore
     // Sadly and annoyingly there is no covariance on std::vector in C++, so we have
     // to explicitly project back down to the superclass type to use the APIs as written.
     static std::vector<Mutation>
-    ProjectBack(const std::vector<ScoredMutation>& smuts)
+    ProjectDown(const std::vector<ScoredMutation>& smuts)
     {
         return std::vector<Mutation>(smuts.begin(), smuts.end());
     }
 
 
-    bool QuiverConsensus::IterateToConsensus(AbstractMultiReadMutationScorer& mms)
+    bool RefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
     {
 
         bool isConverged = false;
@@ -123,7 +119,7 @@ namespace ConsensusCore
 
         vector<ScoredMutation> favorableMutsAndScores;
 
-        for (int round = 1; round <= MAX_ROUNDS; round++)
+        for (int round = 1; round <= opts.MaximumIterations; round++)
         {
             if (mms.BaselineScore() < score)
             {
@@ -140,7 +136,7 @@ namespace ConsensusCore
             if (round == 1) {
                 mutationsToTry = AllUniqueMutations(mms.Template());
             } else {
-                mutationsToTry = UniqueMutationsNearby(mms.Template(), ProjectBack(favorableMutsAndScores), MUT_NEIGHBORHOOD);
+                mutationsToTry = UniqueMutationsNearby(mms.Template(), ProjectDown(favorableMutsAndScores), opts.MutationNeighborhood);
             }
 
             //
@@ -163,8 +159,8 @@ namespace ConsensusCore
             //
             // Go with the "best" subset of well-separated high scoring mutations
             //
-            vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, MUT_SEPARATION);
-            mms.ApplyMutations(ProjectBack(bestSubset));
+            vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, opts.MutationSeparation);
+            mms.ApplyMutations(ProjectDown(bestSubset));
         }
 
         return isConverged;

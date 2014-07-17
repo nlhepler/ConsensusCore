@@ -78,6 +78,11 @@ namespace ConsensusCore {
         return true;
     }
 
+    int QuiverConfigTable::size() const
+    {
+        return table.size();
+    }
+
     const QuiverConfig& QuiverConfigTable::at(const std::string& name) const
         throw(InvalidInputError)
     {

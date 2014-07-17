@@ -15,7 +15,7 @@
 using namespace ConsensusCore;
 %}
 
-#if SWIGPYTHON
+#ifdef SWIGPYTHON
 
 %include "numpy.i"
 %numpy_typemaps(float, NPY_FLOAT, int)
@@ -28,11 +28,6 @@ using namespace ConsensusCore;
  // SWIG now seems to be incorrectly deciding that MultiReadMutationScorer
  // is an abstract class, so we have to tell it otherwise
 %feature("notabstract") MultiReadMutationScorer;
-
- // SWIG needs this to properly override the ToString method
-#if SWIGCSHARP
-%csmethodmodifiers ConsensusCore::Mutation::ToString() const "public override"
-#endif // SWIGCSHARP
 
 %include "Sequence.hpp"
 %include "Mutation.hpp"

@@ -35,6 +35,8 @@
 
 // Author: David Alexander
 
+#pragma once
+
 #include <vector>
 #include <string>
 

@@ -35,6 +35,8 @@
 
 // Author: David Alexander
 
+#pragma once
+
 #include <vector>
 
 #include "Quiver/MultiReadMutationScorer.hpp"
@@ -42,9 +44,20 @@
 
 namespace ConsensusCore
 {
-    class QuiverConsensus {
-    public:
-        static bool IterateToConsensus(AbstractMultiReadMutationScorer& mms);
-        //static bool MutationScores(MultiReadMutationScorer& mms);
+    struct RefineOptions
+    {
+        int MaximumIterations;
+        int MutationSeparation;
+        int MutationNeighborhood;
     };
+
+    static const RefineOptions DefaultRefineOptions =
+    {
+        20, // MaximumIterations
+        7,  // MutationSeparation
+        12  // MutationNeighborhood
+    };
+
+    bool RefineConsensus(AbstractMultiReadMutationScorer& mms,
+                         const RefineOptions& = DefaultRefineOptions);
 }

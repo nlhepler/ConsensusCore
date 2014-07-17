@@ -210,6 +210,7 @@ namespace ConsensusCore
         typedef std::list<QuiverConfigTableEntry>::const_iterator const_iterator;
 
         bool insert(const std::string& name, const QuiverConfig& config);
+        int size() const;
 
         const QuiverConfig& at(const std::string& name) const throw(InvalidInputError);
 

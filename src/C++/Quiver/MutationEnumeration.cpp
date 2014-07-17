@@ -53,7 +53,7 @@ namespace ConsensusCore
     std::vector<Mutation> AllMutations(std::string tpl, int beginPos, int endPos)
     {
         std::vector<Mutation> result;
-        for (int pos = 0; pos < tpl.length(); pos++)
+        for (size_t pos = 0; pos < tpl.length(); pos++)
         {
             foreach (char base, boost::as_array(BASES)) {
                 result.push_back(Mutation(INSERTION, pos, base));
