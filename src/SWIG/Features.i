@@ -11,9 +11,15 @@ using namespace ConsensusCore;
 %numpy_typemaps(float, NPY_FLOAT, int)
 
 %apply (float* IN_ARRAY1, int DIM1)
-     { (const float* ptr, int length) };
+     { (const float* inPtr, int length) };
 
 #endif // SWIGPYTHON
+
+#if SWIGCSHARP
+%include "arrays_csharp.i"
+%apply unsigned char INPUT[] { unsigned char* }
+#endif // SWIGCSHARP
+
 
 %include "Feature.hpp"
 %include "Features.hpp"
@@ -21,10 +27,9 @@ using namespace ConsensusCore;
 namespace ConsensusCore {
     %template(CharFeature) Feature<char>;
     %template(FloatFeature) Feature<float>;
-	%template(IntFeature) Feature<int>;
+    %template(IntFeature) Feature<int>;
 }
 
 %include "carrays.i"
 %array_class(float, FloatArray);
 %array_class(int, IntArray);
-

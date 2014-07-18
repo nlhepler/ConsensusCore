@@ -57,12 +57,24 @@ namespace ConsensusCore
     {
     public:
         // \brief Allocate a new feature object, copying content from ptr.
-        Feature(const T* ptr, int length)
+        Feature(const T* inPtr, int length)
             : boost::shared_array<T>(new T[length]),
               length_(length)
         {
             assert(length >= 0);
-            std::copy(ptr, ptr + length, get());
+            std::copy(inPtr, inPtr + length, get());
+        }
+
+
+        // Our features are typically stored in unsigned char[] or short[].
+        // Here are constructors to make it easier to stuff those guys into
+        // a FloatFeature.
+        Feature(const unsigned char* inPtr, int length)
+            : boost::shared_array<T>(new T[length]),
+              length_(length)
+        {
+            assert(length >= 0);
+            std::copy(inPtr, inPtr + length, get());
         }
 
         // \brief Allocate and zero-fill a new feature object of given length.

@@ -90,6 +90,13 @@ namespace ConsensusCore
                            const Feature<float> delQv,
                            const Feature<float> delTag,
                            const Feature<float> mergeQv);
+
+        QvSequenceFeatures(const std::string& seq,
+                           const unsigned char* insQv,
+                           const unsigned char* subsQv,
+                           const unsigned char* delQv,
+                           const unsigned char* delTag,
+                           const unsigned char* mergeQv);
     };
 
 
