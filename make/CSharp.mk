@@ -5,7 +5,7 @@ SWIG_CMD        = SWIG_LIB=$(SWIG_LIB) $(SWIG) -c++ -csharp
 
 CSHARP_BUILD_DIR = build/CSharp
 GEN_CXX          = $(CSHARP_BUILD_DIR)/ConsensusCore_wrap.cxx
-PINVOKE_LIB      = $(CSHARP_BUILD_DIR)/libConsensusCore.$(DLL)
+PINVOKE_LIB      = $(CSHARP_BUILD_DIR)/libConsensusCore.so
 
 $(PINVOKE_LIB): $(SWIG_INTERFACES) $(CXX_LIB)
 	mkdir -p $(CSHARP_BUILD_DIR)

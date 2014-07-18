@@ -39,12 +39,8 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
         GXX ?= clang++
-        SHLIB_FLAGS = -shared -undefined dynamic_lookup
-        DLL  = dylib
 else
         GXX ?= g++
-        SHLIB_FLAGS = -pthread -shared -Wl,-O1
-        DLL = so
 endif
 
 ifeq ($(GXX),clang++)
@@ -57,6 +53,12 @@ endif
 
 CXX             = $(CCACHE) $(GXX) $(MACHINE) $(CXX_FLAGS) $(INCLUDES) -isystem $(BOOST)
 CXX_STRICT      = $(CCACHE) $(GXX) $(MACHINE) $(CXX_STRICT_FLAGS) $(INCLUDES) -isystem $(BOOST)
+
+ifeq ($(UNAME), Darwin)
+    SHLIB_FLAGS = -shared -undefined dynamic_lookup
+else
+    SHLIB_FLAGS = -pthread -shared -Wl,-O1
+endif
 
 GMOCK_INCLUDE := $(GMOCK)/include
 GMOCK_LIB     := $(GMOCK)/lib/.libs/libgmock.a

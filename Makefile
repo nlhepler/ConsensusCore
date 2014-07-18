@@ -32,8 +32,8 @@ csharp: lib
 before-xbuild: csharp
 	-mkdir -p bin/Debug
 	-mkdir -p bin/Release
-	-cp $(BUILD_ROOT)/CSharp/libConsensusCore.$(DLL) bin/Debug/
-	-cp $(BUILD_ROOT)/CSharp/libConsensusCore.$(DLL) bin/Release/
+	-cp $(BUILD_ROOT)/CSharp/libConsensusCore.so bin/Debug/
+	-cp $(BUILD_ROOT)/CSharp/libConsensusCore.so bin/Release/
 
 #
 # Clean targets
