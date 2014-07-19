@@ -108,6 +108,29 @@ namespace ConsensusCore
         CheckTagFeature(DelTag);
     }
 
+
+    QvSequenceFeatures::QvSequenceFeatures(const std::string& seq,
+                                           const unsigned char* insQv,
+                                           const unsigned char* subsQv,
+                                           const unsigned char* delQv,
+                                           const unsigned char* delTag,
+                                           const unsigned char* mergeQv)
+        : SequenceFeatures(seq),
+          SequenceAsFloat(Length()),
+          InsQv (insQv, Length()),
+          SubsQv(subsQv, Length()),
+          DelQv (delQv, Length()),
+          DelTag(delTag, Length()),
+          MergeQv(mergeQv, Length())
+    {
+        for (int i = 0; i < Length(); i++)
+        {
+            SequenceAsFloat[i] = static_cast<float>(seq[i]);
+        }
+        CheckTagFeature(DelTag);
+    }
+
+
     QvSequenceFeatures::QvSequenceFeatures(const std::string& seq,
                                            const Feature<float> insQv,
                                            const Feature<float> subsQv,
