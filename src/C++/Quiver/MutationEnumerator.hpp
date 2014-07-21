@@ -50,6 +50,7 @@ namespace ConsensusCore
     struct AbstractMutationEnumerator
     {
         AbstractMutationEnumerator(const std::string& tpl);
+        virtual ~AbstractMutationEnumerator();
 
         virtual std::vector<Mutation> Mutations() const = 0;
         virtual std::vector<Mutation> Mutations(int beginPos, int endPos) const = 0;

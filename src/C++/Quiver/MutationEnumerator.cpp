@@ -78,9 +78,13 @@ namespace ConsensusCore
 
 
     namespace detail {
-    AbstractMutationEnumerator::AbstractMutationEnumerator(const std::string& tpl)
+
+        AbstractMutationEnumerator::AbstractMutationEnumerator(const std::string& tpl)
         : tpl_(tpl)
-    {}
+        {}
+
+        AbstractMutationEnumerator::~AbstractMutationEnumerator() {}
+
     } // detail
 
 
