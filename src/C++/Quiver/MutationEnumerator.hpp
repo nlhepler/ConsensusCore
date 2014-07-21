@@ -55,7 +55,7 @@ namespace ConsensusCore
         virtual std::vector<Mutation> Mutations(int beginPos, int endPos) const = 0;
 
     protected:
-        const std::string& tpl_;
+        const std::string tpl_;
     };
     } // detail
 
