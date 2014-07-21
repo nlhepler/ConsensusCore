@@ -9,7 +9,7 @@ ifeq (,$(wildcard $(NUMPY_INCLUDE)/numpy/arrayobject.h))
 $(error numpy include not configured properly, cannot build python module!)
 endif
 
-SWIG_CMD   := SWIG_LIB=$(SWIG_LIB) $(SWIG) -c++ -python -builtin
+SWIG_CMD   := SWIG_LIB=$(SWIG_LIB) $(SWIG) -Wall -c++ -python -builtin
 GEN_CXX    := $(PYTHON_BUILD_DIR)/ConsensusCore_wrap.cxx
 PYTHON_DLL := $(PYTHON_BUILD_DIR)/_ConsensusCore.so
 

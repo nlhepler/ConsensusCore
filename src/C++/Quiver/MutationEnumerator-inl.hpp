@@ -33,90 +33,33 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
-// Author: David Alexander
+// Author: David Alexander, Lance Hepler
 
-#include <boost/range/as_array.hpp>
-#include <vector>
-#include <string>
+#include <algorithm>
 #include <set>
-
-#include <Types.hpp>
-#include <Utils.hpp>
-#include <Mutation.hpp>
-
-#include "MutationEnumeration.hpp"
+#include <vector>
 
 namespace ConsensusCore
 {
-    static const char BASES[] = { 'A', 'C', 'G', 'T' };
-
-    std::vector<Mutation> AllMutations(std::string tpl, int beginPos, int endPos)
-    {
-        std::vector<Mutation> result;
-        for (size_t pos = 0; pos < tpl.length(); pos++)
-        {
-            foreach (char base, boost::as_array(BASES)) {
-                result.push_back(Mutation(INSERTION, pos, base));
-            }
-            result.push_back(Mutation(DELETION, pos, '-'));
-            foreach (char base, boost::as_array(BASES)) {
-                if (base != tpl[pos]) {
-                    result.push_back(Mutation(SUBSTITUTION, pos, base));
-                }
-            }
-        }
-        return result;
-    }
-
-    std::vector<Mutation> AllMutations(std::string tpl)
-    {
-        return AllMutations(tpl, 0, tpl.length());
-    }
-
-    std::vector<Mutation> AllUniqueMutations(std::string tpl, int beginPos, int endPos)
-    {
-        std::vector<Mutation> result;
-        for (int pos = beginPos; pos < endPos; pos++)
-        {
-            char prevTplBase = pos > 0 ? tpl[pos-1] : '-';
-            // Insertions only allowed at the beginning of homopolymers
-            foreach (char base, boost::as_array(BASES)) {
-                if (base != prevTplBase) {
-                    result.push_back(Mutation(INSERTION, pos, base));
-                }
-            }
-            result.push_back(Mutation(DELETION, pos, '-'));
-            foreach (char base, boost::as_array(BASES)) {
-                if (base != tpl[pos]) {
-                    result.push_back(Mutation(SUBSTITUTION, pos, base));
-                }
-            }
-        }
-        return result;
-    }
-
-    std::vector<Mutation> AllUniqueMutations(std::string tpl)
-    {
-        return AllUniqueMutations(tpl, 0, tpl.length());
-    }
-
     ///
     /// Enumerate all mutations within a neighborhood of another set of
     /// mutations of interest.  Note that the neighborhoods are presently
     /// lopsided due to the end-exclusive definition for how we do ranges.
     /// (In other words a neighborhood of size 2 includes two before but one
     //   after).
-    std::vector<Mutation> UniqueMutationsNearby(std::string tpl,
-                                                std::vector<Mutation> centers,
+    template <typename T>
+    std::vector<Mutation> UniqueNearbyMutations(const T& mutationEnumerator,
+                                                const std::vector<Mutation>& centers,
                                                 int neighborhoodSize)
     {
         std::set<Mutation> muts;
         foreach (const Mutation& center, centers)
         {
             int c = center.Start();
-            int l = std::max(c - neighborhoodSize, 0);
-            int r = std::min(c + neighborhoodSize, (int)tpl.length());
-            std::vector<Mutation> mutsInRange = AllUniqueMutations(tpl, l, r);
+            int l = c - neighborhoodSize;
+            // FIXME: r should probably be +1 to be symmetric
+            int r = c + neighborhoodSize;
+            std::vector<Mutation> mutsInRange = mutationEnumerator.Mutations(l, r);
             muts.insert(mutsInRange.begin(), mutsInRange.end());
         }
         std::vector<Mutation> result;

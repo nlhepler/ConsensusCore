@@ -33,15 +33,16 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
-// Author: David Alexander
+// Author: David Alexander, Lance Hepler
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
 #include <boost/tuple/tuple.hpp>
 
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Quiver/QuiverConsensus.hpp"
-#include "Quiver/MutationEnumeration.hpp"
+#include "Quiver/MutationEnumerator.hpp"
 
 #include "Utils.hpp"
 
@@ -52,11 +53,11 @@
 namespace ConsensusCore
 {
     using std::vector;
-    using std::make_pair;
-    using std::max_element;
-    using std::transform;
 
-    static vector<ScoredMutation>
+    namespace { // PRIVATE
+    using std::max_element;
+
+    vector<ScoredMutation>
     DeleteRange(vector<ScoredMutation> input, int rStart, int rEnd)
     {
         vector<ScoredMutation> output;
@@ -71,7 +72,7 @@ namespace ConsensusCore
         return output;
     }
 
-    static bool ScoreComparer(ScoredMutation i, ScoredMutation j)
+    bool ScoreComparer(const ScoredMutation& i, const ScoredMutation& j)
     {
         return i.Score() < j.Score();
     }
@@ -104,22 +105,46 @@ namespace ConsensusCore
 
     // Sadly and annoyingly there is no covariance on std::vector in C++, so we have
     // to explicitly project back down to the superclass type to use the APIs as written.
-    static std::vector<Mutation>
-    ProjectDown(const std::vector<ScoredMutation>& smuts)
+    vector<Mutation>
+    ProjectDown(const vector<ScoredMutation>& smuts)
     {
-        return std::vector<Mutation>(smuts.begin(), smuts.end());
+        return vector<Mutation>(smuts.begin(), smuts.end());
     }
 
 
-    bool RefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
+    int ProbabilityToQV(double probability, int cap = 93)
     {
+        if (probability <= 0.0)
+            return cap;
 
+        return std::min(cap, static_cast<int>(round(-10.0 * log10(probability))));
+    }
+
+    template <typename T>
+    T MutationEnumerator(const std::string& tpl, const RefineOptions& opts)
+    {
+        return T(tpl);
+    }
+
+    //
+    // this MUST go last to properly specialize the MutationEnumerator
+    //
+    template <>
+    DinucleotideRepeatMutationEnumerator
+    MutationEnumerator<>(const std::string& tpl, const RefineOptions& opts)
+    {
+        return DinucleotideRepeatMutationEnumerator(tpl, opts.MinDinucRepeatElements);
+    }
+
+    template <typename T>
+    bool AbstractRefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
+    {
         bool isConverged = false;
         float score = mms.BaselineScore();
 
         vector<ScoredMutation> favorableMutsAndScores;
 
-        for (int round = 1; round <= opts.MaximumIterations; round++)
+        for (int iter = 0; iter < opts.MaximumIterations; iter++)
         {
             if (mms.BaselineScore() < score)
             {
@@ -129,14 +154,18 @@ namespace ConsensusCore
             score = mms.BaselineScore();
 
             //
-            // Try all mutations in round 1.  In subsequent rounds, try mutations
-            // nearby those used in previous round.
+            // Try all mutations in iteration 0.  In subsequent iterations, try mutations
+            // nearby those used in previous iteration.
             //
+            T mutationEnumerator = MutationEnumerator<T>(mms.Template(), opts);
             vector<Mutation> mutationsToTry;
-            if (round == 1) {
-                mutationsToTry = AllUniqueMutations(mms.Template());
-            } else {
-                mutationsToTry = UniqueMutationsNearby(mms.Template(), ProjectDown(favorableMutsAndScores), opts.MutationNeighborhood);
+            if (iter == 0) {
+                mutationsToTry = mutationEnumerator.Mutations();
+            }
+            else {
+                mutationsToTry = UniqueNearbyMutations(mutationEnumerator,
+                                                       ProjectDown(favorableMutsAndScores),
+                                                       opts.MutationNeighborhood);
             }
 
             //
@@ -165,10 +194,48 @@ namespace ConsensusCore
 
         return isConverged;
     }
+    } // PRIVATE
+
+
+    bool RefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
+    {
+        return AbstractRefineConsensus<UniqueSingleBaseMutationEnumerator>(mms, opts);
+    }
+
+
+    bool RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
+    {
+        return AbstractRefineConsensus<DinucleotideRepeatMutationEnumerator>(mms, opts);
+    }
 
 
     std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms)
     {
+        std::vector<int> QVs;
+        UniqueSingleBaseMutationEnumerator mutationEnumerator(mms.Template());
+        for (size_t pos = 0; pos < mms.Template().length(); pos++)
+        {
+            double scoreSum = 0.0;
+            foreach (const Mutation& m, mutationEnumerator.Mutations(pos, pos + 1))
+            {
+                scoreSum += exp(mms.FastScore(m));
+            }
+            QVs.push_back(ProbabilityToQV(1.0 - 1.0 / (1.0 + scoreSum)));
+        }
+        return QVs;
+    }
+
+
+#if 0
+    Matrix<float> MutationScoresMatrix(mms)
+    {
         NotYetImplemented();
     }
+
+
+    Matrix<float> MutationScoresMatrix(mms, mutationsToScore)
+    {
+        NotYetImplemented();
+    }
+#endif
 }

@@ -33,7 +33,7 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
-// Author: David Alexander
+// Author: David Alexander, Lance Hepler
 
 #pragma once
 
@@ -46,14 +46,57 @@
 
 namespace ConsensusCore
 {
-    std::vector<Mutation> AllMutations(std::string tpl, int, int);
-    std::vector<Mutation> AllMutations(std::string tpl);
+    namespace detail {
+    struct AbstractMutationEnumerator
+    {
+        AbstractMutationEnumerator(const std::string& tpl);
 
-    std::vector<Mutation> AllUniqueMutations(std::string tpl, int, int);
-    std::vector<Mutation> AllUniqueMutations(std::string tpl);
+        virtual std::vector<Mutation> Mutations() const = 0;
+        virtual std::vector<Mutation> Mutations(int beginPos, int endPos) const = 0;
 
-    std::vector<Mutation> UniqueMutationsNearby(std::string tpl,
-                                                std::vector<Mutation> centers,
+    protected:
+        const std::string& tpl_;
+    };
+    } // detail
+
+    struct AllSingleBaseMutationEnumerator
+        : detail::AbstractMutationEnumerator
+    {
+        AllSingleBaseMutationEnumerator(const std::string& tpl);
+
+        std::vector<Mutation> Mutations() const;
+        std::vector<Mutation> Mutations(int beginPos, int endPos) const;
+    };
+
+
+    struct UniqueSingleBaseMutationEnumerator
+        : detail::AbstractMutationEnumerator
+    {
+        UniqueSingleBaseMutationEnumerator(const std::string& tpl);
+
+        std::vector<Mutation> Mutations() const;
+        std::vector<Mutation> Mutations(int beginPos, int endPos) const;
+    };
+
+
+    struct DinucleotideRepeatMutationEnumerator
+        : detail::AbstractMutationEnumerator
+    {
+        DinucleotideRepeatMutationEnumerator(const std::string& tpl,
+                                             int minDinucRepeatElements = 3);
+
+        std::vector<Mutation> Mutations() const;
+        std::vector<Mutation> Mutations(int beginPos, int endPos) const;
+
+    private:
+        int minDinucRepeatElements_;
+    };
+
+
+    template <typename T>
+    std::vector<Mutation> UniqueNearbyMutations(const T& mutationEnumerator,
+                                                const std::vector<Mutation>& centers,
                                                 int neighborhoodSize);
-
 }
+
+#include "Quiver/MutationEnumerator-inl.hpp"

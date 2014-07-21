@@ -33,7 +33,7 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
-// Author: David Alexander
+// Author: David Alexander, Lance Hepler
 
 #pragma once
 
@@ -49,24 +49,29 @@ namespace ConsensusCore
         int MaximumIterations;
         int MutationSeparation;
         int MutationNeighborhood;
+        int MinDinucRepeatElements;
     };
 
     static const RefineOptions DefaultRefineOptions =
     {
-        20, // MaximumIterations
-        7,  // MutationSeparation
-        12  // MutationNeighborhood
+        20,  // MaximumIterations
+        7,   // MutationSeparation
+        12,  // MutationNeighborhood
+        3    // MinDinucRepeatElements
     };
+
 
     bool RefineConsensus(AbstractMultiReadMutationScorer& mms,
                          const RefineOptions& = DefaultRefineOptions);
 
+    bool RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms,
+                                   const RefineOptions& = DefaultRefineOptions);
 
     std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms);
 
+    //
     // Lower priority:
     //
-    // bool RefineDinucleotideRepeats(mms)
-    // Matrix<float> MutationScoresMatrix(mms)
-    // Matrix<float> MutationScoresMatrix(mms, mutationsToScore)
+    // Matrix<float> MutationScoresMatrix(mms);
+    // Matrix<float> MutationScoresMatrix(mms, mutationsToScore);
 }

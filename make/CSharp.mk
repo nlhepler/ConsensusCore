@@ -1,7 +1,7 @@
 include make/Config.mk
 include make/Defs.mk
 
-SWIG_CMD        = SWIG_LIB=$(SWIG_LIB) $(SWIG) -c++ -csharp
+SWIG_CMD        = SWIG_LIB=$(SWIG_LIB) $(SWIG) -Wall -c++ -csharp
 
 CSHARP_BUILD_DIR = build/CSharp
 GEN_CXX          = $(CSHARP_BUILD_DIR)/ConsensusCore_wrap.cxx
