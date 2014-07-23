@@ -43,6 +43,7 @@
 #include "Quiver/MultiReadMutationScorer.hpp"
 #include "Quiver/QuiverConsensus.hpp"
 #include "Quiver/MutationEnumerator.hpp"
+#include "Mutation.hpp"
 
 #include "Utils.hpp"
 
@@ -154,15 +155,20 @@ namespace ConsensusCore
     {
         bool isConverged = false;
         float score = mms.BaselineScore();
+        std::set<std::string> tplHistory;
 
         vector<ScoredMutation> favorableMutsAndScores;
 
         for (int iter = 0; iter < opts.MaximumIterations; iter++)
         {
+            if (tplHistory.find(mms.Template()) != tplHistory.end())
+            {
+                LDEBUG << "Cycle detected!";
+            }
+
             if (mms.BaselineScore() < score)
             {
-                // Usually recoverable, so allow iteration to continue
-                LDEBUG << "Score decrease";
+                LDEBUG << "Score decrease"; // Usually recoverable, so we allow iteration to continue
             }
             score = mms.BaselineScore();
 
@@ -201,16 +207,30 @@ namespace ConsensusCore
             //
             // Go with the "best" subset of well-separated high scoring mutations
             //
+            vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, opts.MutationSeparation);
+            vector<Mutation> bestSubsetMuts = ProjectDown(bestSubset);
+
+            //
+            // Attempt to avoid cycling.  We could do a better job here.
+            //
+            if (bestSubset.size() > 1)
+            {
+                std::string nextTpl = ApplyMutations(bestSubsetMuts, mms.Template());
+                if (tplHistory.find(nextTpl) != tplHistory.end())
+                {
+                    LDEBUG << "Attempting to avoid cycle";
+                    bestSubset = std::vector<ScoredMutation>(bestSubset.begin() + 1, bestSubset.end());
+                }
+            }
+
             LDEBUG << "Round " << iter << ": Score=" << score;
             LDEBUG << "Applying mutations:";
-
-            vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, opts.MutationSeparation);
             foreach (const ScoredMutation& smut, bestSubset)
             {
                 LDEBUG << "\t" << smut;
             }
 
-            mms.ApplyMutations(ProjectDown(bestSubset));
+            mms.ApplyMutations(bestSubsetMuts);
         }
 
         return isConverged;
