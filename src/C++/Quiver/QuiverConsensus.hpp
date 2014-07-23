@@ -63,7 +63,7 @@ namespace ConsensusCore
                          const RefineOptions& = DefaultRefineOptions);
 
     void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms,
-                                   int minDinucleotideRepeatElements);
+                                   int minDinucleotideRepeatElements = 3);
 
     std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms);
 
