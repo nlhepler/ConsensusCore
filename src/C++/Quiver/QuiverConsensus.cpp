@@ -208,18 +208,17 @@ namespace ConsensusCore
             // Go with the "best" subset of well-separated high scoring mutations
             //
             vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, opts.MutationSeparation);
-            vector<Mutation> bestSubsetMuts = ProjectDown(bestSubset);
 
             //
             // Attempt to avoid cycling.  We could do a better job here.
             //
             if (bestSubset.size() > 1)
             {
-                std::string nextTpl = ApplyMutations(bestSubsetMuts, mms.Template());
+                std::string nextTpl = ApplyMutations(ProjectDown(bestSubset), mms.Template());
                 if (tplHistory.find(nextTpl) != tplHistory.end())
                 {
                     LDEBUG << "Attempting to avoid cycle";
-                    bestSubset = std::vector<ScoredMutation>(bestSubset.begin() + 1, bestSubset.end());
+                    bestSubset = std::vector<ScoredMutation>(bestSubset.begin(), bestSubset.begin() + 1);
                 }
             }
 
@@ -230,7 +229,8 @@ namespace ConsensusCore
                 LDEBUG << "\t" << smut;
             }
 
-            mms.ApplyMutations(bestSubsetMuts);
+            tplHistory.insert(mms.Template());
+            mms.ApplyMutations(ProjectDown(bestSubset));
         }
 
         return isConverged;
