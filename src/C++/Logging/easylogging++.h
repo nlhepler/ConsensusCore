@@ -99,6 +99,14 @@
 #      define _ELPP_CXX11 1
 #   endif // (_ELPP_CLANG_VERSION >= 30300)
 #endif // defined(__clang__) && (__clang__ == 1)
+
+// DHA @ PacBio: Override the C++11 detection above, it should not be
+// keyed off of compiler version as we override using -std=c++98
+#undef _ELPP_CXX11
+#undef _ELPP_CXX0X
+#define _ELPP_CXX11 0
+#define _ELPP_CXX0X 0
+
 // MinGW
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #   define _ELPP_MINGW 1
