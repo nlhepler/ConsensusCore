@@ -122,7 +122,11 @@ namespace ConsensusCore
         ScoredMutation();
         ScoredMutation(const Mutation& m, float score);
         float Score() const;
+        std::string ToString() const;
     };
+
+    std::ostream& operator<<(std::ostream& out, const ScoredMutation& m);
+
 }
 
 #include "Mutation-inl.hpp"

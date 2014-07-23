@@ -20,7 +20,8 @@ VPATH           := src/C++/                     \
                   :src/C++/Quiver/detail        \
                   :src/C++/Poa/                 \
                   :src/C++/Statistics           \
-                  :src/C++/Simulation
+                  :src/C++/Simulation           \
+                  :src/C++/Logging
 
 CXX_LIB         := $(abspath $(OBJDIR)/libConsensusCore.a)
 CXX_SRCS        := $(notdir $(shell find src/C++/ -name "*.cpp" | grep -v '\#'))

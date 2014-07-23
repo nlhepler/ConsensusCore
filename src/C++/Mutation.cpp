@@ -44,7 +44,9 @@
 #include <string>
 #include <vector>
 
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include "Types.hpp"
 #include "PairwiseAlignment.hpp"
@@ -208,5 +210,18 @@ namespace ConsensusCore
     float ScoredMutation::Score() const
     {
         return score_;
+    }
+
+    std::string ScoredMutation::ToString() const
+    {
+        std::stringstream ss;
+        ss << *this;
+        return ss.str();
+    }
+
+    std::ostream& operator<<(std::ostream& out, const ScoredMutation& m)
+    {
+        out << m.Mutation::ToString() << "\t" << boost::format("%0.2f") % m.Score();
+        return out;
     }
 }

@@ -46,9 +46,8 @@
 
 #include "Utils.hpp"
 
-// hook these up to something
-#define LOG_WARN(msg)
-#define LOG_INFO(msg)
+#include "Logging/Logging.hpp"
+
 
 namespace ConsensusCore
 {
@@ -163,7 +162,7 @@ namespace ConsensusCore
             if (mms.BaselineScore() < score)
             {
                 // Usually recoverable, so allow iteration to continue
-                LOG_INFO("Score decrease");
+                LDEBUG << "Score decrease";
             }
             score = mms.BaselineScore();
 
@@ -202,7 +201,15 @@ namespace ConsensusCore
             //
             // Go with the "best" subset of well-separated high scoring mutations
             //
+            LDEBUG << "Round " << iter << ": Score=" << score;
+            LDEBUG << "Applying mutations:";
+
             vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores, opts.MutationSeparation);
+            foreach (const ScoredMutation& smut, bestSubset)
+            {
+                LDEBUG << "\t" << smut;
+            }
+
             mms.ApplyMutations(ProjectDown(bestSubset));
         }
 
