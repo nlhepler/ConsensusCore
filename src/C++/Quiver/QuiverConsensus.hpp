@@ -49,23 +49,21 @@ namespace ConsensusCore
         int MaximumIterations;
         int MutationSeparation;
         int MutationNeighborhood;
-        int MinDinucRepeatElements;
     };
 
     static const RefineOptions DefaultRefineOptions =
     {
         20,  // MaximumIterations
         7,   // MutationSeparation
-        12,  // MutationNeighborhood
-        3    // MinDinucRepeatElements
+        12   // MutationNeighborhood
     };
 
 
     bool RefineConsensus(AbstractMultiReadMutationScorer& mms,
                          const RefineOptions& = DefaultRefineOptions);
 
-    bool RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms,
-                                   const RefineOptions& = DefaultRefineOptions);
+    void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms,
+                                   int minDinucleotideRepeatElements);
 
     std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms);
 

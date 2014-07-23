@@ -57,6 +57,17 @@ namespace ConsensusCore
     namespace { // PRIVATE
     using std::max_element;
 
+    struct RefineDinucleotideRepeatOptions : RefineOptions
+    {
+        RefineDinucleotideRepeatOptions(int minDinucleotideRepeatElements)
+            : MinDinucleotideRepeatElements(minDinucleotideRepeatElements)
+        {
+            MaximumIterations = 1;
+        }
+
+        int MinDinucleotideRepeatElements;
+    };
+
     vector<ScoredMutation>
     DeleteRange(vector<ScoredMutation> input, int rStart, int rEnd)
     {
@@ -64,7 +75,7 @@ namespace ConsensusCore
         foreach (ScoredMutation s, input)
         {
             int pos = s.Start();
-            if (!(rStart <= pos &&  pos <= rEnd))
+            if (!(rStart <= pos && pos <= rEnd))
             {
                 output.push_back(s);
             }
@@ -88,6 +99,9 @@ namespace ConsensusCore
     vector<ScoredMutation>
     BestSubset(vector<ScoredMutation> input, int mutationSeparation)
     {
+        if (mutationSeparation == 0)
+            return input;
+
         vector<ScoredMutation> output;
 
         while (!input.empty())
@@ -120,10 +134,10 @@ namespace ConsensusCore
         return std::min(cap, static_cast<int>(round(-10.0 * log10(probability))));
     }
 
-    template <typename T>
-    T MutationEnumerator(const std::string& tpl, const RefineOptions& opts)
+    template <typename E, typename O>
+    E MutationEnumerator(const std::string& tpl, const O& opts)
     {
-        return T(tpl);
+        return E(tpl);
     }
 
     //
@@ -131,13 +145,13 @@ namespace ConsensusCore
     //
     template <>
     DinucleotideRepeatMutationEnumerator
-    MutationEnumerator<>(const std::string& tpl, const RefineOptions& opts)
+    MutationEnumerator<>(const std::string& tpl, const RefineDinucleotideRepeatOptions& opts)
     {
-        return DinucleotideRepeatMutationEnumerator(tpl, opts.MinDinucRepeatElements);
+        return DinucleotideRepeatMutationEnumerator(tpl, opts.MinDinucleotideRepeatElements);
     }
 
-    template <typename T>
-    bool AbstractRefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
+    template <typename E, typename O>
+    bool AbstractRefineConsensus(AbstractMultiReadMutationScorer& mms, const O& opts)
     {
         bool isConverged = false;
         float score = mms.BaselineScore();
@@ -157,7 +171,7 @@ namespace ConsensusCore
             // Try all mutations in iteration 0.  In subsequent iterations, try mutations
             // nearby those used in previous iteration.
             //
-            T mutationEnumerator = MutationEnumerator<T>(mms.Template(), opts);
+            E mutationEnumerator = MutationEnumerator<E, O>(mms.Template(), opts);
             vector<Mutation> mutationsToTry;
             if (iter == 0) {
                 mutationsToTry = mutationEnumerator.Mutations();
@@ -203,9 +217,10 @@ namespace ConsensusCore
     }
 
 
-    bool RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
+    void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms, int minDinucleotideRepeatElements)
     {
-        return AbstractRefineConsensus<DinucleotideRepeatMutationEnumerator>(mms, opts);
+        RefineDinucleotideRepeatOptions opts(minDinucleotideRepeatElements);
+        AbstractRefineConsensus<DinucleotideRepeatMutationEnumerator>(mms, opts);
     }
 
 
