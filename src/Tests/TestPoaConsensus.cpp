@@ -536,9 +536,9 @@ TEST(PoaConsensus, TestMutations)
         variantDescriptions.push_back(scoredMutation.ToString());
     }
     sort(variantDescriptions.begin(), variantDescriptions.end());
-    const char* expectedDescriptions[] = { "Deletion @5:6",
-                                           "Insertion (G) @5",
-                                           "Substitution (T) @6:7" };
+    const char* expectedDescriptions[] = { "Deletion @5:6 -3.00",
+                                           "Insertion (G) @5 -3.00",
+                                           "Substitution (T) @6:7 -3.00" };
     ASSERT_THAT(variantDescriptions, ElementsAreArray(expectedDescriptions));
     delete pc;
 }

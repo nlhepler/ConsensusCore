@@ -221,7 +221,7 @@ namespace ConsensusCore
 
     std::ostream& operator<<(std::ostream& out, const ScoredMutation& m)
     {
-        out << m.Mutation::ToString() << "\t" << boost::format("%0.2f") % m.Score();
+        out << m.Mutation::ToString() << " " << boost::format("%0.2f") % m.Score();
         return out;
     }
 }
