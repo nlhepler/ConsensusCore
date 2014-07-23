@@ -53,16 +53,6 @@ namespace ConsensusCore
     namespace { // PRIVATE
     const char BASES[] = { 'A', 'C', 'G', 'T' };
 
-    bool LowerComparer(const Mutation& i, int lowerBound)
-    {
-        return i.Start() < lowerBound;
-    }
-
-    bool StartComparer(const Mutation& i, const Mutation& j)
-    {
-        return i.Start() < j.Start();
-    }
-
     inline
     int BoundPosition(const std::string& tpl, int pos)
     {
