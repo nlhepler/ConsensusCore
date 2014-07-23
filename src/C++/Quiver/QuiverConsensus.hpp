@@ -53,9 +53,9 @@ namespace ConsensusCore
 
     static const RefineOptions DefaultRefineOptions =
     {
-        20,  // MaximumIterations
-        7,   // MutationSeparation
-        12   // MutationNeighborhood
+        40,  // MaximumIterations
+        10,  // MutationSeparation
+        20   // MutationNeighborhood
     };
 
 
