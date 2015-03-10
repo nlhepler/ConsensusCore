@@ -57,7 +57,8 @@ namespace ConsensusCore
     // Could the mutation change the contents of the portion of the
     // template that is mapped to the read?
     //
-    bool ReadScoresMutation(const MappedRead& read, const Mutation& mut)
+    template<typename F>
+    bool ReadScoresMutation(const MappedRead<F>& read, const Mutation& mut)
     {
         int ts = read.TemplateStart;
         int te = read.TemplateEnd;
@@ -77,7 +78,8 @@ namespace ConsensusCore
     // possible clipping, if the mutation is not wholly within the
     // mapped read.
     //
-    Mutation OrientedMutation(const MappedRead& mr,
+    template<typename F>
+    Mutation OrientedMutation(const MappedRead<F>& mr,
                               const Mutation& mut)
     {
         using std::min;
@@ -127,16 +129,16 @@ namespace ConsensusCore
 
     template<typename R>
     MultiReadMutationScorer<R>::MultiReadMutationScorer
-    (const QuiverConfigTable& quiverConfigByChemistry, std::string tpl)
-        : quiverConfigByChemistry_(quiverConfigByChemistry),
+    (const ConfigTableType& modelConfigByChemistry, const std::string& tpl)
+        : modelConfigByChemistry_(modelConfigByChemistry),
           fwdTemplate_(tpl),
           revTemplate_(ReverseComplement(tpl)),
           reads_()
     {
         DEBUG_ONLY(CheckInvariants());
         fastScoreThreshold_ = 0;
-        QuiverConfigTable::const_iterator it;
-        for (it = quiverConfigByChemistry_.begin(); it != quiverConfigByChemistry_.end(); it++)
+        typename ConfigTableType::const_iterator it;
+        for (it = modelConfigByChemistry_.begin(); it != modelConfigByChemistry_.end(); it++)
         {
             fastScoreThreshold_ = std::min(fastScoreThreshold_, it->second.FastScoreThreshold);
         }
@@ -144,7 +146,7 @@ namespace ConsensusCore
 
     template<typename R>
     MultiReadMutationScorer<R>::MultiReadMutationScorer(const MultiReadMutationScorer<R>& other)
-        : quiverConfigByChemistry_(other.quiverConfigByChemistry_),
+        : modelConfigByChemistry_(other.modelConfigByChemistry_),
           fastScoreThreshold_(other.fastScoreThreshold_),
           fwdTemplate_(other.fwdTemplate_),
           revTemplate_(other.revTemplate_),
@@ -179,7 +181,7 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    const MappedRead*
+    const MappedRead<typename MultiReadMutationScorer<R>::FeaturesType>*
     MultiReadMutationScorer<R>::Read(int readIdx) const
     {
         return reads_[readIdx].IsActive ? reads_[readIdx].Read : NULL;
@@ -244,13 +246,14 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr, float threshold)
+    bool MultiReadMutationScorer<R>::AddRead(const MappedRead<FeaturesType>& mr,
+                                             float threshold)
     {
         DEBUG_ONLY(CheckInvariants());
-        const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
+        const ConfigType* config = &modelConfigByChemistry_.At(mr.Chemistry);
         EvaluatorType ev(mr,
                          Template(mr.Strand, mr.TemplateStart, mr.TemplateEnd),
-                         config->QvParams);
+                         config->Params);
         RecursorType recursor(config->MovesAvailable, config->Banding);
 
         ScorerType* scorer;
@@ -278,16 +281,16 @@ namespace ConsensusCore
         }
 
         bool isActive = scorer != NULL;
-        reads_.push_back(ReadStateType(new MappedRead(mr), scorer, isActive));
+        reads_.push_back(ReadStateType(new MappedRead<FeaturesType>(mr), scorer, isActive));
         DEBUG_ONLY(CheckInvariants());
         return isActive;
     }
 
     template<typename R>
-    bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
+    bool MultiReadMutationScorer<R>::AddRead(const MappedRead<FeaturesType>& mr)
     {
         DEBUG_ONLY(CheckInvariants());
-        const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
+        const ConfigType* config = &modelConfigByChemistry_.At(mr.Chemistry);
         return AddRead(mr, config->AddThreshold);
     }
 
@@ -520,7 +523,7 @@ namespace ConsensusCore
     namespace detail {
 
         template<typename ScorerType>
-        ReadState<ScorerType>::ReadState(MappedRead* read,
+        ReadState<ScorerType>::ReadState(MappedRead<FeaturesType>* read,
                                          ScorerType* scorer,
                                          bool isActive)
             : Read(read),
@@ -536,7 +539,7 @@ namespace ConsensusCore
               Scorer(NULL),
               IsActive(other.IsActive)
         {
-            if (other.Read != NULL) Read = new MappedRead(*other.Read);
+            if (other.Read != NULL) Read = new MappedRead<FeaturesType>(*other.Read);
             if (other.Scorer != NULL) Scorer = new ScorerType(*other.Scorer);
             CheckInvariants();
         }
@@ -580,4 +583,20 @@ namespace ConsensusCore
 
     template class MultiReadMutationScorer<SparseSseQvRecursor>;
     template class MultiReadMutationScorer<SparseSseQvSumProductRecursor>;
+
+
+    MlMultiReadMutationScorer::MlMultiReadMutationScorer
+    (double substitutionRate, const std::string& tpl)
+        : MultiReadMutationScorer<SimpleMlSumProductRecursor>(ConfigTableType(), tpl)
+    {
+        MlModelParams params(substitutionRate);
+        BandingOptions banding(4, 18);
+        MlConfig config(params, BASIC_MOVES, banding, -12.5f);
+        modelConfigByChemistry_.InsertDefault(config);
+    }
+
+    MlMultiReadMutationScorer::MlMultiReadMutationScorer
+    (const MlMultiReadMutationScorer& other)
+        : MultiReadMutationScorer<SimpleMlSumProductRecursor>(other)
+    {}
 }

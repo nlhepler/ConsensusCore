@@ -44,67 +44,82 @@
 #include <sstream>
 #include <boost/format.hpp>
 
-namespace ConsensusCore {
-
-    Read::Read(QvSequenceFeatures features,
-               std::string name,
-               std::string chemistry)
-        : Features(features),
-          Name(name),
-          Chemistry(chemistry)
+namespace ConsensusCore
+{
+    template<typename F>
+    Read<F>::Read(const FeaturesType& features,
+                  const std::string& name,
+                  const std::string& chemistry)
+        : Name(name)
+        , Chemistry(chemistry)
+        , Features(features)
     {}
 
-    Read::Read(const Read& other)
-        : Features(other.Features),
-          Name(other.Name),
-          Chemistry(other.Chemistry)
+    template<typename F>
+    Read<F>::Read(const Read& other)
+        : Name(other.Name)
+        , Chemistry(other.Chemistry)
+        , Features(other.Features)
     {}
 
-    int Read::Length() const
+    template<typename F>
+    int Read<F>::Length() const
     {
         return Features.Length();
     }
 
-    std::string Read::ToString() const
+    template<typename F>
+    std::string Read<F>::ToString() const
     {
         return (boost::format("%s (%s) Length=%d Data=%s")
                 % Name % Chemistry % Length() % Checksum::Of(Features)).str();
     }
 
-    Read Read::Null()
+    template<typename F>
+    Read<F> Read<F>::Null()
     {
-        return Read(QvSequenceFeatures(""), "", "");
+        return Read(FeaturesType(""), "", "");
     }
 
-    MappedRead::MappedRead(const Read& read,
-                           StrandEnum strand,
-                           int templateStart,
-                           int templateEnd,
-                           bool pinStart,
-                           bool pinEnd)
-        : Read(read),
-          Strand(strand),
-          TemplateStart(templateStart),
-          TemplateEnd(templateEnd),
-          PinStart(pinStart),
-          PinEnd(pinEnd)
+    template struct Read<QvSequenceFeatures>;
+    template struct Read<MlSequenceFeatures>;
+
+
+    template<typename F>
+    MappedRead<F>::MappedRead(const ReadType& read,
+                              StrandEnum strand,
+                              int templateStart,
+                              int templateEnd,
+                              bool pinStart,
+                              bool pinEnd)
+        : Read<F>(read)
+        , Strand(strand)
+        , TemplateStart(templateStart)
+        , TemplateEnd(templateEnd)
+        , PinStart(pinStart)
+        , PinEnd(pinEnd)
     {}
 
-    MappedRead::MappedRead(const MappedRead& other)
-        : Read(other),
-          Strand(other.Strand),
-          TemplateStart(other.TemplateStart),
-          TemplateEnd(other.TemplateEnd),
-          PinStart(other.PinStart),
-          PinEnd(other.PinEnd)
+    template<typename F>
+    MappedRead<F>::MappedRead(const MappedRead<F>& other)
+        : Read<F>(other)
+        , Strand(other.Strand)
+        , TemplateStart(other.TemplateStart)
+        , TemplateEnd(other.TemplateEnd)
+        , PinStart(other.PinStart)
+        , PinEnd(other.PinEnd)
     {}
 
-    std::string MappedRead::ToString() const
+    template<typename F>
+    std::string MappedRead<F>::ToString() const
     {
         std::stringstream ss;
         ss << (PinStart ? "[" : "(");
         ss << TemplateStart << "," << TemplateEnd;
         ss << (PinEnd   ? "]" : ")");
-        return Read::ToString() + " @ " + ss.str();
+        return Read<F>::ToString() + " @ " + ss.str();
     }
+
+    template struct MappedRead<QvSequenceFeatures>;
+    template struct MappedRead<MlSequenceFeatures>;
 }

@@ -320,6 +320,15 @@ namespace ConsensusCore
             return Zero4<lfloat>();
         }
 
+
+        template<typename M>
+        std::vector<MlTransitionProbabilities> PseudoCounts(const M& alpha, const M& beta) const
+        {
+            std::vector<MlTransitionProbabilities> res(ReadLength());
+            return res;
+        }
+
+
     protected:
         ChannelSequenceFeatures features_;
         EdnaModelParams params_;

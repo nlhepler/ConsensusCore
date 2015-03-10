@@ -190,55 +190,75 @@ namespace ConsensusCore
     };
 
 
-    struct QuiverConfig
+    struct MlModelParams
     {
-        QvModelParams QvParams;
+        static const std::string ChemistryName;
+        static const std::string ModelName;
+        double EmitMatch;
+        double EmitSubstitution;
+
+        MlModelParams(double substitutionRate);
+    };
+
+
+    template<typename P>
+    struct ModelConfig
+    {
+        typedef P ParamsType;
+
+        ParamsType Params;
         int MovesAvailable;
         BandingOptions Banding;
         float FastScoreThreshold;
         float AddThreshold;
 
-        QuiverConfig(const QvModelParams& qvParams,
-                     int movesAvailable,
-                     const BandingOptions& bandingOptions,
-                     float fastScoreThreshold,
-                     float addThreshold = 1.0f);
+        ModelConfig(const ParamsType& Params,
+                    int movesAvailable,
+                    const BandingOptions& bandingOptions,
+                    float fastScoreThreshold,
+                    float addThreshold = 1.0f);
 
-        QuiverConfig(const QuiverConfig& qvConfig);
+        ModelConfig(const ModelConfig& other);
     };
 
+    typedef ModelConfig<QvModelParams> QuiverConfig;
+    typedef ModelConfig<MlModelParams> MlConfig;
 
 
-    class QuiverConfigTable
+    template<typename C>
+    class ModelConfigTable
     {
-    private:
-        typedef std::pair<const std::string, const QuiverConfig> QuiverConfigTableEntry;
+    public:
+        typedef C ConfigType;
 
     private:
-        std::list<QuiverConfigTableEntry> table;
-        bool InsertAs_(const std::string& name, const QuiverConfig& config);
+        typedef std::pair<const std::string, const ConfigType> ConfigTableEntry;
+
+    private:
+        std::list<ConfigTableEntry> table;
+        bool InsertAs_(const std::string& name, const ConfigType& config);
 
     public:
-        typedef std::list<QuiverConfigTableEntry>::const_iterator const_iterator;
+        typedef typename std::list<ConfigTableEntry>::const_iterator const_iterator;
 
-        QuiverConfigTable();
+        ModelConfigTable();
 
         // Insert as the default config (when a read's chemistry is not found.
-        bool InsertDefault(const QuiverConfig& config);
+        bool InsertDefault(const ConfigType& config);
 
         // Insert, using the chemistry found in the config.
-        bool Insert(const QuiverConfig& config) throw(InvalidInputError);
+        bool Insert(const ConfigType& config) throw(InvalidInputError);
 
         // Insert, aliasing as a different chemistry name.  This is
         // important, for example, when a read presents itself as
         // "XL-C2" but we have no trained models for "XL-C2", so we
         // want to have At("XL-C2") fetch the config for a similar
         // chemistry.
-        bool InsertAs(const std::string& name, const QuiverConfig& config) throw(InvalidInputError);
+        bool InsertAs(const std::string& name, const ConfigType& config) throw(InvalidInputError);
 
         int Size() const;
 
-        const QuiverConfig& At(const std::string& name) const throw(InvalidInputError);
+        const ConfigType& At(const std::string& name) const throw(InvalidInputError);
 
         std::vector<std::string> Keys() const;
 
@@ -247,4 +267,7 @@ namespace ConsensusCore
         const_iterator end() const;
 #endif
     };
+
+    typedef ModelConfigTable<QuiverConfig> QuiverConfigTable;
+    typedef ModelConfigTable<MlConfig>     MlConfigTable;
 }

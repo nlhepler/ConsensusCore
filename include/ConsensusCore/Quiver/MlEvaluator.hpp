@@ -66,29 +66,29 @@ using std::max;
 #define NEG_INF -FLT_MAX
 
 namespace ConsensusCore
-{
-    /// \brief An Evaluator that can compute move scores using a QvSequenceFeatures
-    class QvEvaluator
+{    
+    /// \brief An Evaluator that can compute move scores using a MlSequenceFeatures
+    class MlEvaluator
     {
     public:
-        typedef QvSequenceFeatures FeaturesType;
-        typedef QvModelParams      ParamsType;
+        typedef MlSequenceFeatures FeaturesType;
+        typedef MlModelParams      ParamsType;
         typedef Read<FeaturesType> ReadType;
 
     public:
-        QvEvaluator(const ReadType& read,
+        MlEvaluator(const ReadType& read,
                     const std::string& tpl,
-                    const QvModelParams& params,
+                    const MlModelParams& params,
                     bool pinStart = true,
                     bool pinEnd = true)
-            : read_(read),
-              params_(params),
-              tpl_(tpl),
-              pinStart_(pinStart),
-              pinEnd_(pinEnd)
+            : read_(read)
+            , params_(params)
+            , tpl_(tpl)
+            , pinStart_(pinStart)
+            , pinEnd_(pinEnd)
         {}
 
-        ~QvEvaluator()
+        ~MlEvaluator()
         {}
 
         std::string ReadName() const
@@ -139,15 +139,22 @@ namespace ConsensusCore
             return (Features()[i] == tpl_[j]);
         }
 
+        // match or mismatch
         float Inc(int i, int j) const
         {
             assert(0 <= j && j < TemplateLength() &&
                    0 <= i && i < ReadLength() );
-            return (IsMatch(i, j)) ?
-                    params_.Match :
-                    params_.Mismatch + params_.MismatchS * Features().SubsQv[i];
+
+            if (i == 0 && j == 0)
+            {
+                return params_.EmitMatch;
+            }
+
+            return ( read_.Features.TransitionProbabilities[i].Match
+                   + (IsMatch(i, j) ? params_.EmitMatch : params_.EmitSubstitution) );
         }
 
+        // deletion
         float Del(int i, int j) const
         {
             assert(0 <= j && j < TemplateLength() &&
@@ -158,34 +165,25 @@ namespace ConsensusCore
             }
             else
             {
-                float tplBase = tpl_[j];
-                return (i < ReadLength() && tplBase == Features().DelTag[i]) ?
-                        params_.DeletionWithTag + params_.DeletionWithTagS * Features().DelQv[i] :
-                        params_.DeletionN;
+                return read_.Features.TransitionProbabilities[i].Deletion;
             }
         }
 
+        // insertion
         float Extra(int i, int j) const
         {
             assert(0 <= j && j <= TemplateLength() &&
                    0 <= i && i < ReadLength() );
-            return (j < TemplateLength() && IsMatch(i, j)) ?
-                    params_.Branch + params_.BranchS * Features().InsQv[i] :
-                    params_.Nce + params_.NceS * Features().InsQv[i];
+            return ( j + 1 < TemplateLength() && IsMatch(i, j + 1) )
+                   ? read_.Features.TransitionProbabilities[i].Branch
+                   : read_.Features.TransitionProbabilities[i].Stick;
         }
 
         float Merge(int i, int j) const
         {
             assert(0 <= j && j < TemplateLength() - 1 &&
                    0 <= i && i < ReadLength() );
-            if (!(Features()[i] == tpl_[j] && Features()[i] == tpl_[j + 1]) )
-            {
-                return -FLT_MAX;
-            }
-            else
-            {   int tplBase = encodeTplBase(tpl_[j]);
-                return params_.Merge[tplBase] + params_.MergeS[tplBase] * Features().MergeQv[i];
-            }
+            return -FLT_MAX;
         }
 
         //
@@ -196,104 +194,93 @@ namespace ConsensusCore
         {
             assert (0 <= i && i <= ReadLength() - 4);
             assert (0 <= j && j < TemplateLength());
-            float tplBase = tpl_[j];
-            __m128 match = _mm_set_ps1(params_.Match);
-            __m128 mismatch = AFFINE4(params_.Mismatch, params_.MismatchS, &Features().SubsQv[i]);
-            // Mask to see it the base is equal to the template
-            __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().SequenceAsFloat[i]),
-                                       _mm_set_ps1(tplBase));
-            return MUX4(mask, match, mismatch);
+            __m128 res = _mm_setr_ps(Inc(i + 0, j),
+                                     Inc(i + 1, j),
+                                     Inc(i + 2, j),
+                                     Inc(i + 3, j));
+            return res;
         }
 
         __m128 Del4(int i, int j) const
         {
-            assert (0 <= i && i <= ReadLength());
+            assert (0 <= i && i <= ReadLength() - 4);
             assert (0 <= j && j < TemplateLength());
-            if (i != 0 && i + 3 != ReadLength())
-            {
-                float tplBase = tpl_[j];
-                __m128 delWTag = AFFINE4(params_.DeletionWithTag,
-                                         params_.DeletionWithTagS,
-                                         &Features().DelQv[i]);
-                __m128 delNoTag = _mm_set_ps1(params_.DeletionN);
-                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().DelTag[i]),
-                                           _mm_set_ps1(tplBase));
-                return MUX4(mask, delWTag, delNoTag);
-            }
-            else
-            {
-                // Have to do PinStart/PinEnd logic, and weird
-                // logic for last row.  Punt.
-                __m128 res = _mm_setr_ps(Del(i + 0, j),
-                                         Del(i + 1, j),
-                                         Del(i + 2, j),
-                                         Del(i + 3, j));
-                return res;
-            }
+            // Have to do PinStart/PinEnd logic, and weird
+            // logic for last row.  Punt.
+            __m128 res = _mm_setr_ps(Del(i + 0, j),
+                                     Del(i + 1, j),
+                                     Del(i + 2, j),
+                                     Del(i + 3, j));
+            return res;
         }
 
         __m128 Extra4(int i, int j) const
         {
             assert (0 <= i && i <= ReadLength() - 4);
             assert (0 <= j && j <= TemplateLength());
-            if (i != 0 && i + 3 != ReadLength())
-            {
-                float tplBase = tpl_[j];
-                __m128 branch = AFFINE4(params_.Branch, params_.BranchS, &Features().InsQv[i]);
-                __m128 nce    = AFFINE4(params_.Nce,    params_.NceS,    &Features().InsQv[i]);
-
-                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().SequenceAsFloat[i]),
-                                           _mm_set_ps1(tplBase));
-                return MUX4(mask, branch, nce);
-            }
-            else
-            {
-                __m128 res = _mm_setr_ps(Extra(i + 0, j),
-                                         Extra(i + 1, j),
-                                         Extra(i + 2, j),
-                                         Extra(i + 3, j));
-                return res;
-            }
+            __m128 res = _mm_setr_ps(Extra(i + 0, j),
+                                     Extra(i + 1, j),
+                                     Extra(i + 2, j),
+                                     Extra(i + 3, j));
+            return res;
         }
 
 
         __m128 Merge4(int i, int j) const
         {
-            assert(0 <= i && i <= ReadLength() - 4);
-            assert(0 <= j && j < TemplateLength() - 1);
-
-            float tplBase     = tpl_[j];
-            float tplBaseNext = tpl_[j + 1];
-            int tplBase_ = encodeTplBase(tpl_[j]);
-
-            __m128 merge =  AFFINE4(params_.Merge[tplBase_],
-                                    params_.MergeS[tplBase_],
-                                    &Features().MergeQv[i]);
-            __m128 noMerge = _mm_set_ps1(-FLT_MAX);
-
-            if (tplBase == tplBaseNext)
-            {
-                __m128 mask = _mm_cmpeq_ps(_mm_loadu_ps(&Features().SequenceAsFloat[i]),
-                                           _mm_set_ps1(tplBase));
-                return MUX4(mask, merge, noMerge);
-            }
-            else
-            {
-                return noMerge;
-            }
+            return _mm_set_ps1(-FLT_MAX);
         }
 
 
         template<typename M>
         std::vector<MlTransitionProbabilities> PseudoCounts(const M& alpha, const M& beta) const
         {
-            std::vector<MlTransitionProbabilities> res(ReadLength());
+            const int I = ReadLength();
+            const int J = TemplateLength();
+            std::vector<MlTransitionProbabilities> res(I);
+
+            // TODO (lhepler) deal with sparse-matrix-fu
+            for (int i = 0; i < I; ++i)
+            {
+                const MlTransitionProbabilities transProbs = read_.Features.TransitionProbabilities[i];
+
+                for (int j = 0; j < J; ++j)
+                {
+                    double curF = alpha(i, j);
+
+                    if (i + 1 < I && j + 1 < J)
+                    {
+                        bool isMatch = read_.Features[i + 1] == tpl_[i + 1];
+                        double e = isMatch ? params_.EmitMatch : params_.EmitSubstitution;
+                        res[i].Match += curF + beta(i + 1, j + 1) + transProbs.Match + e;
+                    }
+
+                    if (i + 1 < I)
+                    {
+                        bool isBranch = read_.Features[i] == read_.Features[i + 1];
+                        if (isBranch)
+                        {
+                            res[i].Branch += curF + beta(i + 1, j) + transProbs.Branch;
+                        }
+                        else
+                        {
+                            res[i].Stick += curF + beta(i + 1, j) + transProbs.Stick;
+                        }
+                    }
+
+                    if (j + 1 < J)
+                    {
+                        res[i].Deletion += curF + beta(i, j + 1) + transProbs.Deletion;
+                    }
+                }
+            }
+
             return res;
         }
 
 
     protected:
-        inline const QvSequenceFeatures& Features() const
+        inline const MlSequenceFeatures& Features() const
         {
             return read_.Features;
         }
@@ -301,7 +288,7 @@ namespace ConsensusCore
 
     protected:
         ReadType read_;
-        QvModelParams params_;
+        MlModelParams params_;
         std::string tpl_;
         bool pinStart_;
         bool pinEnd_;

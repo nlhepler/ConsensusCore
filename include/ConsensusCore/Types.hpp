@@ -48,19 +48,19 @@ namespace ConsensusCore {
     struct AlignConfig;
     struct BandingOptions;
     class DenseMatrix;
-    struct QuiverConfig;
     class PairwiseAlignment;
     class AnnotatedPairwiseAlignment;
     struct QvModelParams;
+    struct MlModelParams;
     struct EdnaModelParams;
     struct ChannelSequenceFeatures;
     struct QvSequenceFeatures;
+    struct MlSequenceFeatures;
     struct SequenceFeatures;
     class SparseMatrix;
     class Mutation;
     class ScoredMutation;
     struct Interval;
-    struct Read;
 }
 
 namespace ConsensusCore {

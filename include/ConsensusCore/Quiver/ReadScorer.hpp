@@ -38,6 +38,7 @@
 #pragma once
 
 #include <ConsensusCore/Quiver/QuiverConfig.hpp>
+#include <ConsensusCore/Read.hpp>
 #include <ConsensusCore/Types.hpp>
 
 #include <string>
@@ -54,23 +55,23 @@ namespace ConsensusCore
         explicit ReadScorer(QuiverConfig& config);
 
         float Score
-        (const std::string& tpl, const Read& read) const
+        (const std::string& tpl, const Read<QvSequenceFeatures>& read) const
             throw(AlphaBetaMismatchException);
 
         const PairwiseAlignment* Align
-        (const std::string& tpl, const Read& read) const
+        (const std::string& tpl, const Read<QvSequenceFeatures>& read) const
             throw(AlphaBetaMismatchException);
 
         const SparseMatrix* Alpha
-        (const std::string& tpl, const Read& read) const
+        (const std::string& tpl, const Read<QvSequenceFeatures>& read) const
             throw(AlphaBetaMismatchException);
 
         const SparseMatrix* Beta
-        (const std::string& tpl, const Read& read) const
+        (const std::string& tpl, const Read<QvSequenceFeatures>& read) const
             throw(AlphaBetaMismatchException);
 
 
     private:
-        QuiverConfig _quiverConfig;
+        ModelConfig<QvModelParams> _quiverConfig;
     };
 }

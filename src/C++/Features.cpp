@@ -38,6 +38,7 @@
 #include <ConsensusCore/Features.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -151,6 +152,39 @@ namespace ConsensusCore
         }
         CheckTagFeature(DelTag);
     }
+
+    namespace
+    {
+        double lgOneThird = -1.0986122886681098;
+    }
+
+    MlTransitionProbabilities::MlTransitionProbabilities(const double match,
+                                                         const double branch,
+                                                         const double stick,
+                                                         const double deletion)
+        : Match(log(match))
+        , Branch(log(branch))
+        , Stick(log(stick) + lgOneThird)
+        , Deletion(log(deletion))
+    {}
+
+    MlTransitionProbabilities::MlTransitionProbabilities()
+        : Match(0.0)
+        , Branch(0.0)
+        , Stick(0.0)
+        , Deletion(0.0)
+    {}
+
+    MlSequenceFeatures::MlSequenceFeatures(const std::string& seq)
+        : SequenceFeatures(seq)
+        , TransitionProbabilities(Length())
+    {}
+
+    MlSequenceFeatures::MlSequenceFeatures(const std::string& seq,
+                                           const MlTransitionProbabilities* transProbs)
+        : SequenceFeatures(seq)
+        , TransitionProbabilities(transProbs, Length())
+    {}
 
     ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq)
         : SequenceFeatures(seq),

@@ -91,7 +91,7 @@ protected:
 #define E  typename TypeParam::EvaluatorType
 
 #define recursor  (this->recursor_)
-#define params    (this->testingConfig_.QvParams)
+#define params    (this->testingConfig_.Params)
 #define config    (this->testingConfig_)
 
 extern Read AnonymousRead(std::string seq);

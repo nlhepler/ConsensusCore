@@ -81,6 +81,9 @@ namespace ConsensusCore
         const EvaluatorType* Evaluator() const;
         const int NumFlipFlops() const { return numFlipFlops_; }
 
+    public:
+        std::vector<MlTransitionProbabilities> PseudoCounts() const;
+
     private:
         EvaluatorType* evaluator_;
         R* recursor_;

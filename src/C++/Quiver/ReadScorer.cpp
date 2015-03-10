@@ -56,12 +56,12 @@ namespace ConsensusCore
         : _quiverConfig(config)
     {}
 
-    float ReadScorer::Score(const string& tpl, const Read& read) const
+    float ReadScorer::Score(const string& tpl, const Read<QvSequenceFeatures>& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+        QvEvaluator e(read, tpl, _quiverConfig.Params);
 
         I = read.Length();
         J = tpl.length();
@@ -72,12 +72,12 @@ namespace ConsensusCore
     }
 
     const PairwiseAlignment*
-    ReadScorer::Align(const string& tpl, const Read& read) const
+    ReadScorer::Align(const string& tpl, const Read<QvSequenceFeatures>& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+        QvEvaluator e(read, tpl, _quiverConfig.Params);
 
         I = read.Length();
         J = tpl.length();
@@ -87,12 +87,12 @@ namespace ConsensusCore
     }
 
     const SparseMatrix*
-    ReadScorer::Alpha(const string& tpl, const Read& read) const
+    ReadScorer::Alpha(const string& tpl, const Read<QvSequenceFeatures>& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+        QvEvaluator e(read, tpl, _quiverConfig.Params);
 
         I = read.Length();
         J = tpl.length();
@@ -103,12 +103,12 @@ namespace ConsensusCore
     }
 
     const SparseMatrix*
-    ReadScorer::Beta(const string& tpl, const Read& read) const
+    ReadScorer::Beta(const string& tpl, const Read<QvSequenceFeatures>& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
         SparseSseQvRecursor r(_quiverConfig.MovesAvailable, _quiverConfig.Banding);
-        QvEvaluator e(read, tpl, _quiverConfig.QvParams);
+        QvEvaluator e(read, tpl, _quiverConfig.Params);
 
         I = read.Length();
         J = tpl.length();

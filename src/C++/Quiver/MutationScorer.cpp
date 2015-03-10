@@ -241,6 +241,14 @@ namespace ConsensusCore
         delete evaluator_;
     }
 
+
+    template<typename R>
+    std::vector<MlTransitionProbabilities> MutationScorer<R>::PseudoCounts() const
+    {
+        return evaluator_->PseudoCounts(*alpha_, *beta_);
+    }
+
+
     template class MutationScorer<SimpleQvRecursor>;
     template class MutationScorer<SseQvRecursor>;
     template class MutationScorer<SparseSimpleQvRecursor>;

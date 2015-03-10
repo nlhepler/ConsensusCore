@@ -250,7 +250,7 @@ protected:
 #define E   typename TypeParam::EvaluatorType
 
 #define config    (this->testingConfig_)
-#define params    (this->testingConfig_.QvParams)
+#define params    (this->testingConfig_.Params)
 
 
 TYPED_TEST(MultiReadMutationScorerTest, Template)

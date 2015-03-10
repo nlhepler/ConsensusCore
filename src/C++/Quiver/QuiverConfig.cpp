@@ -37,38 +37,62 @@
 
 #include <ConsensusCore/Quiver/QuiverConfig.hpp>
 
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
 
+#define FALLBACK "*"
+
 namespace ConsensusCore {
-    QuiverConfig::QuiverConfig(const QvModelParams& qvParams,
-                               int movesAvailable,
-                               const BandingOptions& bandingOptions,
-                               float fastScoreThreshold,
-                               float addThreshold)
-        : QvParams(qvParams),
+
+    namespace
+    {
+        double lgOneThird = -1.0986122886681098;
+    }
+
+    MlModelParams::MlModelParams(double substitutionRate)
+        : EmitMatch(log(1.0 - substitutionRate))
+        , EmitSubstitution(log(substitutionRate) + lgOneThird)
+    {}
+
+    const std::string MlModelParams::ChemistryName = FALLBACK;
+    const std::string MlModelParams::ModelName     = "UnitEM";
+
+    template<typename P>
+    ModelConfig<P>::ModelConfig(const ParamsType& params,
+                                int movesAvailable,
+                                const BandingOptions& bandingOptions,
+                                float fastScoreThreshold,
+                                float addThreshold)
+        : Params(params),
           MovesAvailable(movesAvailable),
           Banding(bandingOptions),
           FastScoreThreshold(fastScoreThreshold),
           AddThreshold(addThreshold)
     {}
 
-    QuiverConfig::QuiverConfig(const QuiverConfig& qvConfig)
-        : QvParams(qvConfig.QvParams),
+    template<typename P>
+    ModelConfig<P>::ModelConfig(const ModelConfig& qvConfig)
+        : Params(qvConfig.Params),
           MovesAvailable(qvConfig.MovesAvailable),
           Banding(qvConfig.Banding),
           FastScoreThreshold(qvConfig.FastScoreThreshold),
           AddThreshold(qvConfig.AddThreshold)
     {}
 
+    template struct ModelConfig<QvModelParams>;
+    template struct ModelConfig<MlModelParams>;
 
-    QuiverConfigTable::QuiverConfigTable()
+
+    template<typename C>
+    ModelConfigTable<C>::ModelConfigTable()
     {}
 
-    bool QuiverConfigTable::InsertAs_(const std::string& name, const QuiverConfig& config)
+    template<typename C>
+    bool ModelConfigTable<C>::InsertAs_(const std::string& name, const ConfigType& config)
     {
         const_iterator it;
 
@@ -81,36 +105,39 @@ namespace ConsensusCore {
         return true;
     }
 
-    #define FALLBACK "*"
-
-    bool QuiverConfigTable::InsertAs(const std::string& name, const QuiverConfig& config)
+    template<typename C>
+    bool ModelConfigTable<C>::InsertAs(const std::string& name, const ConfigType& config)
         throw(InvalidInputError)
 
     {
         if (name.compare(FALLBACK) == 0)
             throw InvalidInputError(
-                "Cannot Insert(...) a QuiverConfig with chemistry '" FALLBACK "'");
+                "Cannot Insert(...) a ConfigType with chemistry '" FALLBACK "'");
         return InsertAs_(name, config);
     }
 
-    bool QuiverConfigTable::Insert(const QuiverConfig& config)
+    template<typename C>
+    bool ModelConfigTable<C>::Insert(const ConfigType& config)
         throw(InvalidInputError)
     {
-        const std::string& name = config.QvParams.ChemistryName;
+        const std::string& name = config.Params.ChemistryName;
         return InsertAs(name, config);
     }
 
-    bool QuiverConfigTable::InsertDefault(const QuiverConfig& config)
+    template<typename C>
+    bool ModelConfigTable<C>::InsertDefault(const ConfigType& config)
     {
         return InsertAs_(FALLBACK, config);
     }
 
-    int QuiverConfigTable::Size() const
+    template<typename C>
+    int ModelConfigTable<C>::Size() const
     {
         return table.size();
     }
 
-    const QuiverConfig& QuiverConfigTable::At(const std::string& name) const
+    template<typename C>
+    const typename ModelConfigTable<C>::ConfigType& ModelConfigTable<C>::At(const std::string& name) const
         throw(InvalidInputError)
     {
         const_iterator it;
@@ -125,11 +152,11 @@ namespace ConsensusCore {
             if (it->first.compare(FALLBACK) == 0)
                 return it->second;
 
-        throw InvalidInputError("Chemistry not found in QuiverConfigTable");
+        throw InvalidInputError("Chemistry not found in ModelConfigTable");
     }
 
-
-    std::vector<std::string> QuiverConfigTable::Keys() const
+    template<typename C>
+    std::vector<std::string> ModelConfigTable<C>::Keys() const
     {
         std::vector<std::string> keys;
         for (const_iterator it = table.begin(); it != table.end(); it++)
@@ -139,13 +166,18 @@ namespace ConsensusCore {
         return keys;
     }
 
-    QuiverConfigTable::const_iterator QuiverConfigTable::begin() const
+    template<typename C>
+    typename ModelConfigTable<C>::const_iterator ModelConfigTable<C>::begin() const
     {
         return table.begin();
     }
 
-    QuiverConfigTable::const_iterator QuiverConfigTable::end() const
+    template<typename C>
+    typename ModelConfigTable<C>::const_iterator ModelConfigTable<C>::end() const
     {
         return table.end();
     }
+
+    template class ModelConfigTable<QuiverConfig>;
+    template class ModelConfigTable<MlConfig>;
 }

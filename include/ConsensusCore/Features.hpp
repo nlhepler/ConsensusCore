@@ -99,6 +99,33 @@ namespace ConsensusCore
                            const unsigned char* mergeQv);
     };
 
+    /// \brief a Feature type encapsulating the possible moves
+    struct MlTransitionProbabilities
+    {
+        double Match;
+        double Branch;       // Insertion of same base
+        double Stick;        // Insertion of different base
+        double Deletion;     // Merge + Dark, indistinguishable
+
+        MlTransitionProbabilities(const double match,
+                                  const double branch,
+                                  const double stick,
+                                  const double deletion);
+
+        MlTransitionProbabilities();
+    };
+
+    /// \brief a features object that contains transition states
+    struct MlSequenceFeatures : public SequenceFeatures
+    {
+        Feature<MlTransitionProbabilities> TransitionProbabilities;
+
+        explicit MlSequenceFeatures(const std::string& seq);
+
+        MlSequenceFeatures(const std::string& seq,
+                           const MlTransitionProbabilities* transProbs);
+    };
+
 
     /// \brief A features object that contains sequence in channel space.
     struct ChannelSequenceFeatures : SequenceFeatures

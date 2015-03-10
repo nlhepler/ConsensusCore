@@ -39,6 +39,7 @@
 
 #include <ConsensusCore/Matrix/DenseMatrix.hpp>
 #include <ConsensusCore/Quiver/QvEvaluator.hpp>
+#include <ConsensusCore/Quiver/MlEvaluator.hpp>
 #include <ConsensusCore/Quiver/detail/Combiner.hpp>
 #include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
 
@@ -80,6 +81,10 @@ namespace ConsensusCore {
     typedef SimpleRecursor<DenseMatrix,
                            QvEvaluator,
                            detail::SumProductCombiner> SimpleQvSumProductRecursor;
+
+    typedef SimpleRecursor<DenseMatrix,
+                           MlEvaluator,
+                           detail::SumProductCombiner> SimpleMlSumProductRecursor;
 
     typedef SimpleRecursor<SparseMatrix,
                            QvEvaluator,

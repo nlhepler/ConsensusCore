@@ -83,3 +83,22 @@ bool AlmostEqual(float A, float B, int maxUlps = 4);
 #else
 #    define INLINE_CALLEES __attribute__((flatten))
 #endif
+
+namespace ConsensusCore
+{
+    //
+    // Utility functions
+    //
+    static inline int encodeTplBase(char base)
+    {
+        switch (base) {
+            case 'A': return 0;
+            case 'C': return 1;
+            case 'G': return 2;
+            case 'T': return 3;
+            case 'M': return 4;  // For testing
+            case 'N': return 5;  // For testing
+            default:  ShouldNotReachHere();
+        }
+    }
+}

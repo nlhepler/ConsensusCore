@@ -61,7 +61,6 @@ namespace ConsensusCore {
     public:
         virtual int TemplateLength() const = 0;
         virtual int NumReads() const = 0;
-        virtual const MappedRead* Read(int readIndex) const = 0;
 
         virtual std::string Template(StrandEnum strand = FORWARD_STRAND) const = 0;
         virtual std::string Template(StrandEnum strand,
@@ -73,8 +72,9 @@ namespace ConsensusCore {
         // Reads provided must be clipped to the reference/scaffold window implied by the
         // template, however they need not span the window entirely---nonspanning reads
         // must be provided with (0-based) template start/end coordinates.
-        virtual bool AddRead(const MappedRead& mappedRead, float threshold) = 0;
-        virtual bool AddRead(const MappedRead& mappedRead) = 0;
+        //virtual bool AddRead(const AbstractMappedRead& mappedRead, float threshold) = 0;
+        //virtual bool AddRead(const AbstractMappedRead& mappedRead) = 0;
+        //virtual const AbstractMappedRead* Read(int readIndex) const = 0;
 
         virtual float Score(const Mutation& m) const = 0;
         virtual float FastScore(const Mutation& m) const = 0;
@@ -120,19 +120,24 @@ namespace ConsensusCore {
     };
 
 
-    bool ReadScoresMutation(const MappedRead& mr, const Mutation& mut);
-    Mutation OrientedMutation(const MappedRead& mr, const Mutation& mut);
+    template<typename F>
+    bool ReadScoresMutation(const MappedRead<F>& mr, const Mutation& mut);
+
+    template<typename F>
+    Mutation OrientedMutation(const MappedRead<F>& mr, const Mutation& mut);
 
 
     namespace detail {
         template<typename ScorerType>
         struct ReadState
         {
-            MappedRead* Read;
+            typedef typename ScorerType::EvaluatorType::FeaturesType FeaturesType;
+
+            MappedRead<FeaturesType>* Read;
             ScorerType* Scorer;
             bool IsActive;
 
-            ReadState(MappedRead* read,
+            ReadState(MappedRead<FeaturesType>* read,
                       ScorerType* scorer,
                       bool isActive);
 
@@ -148,18 +153,22 @@ namespace ConsensusCore {
     {
     public:
         typedef R                                         RecursorType;
+        typedef MutationScorer<R>                         ScorerType;
         typedef typename R::EvaluatorType                 EvaluatorType;
-        typedef typename ConsensusCore::MutationScorer<R> ScorerType;
         typedef typename detail::ReadState<ScorerType>    ReadStateType;
+        typedef typename EvaluatorType::FeaturesType      FeaturesType;
+        typedef typename EvaluatorType::ParamsType        ParamsType;
+        typedef ModelConfig<ParamsType>                   ConfigType;
+        typedef ModelConfigTable<ConfigType>              ConfigTableType;
 
     public:
-        MultiReadMutationScorer(const QuiverConfigTable& paramsByChemistry, std::string tpl);
+        MultiReadMutationScorer(const ConfigTableType& paramsByChemistry, const std::string& tpl);
         MultiReadMutationScorer(const MultiReadMutationScorer<R>& scorer);
         virtual ~MultiReadMutationScorer();
 
         int TemplateLength() const;
         int NumReads() const;
-        const MappedRead* Read(int readIndex) const;
+        const MappedRead<FeaturesType>* Read(int readIndex) const;
 
         std::string Template(StrandEnum strand = FORWARD_STRAND) const;
         std::string Template(StrandEnum strand, int templateStart, int templateEnd) const;
@@ -168,8 +177,8 @@ namespace ConsensusCore {
         // Reads provided must be clipped to the reference/scaffold window implied by the
         // template, however they need not span the window entirely---nonspanning reads
         // must be provided with (0-based) template start/end coordinates.
-        bool AddRead(const MappedRead& mappedRead, float threshold);
-        bool AddRead(const MappedRead& mappedRead);
+        bool AddRead(const MappedRead<FeaturesType>& mappedRead, float threshold);
+        bool AddRead(const MappedRead<FeaturesType>& mappedRead);
 
         float Score(const Mutation& m) const;
         float FastScore(const Mutation& m) const;
@@ -223,8 +232,8 @@ namespace ConsensusCore {
     private:
         void CheckInvariants() const;
 
-    private:
-        QuiverConfigTable quiverConfigByChemistry_;
+    protected:
+        ConfigTableType modelConfigByChemistry_;
         float fastScoreThreshold_;
         std::string fwdTemplate_;
         std::string revTemplate_;
@@ -235,4 +244,16 @@ namespace ConsensusCore {
       SparseSseQvMultiReadMutationScorer;
     typedef MultiReadMutationScorer<SparseSseQvSumProductRecursor> \
       SparseSseQvSumProductMultiReadMutationScorer;
+
+
+    class MlMultiReadMutationScorer
+        : public MultiReadMutationScorer<SimpleMlSumProductRecursor>
+    {
+    public:
+        MlMultiReadMutationScorer(double substitutionRate, const std::string& tpl);
+        MlMultiReadMutationScorer(const MlMultiReadMutationScorer& other);
+
+        MlTransitionProbabilities PseudoCounts(int i, int j) const;
+        double                    NewSubstitutionRate() const;
+    };
 }
