@@ -281,13 +281,11 @@ namespace ConsensusCore
  
 
         template<typename M>
-        std::pair<double, double> NewSubstitutionRate(const M& alpha, const M& beta) const
+        void NewSubstitutionRate(const M& alpha, const M& beta, double& num, double& den) const
         {
             const int I = ReadLength();
             const int J = TemplateLength();
             const double ll = beta(0, 0);
-            double num = -std::numeric_limits<double>::max();
-            double den = -std::numeric_limits<double>::max();
 
             for (int i = 0; i < I; ++i)
             {
@@ -299,7 +297,6 @@ namespace ConsensusCore
                     den = lgAdd(den, amt);
                 }
             }
-            return std::make_pair(num, den);
         }
 
 

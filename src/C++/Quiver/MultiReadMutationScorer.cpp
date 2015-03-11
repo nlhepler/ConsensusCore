@@ -50,7 +50,6 @@
 #include <utility>
 #include <vector>
 #include <boost/format.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
 
@@ -619,12 +618,7 @@ namespace ConsensusCore
         foreach (const ReadStateType& read, reads_)
         {
             if (read.IsActive)
-            {
-                double n, d;
-                boost::tie(n, d) = read.Scorer->NewSubstitutionRate();
-                num = lgAdd(num, n);
-                den = lgAdd(den, d);
-            }
+                read.Scorer->NewSubstitutionRate(num, den);
         }
 
         return exp(num - den);

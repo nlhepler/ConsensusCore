@@ -330,10 +330,8 @@ namespace ConsensusCore
 
 
         template<typename M>
-        std::pair<double, double> NewSubstitutionRate(const M& alpha, const M& beta) const
-        {
-            return std::make_pair(-DBL_MAX, -DBL_MAX);
-        }
+        void NewSubstitutionRate(const M& alpha, const M& beta, double& num, double& den) const
+        {}
 
 
     protected:
