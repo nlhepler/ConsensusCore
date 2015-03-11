@@ -83,6 +83,7 @@ namespace ConsensusCore
 
     public:
         std::vector<MlTransitionProbabilities> PseudoCounts() const;
+        std::pair<double, double>              NewSubstitutionRate() const;
 
     private:
         EvaluatorType* evaluator_;

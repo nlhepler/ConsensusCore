@@ -329,6 +329,13 @@ namespace ConsensusCore
         }
 
 
+        template<typename M>
+        std::pair<double, double> NewSubstitutionRate(const M& alpha, const M& beta) const
+        {
+            return std::make_pair(-DBL_MAX, -DBL_MAX);
+        }
+
+
     protected:
         ChannelSequenceFeatures features_;
         EdnaModelParams params_;

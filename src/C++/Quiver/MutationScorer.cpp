@@ -249,6 +249,12 @@ namespace ConsensusCore
     }
 
 
+    template<typename R>
+    std::pair<double, double> MutationScorer<R>::NewSubstitutionRate() const
+    {
+        return evaluator_->NewSubstitutionRate(*alpha_, *beta_);
+    }
+
     template class MutationScorer<SimpleQvRecursor>;
     template class MutationScorer<SseQvRecursor>;
     template class MutationScorer<SparseSimpleQvRecursor>;

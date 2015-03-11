@@ -47,6 +47,7 @@
 #include <climits>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -276,6 +277,29 @@ namespace ConsensusCore
             }
 
             return res;
+        }
+ 
+
+        template<typename M>
+        std::pair<double, double> NewSubstitutionRate(const M& alpha, const M& beta) const
+        {
+            const int I = ReadLength();
+            const int J = TemplateLength();
+            const double ll = beta(0, 0);
+            double num = -std::numeric_limits<double>::max();
+            double den = -std::numeric_limits<double>::max();
+
+            for (int i = 0; i < I; ++i)
+            {
+                for (int j = 0; j < J; ++j)
+                {
+                    double amt = ((i > 0 && j > 0) ? alpha(i - 1, j - 1) : 0.0) + Inc(i, j) + beta(i, j) - ll;
+                    if (read_.Features[i] == tpl_[j])
+                        num = lgAdd(num, amt);
+                    den = lgAdd(den, amt);
+                }
+            }
+            return std::make_pair(num, den);
         }
 
 

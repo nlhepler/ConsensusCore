@@ -99,6 +99,6 @@ namespace ConsensusCore
         std::string ToString() const;
     };
 
-    typedef MappedRead<QvSequenceFeatures> MappedQvRead;
-    typedef MappedRead<MlSequenceFeatures> MappedMlRead;
+    typedef MappedRead<QvSequenceFeatures> QvMappedRead;
+    typedef MappedRead<MlSequenceFeatures> MlMappedRead;
 }

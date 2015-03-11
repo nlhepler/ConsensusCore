@@ -44,10 +44,13 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 #include <boost/format.hpp>
+#include <boost/tuple/tuple.hpp>
 
 #define MIN_FAVORABLE_SCOREDIFF 0.04  // Chosen such that 0.49 = 1 / (1 + exp(minScoreDiff))
 
@@ -599,4 +602,31 @@ namespace ConsensusCore
     (const MlMultiReadMutationScorer& other)
         : MultiReadMutationScorer<SimpleMlSumProductRecursor>(other)
     {}
+
+    std::vector<MlTransitionProbabilities> MlMultiReadMutationScorer::PseudoCounts(int readIdx) const
+    {
+        if (reads_[readIdx].IsActive)
+            return reads_[readIdx].Scorer->PseudoCounts();
+
+        return std::vector<MlTransitionProbabilities>(reads_[readIdx].Read->Length());
+    }
+
+    double MlMultiReadMutationScorer::NewSubstitutionRate() const
+    {
+        double num = -std::numeric_limits<double>::max();
+        double den = -std::numeric_limits<double>::max();
+
+        foreach (const ReadStateType& read, reads_)
+        {
+            if (read.IsActive)
+            {
+                double n, d;
+                boost::tie(n, d) = read.Scorer->NewSubstitutionRate();
+                num = lgAdd(num, n);
+                den = lgAdd(den, d);
+            }
+        }
+
+        return exp(num - den);
+    }
 }

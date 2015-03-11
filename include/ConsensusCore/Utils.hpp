@@ -41,8 +41,11 @@
 #include <stdlib.h>
 
 #include <algorithm>
-#include <boost/foreach.hpp>
+#include <cmath>
+#include <limits>
 #include <string>
+
+#include <boost/foreach.hpp>
 
 #include <ConsensusCore/Types.hpp>
 
@@ -100,5 +103,18 @@ namespace ConsensusCore
             case 'N': return 5;  // For testing
             default:  ShouldNotReachHere();
         }
+    }
+
+
+    template<typename T>
+    T lgAdd(T a, T b)
+    {
+        T m = std::max(a, b);
+        if (m == -std::numeric_limits<T>::max())
+            return m;
+        a -= m;
+        b -= m;
+        T s = exp(a) + exp(b);
+        return m + log(s);
     }
 }

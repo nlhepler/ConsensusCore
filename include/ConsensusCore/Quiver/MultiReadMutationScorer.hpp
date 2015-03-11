@@ -253,7 +253,7 @@ namespace ConsensusCore {
         MlMultiReadMutationScorer(double substitutionRate, const std::string& tpl);
         MlMultiReadMutationScorer(const MlMultiReadMutationScorer& other);
 
-        MlTransitionProbabilities PseudoCounts(int i, int j) const;
-        double                    NewSubstitutionRate() const;
+        std::vector<MlTransitionProbabilities> PseudoCounts(int i) const;
+        double                                 NewSubstitutionRate() const;
     };
 }
