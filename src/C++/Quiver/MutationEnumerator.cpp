@@ -35,13 +35,14 @@
 
 // Author: David Alexander
 
-#include <ConsensusCore/Quiver/MutationEnumerator.hpp>
+#include <ConsensusCore/MutationEnumerator.hpp>
 #include <ConsensusCore/Types.hpp>
 #include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Mutation.hpp>
 
 #include <boost/range/as_array.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <cstring>
 #include <string>
 #include <utility>
 #include <vector>
@@ -144,71 +145,81 @@ namespace ConsensusCore
     }
 
 
-    DinucleotideRepeatMutationEnumerator::DinucleotideRepeatMutationEnumerator
-    (const std::string& tpl, int minDinucRepeatElements)
+    RepeatMutationEnumerator::RepeatMutationEnumerator
+    (const std::string& tpl, int repeatLength, int minRepeatElements)
         : detail::AbstractMutationEnumerator(tpl)
-        , minDinucRepeatElements_(minDinucRepeatElements)
+        , repeatLength_(repeatLength)
+        , minRepeatElements_(minRepeatElements)
     {}
 
     std::vector<Mutation>
-    DinucleotideRepeatMutationEnumerator::Mutations() const
+    RepeatMutationEnumerator::Mutations() const
     {
         return Mutations(0, tpl_.length());
     }
 
     std::vector<Mutation>
-    DinucleotideRepeatMutationEnumerator::Mutations(int beginPos, int endPos) const
+    RepeatMutationEnumerator::Mutations(int beginPos, int endPos) const
     {
         std::vector<Mutation> result;
 
-        if (minDinucRepeatElements_ <= 0)
+        if (minRepeatElements_ <= 0 || repeatLength_ > 31)
             return result;
+
+        // buffer to store repeat characters
+        char buf[32] = {0};
 
         //
         // Consider all dinucleotide repeats that _start_ in the window
         // and don't increment pos here, that happens later
         //
         boost::tie(beginPos, endPos) = BoundInterval(tpl_, beginPos, endPos);
-        for (int pos = beginPos; pos + 1 < endPos;)
+        for (int pos = beginPos; pos + repeatLength_ <= endPos;)
         {
-            char x = tpl_[pos];
-            char y = tpl_[pos + 1];
+            strncpy(buf, tpl_.c_str() + pos, repeatLength_);
+
             int numElements = 1;
 
-            for (int i = pos + 2; i + 1 < static_cast<int>(tpl_.length()); i += 2)
+            for (int i = pos + repeatLength_;
+                 static_cast<size_t>(i + repeatLength_) <= tpl_.length();
+                 i += repeatLength_)
             {
                 //
                 // if we're beyond the window and have enough elements, stop
                 //
-                if (numElements >= minDinucRepeatElements_ && i >= endPos)
+                if (numElements >= minRepeatElements_ && i >= endPos)
                     break;
 
-                else if (tpl_[i] == x && tpl_[i + 1] == y)
+                else if (strncmp(buf, tpl_.c_str() + i, repeatLength_) == 0)
                     numElements++;
                 else
                     break;
             }
 
-            if (numElements >= minDinucRepeatElements_)
+            if (numElements >= minRepeatElements_)
             {
-                std::string dinuc;
-                dinuc.push_back(x);
-                dinuc.push_back(y);
-                result.push_back(Mutation(INSERTION, pos, pos, dinuc));
-                result.push_back(Mutation(DELETION, pos, pos + 2, std::string()));
+                std::string repeat(buf);
+                result.push_back(Mutation(INSERTION, pos, pos, repeat));
+                result.push_back(Mutation(DELETION, pos, pos + repeatLength_, std::string()));
             }
 
             //
             // Increment by the number of repeats found (if > 1),
-            // less 1 so that we resume on the last base of the repeat,
+            // less 1 so that we resume on the second base of the last repeat,
             // otherwise just move ahead by 1
             //
             if (numElements > 1)
-                pos += 2 * numElements - 1;
+                pos += repeatLength_ * (numElements - 1) + 1;
             else
                 pos++;
         }
 
         return result;
     }
+
+
+    DinucleotideRepeatMutationEnumerator::DinucleotideRepeatMutationEnumerator
+    (const std::string& tpl, int minDinucRepeatElements)
+        : RepeatMutationEnumerator(tpl, 2, minDinucRepeatElements)
+    {}
 }

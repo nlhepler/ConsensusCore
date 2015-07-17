@@ -32,4 +32,10 @@ $(TEST_OBJS): $(TEST_BUILD_ROOT)/%.o : %.cpp $(CXX_LIB)
 $(TESTS_EXECUTABLE): $(TEST_OBJS) $(CXX_LIB) $(GMOCK_LIBSRC) $(GMOCK_MAIN)
 	$(CXX) $(COVERAGE) $(TEST_OBJS) $(CXX_LIB) -I$(GMOCK_ROOT) $(GMOCK_LIBSRC) $(GMOCK_MAIN) -lpthread -o $@
 
+# perftest
+PERFTEST_EXE = $(PROJECT_ROOT)/build/C++/perftest
+
+$(PERFTEST_EXE): $(CXX_LIB) $(PROJECT_ROOT)/src/Demos/MatrixTester.cpp
+	$(CXX) $(COVERAGE) $^ -o $@ -lpthread
+
 .PHONY: run-tests tests

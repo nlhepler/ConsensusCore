@@ -95,10 +95,10 @@ namespace ConsensusCore
                                            const float* mergeQv)
         : SequenceFeatures(seq),
           SequenceAsFloat(Length()),
-          InsQv (insQv, Length()),
-          SubsQv(subsQv, Length()),
-          DelQv (delQv, Length()),
-          DelTag(delTag, Length()),
+          InsQv  (insQv,   Length()),
+          SubsQv (subsQv,  Length()),
+          DelQv  (delQv,   Length()),
+          DelTag (delTag,  Length()),
           MergeQv(mergeQv, Length())
     {
         for (int i = 0; i < Length(); i++)
@@ -117,11 +117,11 @@ namespace ConsensusCore
                                            const unsigned char* mergeQv)
         : SequenceFeatures(seq),
           SequenceAsFloat(Length()),
-          InsQv (insQv, Length()),
-          SubsQv(subsQv, Length()),
-          DelQv (delQv, Length()),
-          DelTag(delTag, Length()),
-          MergeQv(mergeQv, Length())
+          InsQv  (reinterpret_cast<const float*>(insQv),   Length()),
+          SubsQv (reinterpret_cast<const float*>(subsQv),  Length()),
+          DelQv  (reinterpret_cast<const float*>(delQv),   Length()),
+          DelTag (reinterpret_cast<const float*>(delTag),  Length()),
+          MergeQv(reinterpret_cast<const float*>(mergeQv), Length())
     {
         for (int i = 0; i < Length(); i++)
         {
@@ -151,6 +151,25 @@ namespace ConsensusCore
         }
         CheckTagFeature(DelTag);
     }
+
+
+    ArrowSequenceFeatures::ArrowSequenceFeatures(const std::string& seq)
+        : SequenceFeatures(seq)
+        , InsQv(Length())
+    {}
+
+    ArrowSequenceFeatures::ArrowSequenceFeatures(const std::string& seq,
+                                                 const unsigned char* const insQv)
+        : SequenceFeatures(seq)
+        , InsQv(insQv, Length())
+    {}
+
+    ArrowSequenceFeatures::ArrowSequenceFeatures(const std::string& seq,
+                                                 const std::vector<unsigned char>& insQv)
+        : SequenceFeatures(seq)
+        , InsQv(&(insQv[0]), Length())
+    {}
+
 
     ChannelSequenceFeatures::ChannelSequenceFeatures(const std::string& seq)
         : SequenceFeatures(seq),

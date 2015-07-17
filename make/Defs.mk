@@ -16,6 +16,9 @@ endif
 
 VPATH           := src/C++/                     \
                   :src/C++/Align                \
+                  :src/C++/Arrow                \
+                  :src/C++/Arrow/Matrix         \
+                  :src/C++/Arrow/detail         \
                   :src/C++/Edna                 \
                   :src/C++/Matrix/              \
                   :src/C++/Quiver/              \
@@ -25,7 +28,7 @@ VPATH           := src/C++/                     \
                   :src/C++/Logging
 
 CXX_LIB         := $(abspath $(OBJDIR)/libConsensusCore.a)
-CXX_SRCS        := $(notdir $(shell find src/C++/ -name "*.cpp" | grep -v '\#'))
+CXX_SRCS        := $(patsubst src/C++/%,%,$(shell find src/C++ -name "*.cpp" | grep -v '\#'))
 
 CXX_OPT_FLAGS_DEBUG   := -O0 -g
 CXX_OPT_FLAGS_RELEASE := -O3 -DNDEBUG -g
@@ -47,14 +50,14 @@ endif
 
 ifeq ($(GXX),clang++)
     CXX_FLAGS           = $(GXX_FLAGS) $(CXX_OPT_FLAGS) -msse3 -fPIC -Qunused-arguments -fno-omit-frame-pointer
-    CXX_STRICT_FLAGS    = $(GXX_FLAGS) $(CXX_FLAGS) -pedantic -std=$(CPP_ABI) -Wall
+    CXX_STRICT_FLAGS    = $(GXX_FLAGS) $(CXX_FLAGS) -pedantic -Wall
 else
     CXX_FLAGS           = $(CXX_OPT_FLAGS) $(CXX_EXTRA_ARGS) -msse3 -fPIC -fno-omit-frame-pointer
-    CXX_STRICT_FLAGS    = $(CXX_FLAGS) -pedantic -std=$(CPP_ABI) -Wall
+    CXX_STRICT_FLAGS    = $(CXX_FLAGS) -pedantic -Wall
 endif
 
-CXX             = $(CCACHE) $(GXX) $(MACHINE) $(CXX_FLAGS) $(INCLUDES) -isystem $(BOOST)
-CXX_STRICT      = $(CCACHE) $(GXX) $(MACHINE) $(CXX_STRICT_FLAGS) $(INCLUDES) -isystem $(BOOST)
+CXX             = $(CCACHE) $(GXX) $(MACHINE) -std=$(CPP_ABI) $(CXX_FLAGS) $(INCLUDES) -isystem $(BOOST)
+CXX_STRICT      = $(CCACHE) $(GXX) $(MACHINE) -std=$(CPP_ABI) $(CXX_STRICT_FLAGS) $(INCLUDES) -isystem $(BOOST)
 
 ifeq ($(UNAME), Darwin)
     SHLIB_FLAGS = -shared -undefined dynamic_lookup

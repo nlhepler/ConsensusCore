@@ -9,16 +9,17 @@ endif
 
 
 CXX_OBJS        := $(addprefix $(OBJDIR)/, $(CXX_SRCS:.cpp=.o))
+OBJ_DIRS        := $(sort $(dir $(CXX_OBJS)))
 SWIG_SRCS       := $(shell find src/SWIG/ -name "*.i")
 
 AR              := ar
 
-$(CXX_LIB): $(OBJDIR) $(CXX_OBJS)
+$(CXX_LIB): $(OBJ_DIRS) $(CXX_OBJS)
 	$(AR) crs $(CXX_LIB) $(CXX_OBJS)
 	touch $(CXX_LIB)
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
+$(OBJ_DIRS):
+	@mkdir -p $@
 
 $(CXX_OBJS): $(OBJDIR)/%.o: %.cpp
 	$(CXX_STRICT) $(COVERAGE) -c $< -o $@

@@ -39,64 +39,52 @@
 #include <cassert>
 #include <vector>
 
-#include <ConsensusCore/Matrix/SparseVector.hpp>
-#include <ConsensusCore/LFloat.hpp>
-
 #define PADDING          8
-#define LZERO            (-FLT_MAX)
 #define SHRINK_THRESHOLD 0.8
 
 namespace ConsensusCore
 {
-    using std::vector;
-    using std::max;
-    using std::min;
-
+    template<typename F, typename Z>
     inline
-    SparseVector::SparseVector(int logicalLength, int beginRow, int endRow)
+    SparseVector<F, Z>::SparseVector(int logicalLength, int beginRow, int endRow)
+        : logicalLength_(logicalLength)
+        , allocatedBeginRow_(std::max(beginRow - PADDING, 0))
+        , allocatedEndRow_(std::min(endRow + PADDING, logicalLength_))
+        , storage_(allocatedEndRow_ - allocatedBeginRow_, Z())
+        , nReallocs_(0)
     {
         assert(beginRow >= 0      &&
                beginRow <= endRow &&
                endRow   <= logicalLength);
-        logicalLength_     =  logicalLength;
-        allocatedBeginRow_ =  max(beginRow - PADDING, 0);
-        allocatedEndRow_   =  min(endRow   + PADDING, logicalLength_);
-        storage_           =  new vector<float>(allocatedEndRow_ - allocatedBeginRow_, LZERO);
-        nReallocs_         =  0;
         DEBUG_ONLY(CheckInvariants());
     }
 
+    template<typename F, typename Z>
     inline
-    SparseVector::SparseVector(const SparseVector& other)
-        : logicalLength_(other.logicalLength_),
-          allocatedBeginRow_(other.allocatedBeginRow_),
-          allocatedEndRow_(other.allocatedEndRow_),
-          nReallocs_(0)
+    SparseVector<F, Z>::SparseVector(const SparseVector<F, Z>& other)
+        : logicalLength_(other.logicalLength_)
+        , allocatedBeginRow_(other.allocatedBeginRow_)
+        , allocatedEndRow_(other.allocatedEndRow_)
+        , storage_(other.storage_)
+        , nReallocs_(0)
     {
-        storage_           =  new vector<float>(*other.storage_);
-        nReallocs_         =  0;
         DEBUG_ONLY(CheckInvariants());
     }
 
-    inline
-    SparseVector::~SparseVector()
-    {
-        delete storage_;
-    }
-
+    template<typename F, typename Z>
     inline void
-    SparseVector::ResetForRange(int beginRow, int endRow)
+    SparseVector<F, Z>::ResetForRange(int beginRow, int endRow)
     {
         // Allows reuse.  Destructive.
         DEBUG_ONLY(CheckInvariants());
         assert(beginRow >= 0      &&
                beginRow <= endRow &&
                endRow   <= logicalLength_);
-        int newAllocatedBegin =  max(beginRow - PADDING, 0);
-        int newAllocatedEnd   =  min(endRow   + PADDING, logicalLength_);
+        int newAllocatedBegin =  std::max(beginRow - PADDING, 0);
+        int newAllocatedEnd   =  std::min(endRow   + PADDING, logicalLength_);
         if ((newAllocatedEnd - newAllocatedBegin) > (allocatedEndRow_ - allocatedBeginRow_))
         {
-            storage_->resize(newAllocatedEnd - newAllocatedBegin);
+            storage_.resize(newAllocatedEnd - newAllocatedBegin);
             nReallocs_++;
             Clear();
         }
@@ -105,7 +93,7 @@ namespace ConsensusCore
         {
             // use swap trick to free allocated but unused memory,
             // see: http://stackoverflow.com/questions/253157/how-to-downsize-stdvector
-            std::vector<float>(newAllocatedEnd - newAllocatedBegin, LZERO).swap(*storage_);
+            std::vector<F>(newAllocatedEnd - newAllocatedBegin, Z()).swap(storage_);
             nReallocs_++;
         }
         else
@@ -117,8 +105,9 @@ namespace ConsensusCore
         DEBUG_ONLY(CheckInvariants());
     }
 
+    template<typename F, typename Z>
     inline void
-    SparseVector::ExpandAllocated(int newAllocatedBegin, int newAllocatedEnd)
+    SparseVector<F, Z>::ExpandAllocated(int newAllocatedBegin, int newAllocatedEnd)
     {
         // Expands allocated storage while preserving the contents.
         DEBUG_ONLY(CheckInvariants());
@@ -128,22 +117,22 @@ namespace ConsensusCore
         assert(newAllocatedBegin <= allocatedBeginRow_ &&
                newAllocatedEnd   >= allocatedEndRow_);
         // Resize the underlying storage.
-        storage_->resize(newAllocatedEnd - newAllocatedBegin);
+        storage_.resize(newAllocatedEnd - newAllocatedBegin);
         // Use memmove to robustly relocate the old data (handles overlapping ranges).
         //   Data is at:
         //      storage[0 ... (end - begin) )
         //   Must be moved to:
         //      storage[(begin - newBegin) ... (end - newBegin)]
-        memmove(&(*storage_)[allocatedBeginRow_ - newAllocatedBegin],
-                &(*storage_)[0],
-                (allocatedEndRow_ - allocatedBeginRow_) * sizeof(float)); // NOLINT
+        memmove(&storage_[allocatedBeginRow_ - newAllocatedBegin],
+                &storage_[0],
+                (allocatedEndRow_ - allocatedBeginRow_) * sizeof(F)); // NOLINT
         // "Zero"-fill the allocated but unused space.
-        std::fill(storage_->begin(),
-                  storage_->begin() + (allocatedBeginRow_ - newAllocatedBegin),
-                  LZERO);
-        std::fill(storage_->begin() + (allocatedEndRow_- newAllocatedBegin),
-                  storage_->end(),
-                  LZERO);
+        std::fill(storage_.begin(),
+                  storage_.begin() + (allocatedBeginRow_ - newAllocatedBegin),
+                  Z());
+        std::fill(storage_.begin() + (allocatedEndRow_- newAllocatedBegin),
+                  storage_.end(),
+                  Z());
         // Update pointers.
         allocatedBeginRow_ = newAllocatedBegin;
         allocatedEndRow_   = newAllocatedEnd;
@@ -151,36 +140,43 @@ namespace ConsensusCore
         DEBUG_ONLY(CheckInvariants());
     }
 
+    template<typename F, typename Z>
     inline bool
-    SparseVector::IsAllocated(int i) const
+    SparseVector<F, Z>::IsAllocated(int i) const
     {
         assert(i >= 0 && i < logicalLength_);
         return i >= allocatedBeginRow_ && i < allocatedEndRow_;
     }
 
-    inline const float&
-    SparseVector::operator()(int i) const
+    template<typename F, typename Z>
+    inline const F&
+    SparseVector<F, Z>::operator()(int i) const
     {
         if (IsAllocated(i))
         {
-            return (*storage_)[i - allocatedBeginRow_];
+            return storage_[i - allocatedBeginRow_];
         }
         else
         {
-            static const float emptyCell_ = LZERO;
+            static const F emptyCell_ = Z();
             return emptyCell_;
         }
     }
 
-    inline float
-    SparseVector::Get(int i) const
+    template<typename F, typename Z>
+    inline F
+    SparseVector<F, Z>::Get(int i) const
     {
         return (*this)(i);
     }
 
+    template<typename F, typename Z>
     inline void
-    SparseVector::Set(int i, float v)
+    SparseVector<F, Z>::Set(int i, F v)
     {
+        using std::max;
+        using std::min;
+
         DEBUG_ONLY(CheckInvariants());
         assert (i >= 0 && i < logicalLength_);
         if (!IsAllocated(i))
@@ -189,17 +185,18 @@ namespace ConsensusCore
             int newEndRow   = min(max(i + PADDING, allocatedEndRow_), logicalLength_);
             ExpandAllocated(newBeginRow, newEndRow);
         }
-        (*storage_)[i - allocatedBeginRow_] = v;
+        storage_[i - allocatedBeginRow_] = v;
         DEBUG_ONLY(CheckInvariants());
     }
 
+    template<>
     inline __m128
-    SparseVector::Get4(int i) const
+    SparseVector<float, lvalue<float>>::Get4(int i) const
     {
         assert(i >= 0 && i < logicalLength_ - 3);
         if (i >= allocatedBeginRow_ && i < allocatedEndRow_ - 3)
         {
-            return _mm_loadu_ps(&(*storage_)[i-allocatedBeginRow_]);
+            return _mm_loadu_ps(&storage_[i-allocatedBeginRow_]);
         }
         else
         {
@@ -207,13 +204,21 @@ namespace ConsensusCore
         }
     }
 
+    template<typename F, typename Z>
+    inline __m128
+    SparseVector<F, Z>::Get4(int i) const
+    {
+        throw std::runtime_error("cannot perform Get4 with non-f32 type");
+    }
+
+    template<>
     inline void
-    SparseVector::Set4(int i, __m128 v4)
+    SparseVector<float, lvalue<float>>::Set4(int i, __m128 v4)
     {
         assert(i >= 0 && i < logicalLength_ - 3);
         if (i >= allocatedBeginRow_ && i < allocatedEndRow_ - 3)
         {
-            _mm_storeu_ps(&(*storage_)[i-allocatedBeginRow_], v4);
+            _mm_storeu_ps(&storage_[i-allocatedBeginRow_], v4);
         }
         else
         {
@@ -226,27 +231,40 @@ namespace ConsensusCore
         }
     }
 
+    template<typename F, typename Z>
     inline void
-    SparseVector::Clear()
+    SparseVector<F, Z>::Set4(int i, __m128 v4)
     {
-        std::fill(storage_->begin(), storage_->end(), LZERO);
+        throw std::runtime_error("cannot perform Set4 with non-f32 type");
     }
 
+    template<typename F, typename Z>
+    inline void
+    SparseVector<F, Z>::Clear()
+    {
+        std::fill(storage_.begin(), storage_.end(), Z());
+    }
+
+    template<typename F, typename Z>
     inline int
-    SparseVector::AllocatedEntries() const
+    SparseVector<F, Z>::AllocatedEntries() const
     {
         // We want the real memory usage.  std::vector is holding some memory back
         // from us.
-        return storage_->capacity();
+        return storage_.capacity();
     }
 
+    template<typename F, typename Z>
     inline void
-    SparseVector::CheckInvariants() const
+    SparseVector<F, Z>::CheckInvariants() const
     {
         assert(logicalLength_ >= 0);
         assert(0 <= allocatedBeginRow_ && allocatedBeginRow_ < logicalLength_);
         assert(0 <= allocatedEndRow_ && allocatedEndRow_ <= logicalLength_);
         assert(allocatedBeginRow_ <= allocatedEndRow_);
-        assert((allocatedEndRow_ - allocatedBeginRow_) <= (signed)storage_->size());
+        assert((allocatedEndRow_ - allocatedBeginRow_) <= (signed)storage_.size());
     }
 }
+
+#undef PADDING
+#undef SHRINK_THRESHOLD

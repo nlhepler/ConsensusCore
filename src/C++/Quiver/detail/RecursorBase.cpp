@@ -38,7 +38,7 @@
 #include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
 
 #include <ConsensusCore/Align/PairwiseAlignment.hpp>
-#include <ConsensusCore/LFloat.hpp>
+#include <ConsensusCore/LValue.hpp>
 #include <ConsensusCore/Logging.hpp>
 #include <ConsensusCore/Matrix/DenseMatrix.hpp>
 #include <ConsensusCore/Matrix/SparseMatrix.hpp>
@@ -275,8 +275,8 @@ namespace detail {
     {}
 
     // template instantiation
-    template class RecursorBase<DenseMatrix, QvEvaluator, ViterbiCombiner>;
-    template class RecursorBase<SparseMatrix, QvEvaluator, ViterbiCombiner>;
-    template class RecursorBase<SparseMatrix, QvEvaluator, SumProductCombiner>;
-    template class RecursorBase<SparseMatrix, EdnaEvaluator, SumProductCombiner>;
+    template class RecursorBase<DenseMatrixF, QvEvaluator, ViterbiCombiner>;
+    template class RecursorBase<SparseMatrixF, QvEvaluator, ViterbiCombiner>;
+    template class RecursorBase<SparseMatrixF, QvEvaluator, SumProductCombiner>;
+    template class RecursorBase<SparseMatrixF, EdnaEvaluator, SumProductCombiner>;
 }}

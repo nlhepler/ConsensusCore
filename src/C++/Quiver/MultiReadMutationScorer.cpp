@@ -57,7 +57,7 @@ namespace ConsensusCore
     // Could the mutation change the contents of the portion of the
     // template that is mapped to the read?
     //
-    bool ReadScoresMutation(const MappedRead& read, const Mutation& mut)
+    bool ReadScoresMutation(const MappedQvRead& read, const Mutation& mut)
     {
         int ts = read.TemplateStart;
         int te = read.TemplateEnd;
@@ -77,7 +77,7 @@ namespace ConsensusCore
     // possible clipping, if the mutation is not wholly within the
     // mapped read.
     //
-    Mutation OrientedMutation(const MappedRead& mr,
+    Mutation OrientedMutation(const MappedQvRead& mr,
                               const Mutation& mut)
     {
         using std::min;
@@ -179,7 +179,7 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    const MappedRead*
+    const MappedQvRead*
     MultiReadMutationScorer<R>::Read(int readIdx) const
     {
         return reads_[readIdx].IsActive ? reads_[readIdx].Read : NULL;
@@ -244,7 +244,7 @@ namespace ConsensusCore
     }
 
     template<typename R>
-    bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr, float threshold)
+    bool MultiReadMutationScorer<R>::AddRead(const MappedQvRead& mr, float threshold)
     {
         DEBUG_ONLY(CheckInvariants());
         const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
@@ -278,13 +278,13 @@ namespace ConsensusCore
         }
 
         bool isActive = scorer != NULL;
-        reads_.push_back(ReadStateType(new MappedRead(mr), scorer, isActive));
+        reads_.push_back(ReadStateType(new MappedQvRead(mr), scorer, isActive));
         DEBUG_ONLY(CheckInvariants());
         return isActive;
     }
 
     template<typename R>
-    bool MultiReadMutationScorer<R>::AddRead(const MappedRead& mr)
+    bool MultiReadMutationScorer<R>::AddRead(const MappedQvRead& mr)
     {
         DEBUG_ONLY(CheckInvariants());
         const QuiverConfig* config = &quiverConfigByChemistry_.At(mr.Chemistry);
@@ -309,9 +309,10 @@ namespace ConsensusCore
 
     template<typename R>
     float MultiReadMutationScorer<R>::Score(MutationType mutationType,
-                                            int position, char base) const
+                                            int position,
+                                            const std::string& newBases) const
     {
-        Mutation m(mutationType, position, base);
+        Mutation m(mutationType, position, newBases);
         return Score(m);
     }
 
@@ -358,10 +359,11 @@ namespace ConsensusCore
 
     template<typename R>
     std::vector<float> MultiReadMutationScorer<R>::Scores(MutationType mutationType,
-                                                          int position, char base,
+                                                          int position,
+                                                          const std::string& newBases,
                                                           float unscoredValue) const
     {
-        Mutation m(mutationType, position, base);
+        Mutation m(mutationType, position, newBases);
         return Scores(m, unscoredValue);
     }
 
@@ -429,14 +431,14 @@ namespace ConsensusCore
 
 
     template<typename R>
-    const AbstractMatrix* MultiReadMutationScorer<R>::AlphaMatrix(int i) const
+    const AbstractMatrixF* MultiReadMutationScorer<R>::AlphaMatrix(int i) const
     {
         return reads_[i].Scorer->Alpha();
     }
 
 
     template<typename R>
-    const AbstractMatrix* MultiReadMutationScorer<R>::BetaMatrix(int i) const
+    const AbstractMatrixF* MultiReadMutationScorer<R>::BetaMatrix(int i) const
     {
         return reads_[i].Scorer->Beta();
     }
@@ -520,7 +522,7 @@ namespace ConsensusCore
     namespace detail {
 
         template<typename ScorerType>
-        ReadState<ScorerType>::ReadState(MappedRead* read,
+        ReadState<ScorerType>::ReadState(MappedQvRead* read,
                                          ScorerType* scorer,
                                          bool isActive)
             : Read(read),
@@ -536,7 +538,7 @@ namespace ConsensusCore
               Scorer(NULL),
               IsActive(other.IsActive)
         {
-            if (other.Read != NULL) Read = new MappedRead(*other.Read);
+            if (other.Read != NULL) Read = new MappedQvRead(*other.Read);
             if (other.Scorer != NULL) Scorer = new ScorerType(*other.Scorer);
             CheckInvariants();
         }

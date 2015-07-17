@@ -80,19 +80,27 @@ namespace ConsensusCore
     };
 
 
-    struct DinucleotideRepeatMutationEnumerator
+    struct RepeatMutationEnumerator
         : detail::AbstractMutationEnumerator
     {
-        DinucleotideRepeatMutationEnumerator(const std::string& tpl,
-                                             int minDinucRepeatElements = 3);
+        RepeatMutationEnumerator(const std::string& tpl,
+                                 int repeatLength,
+                                 int minRepeatElements = 3);
 
         std::vector<Mutation> Mutations() const;
         std::vector<Mutation> Mutations(int beginPos, int endPos) const;
 
     private:
-        int minDinucRepeatElements_;
+        int repeatLength_;
+        int minRepeatElements_;
     };
 
+    struct DinucleotideRepeatMutationEnumerator
+        : public RepeatMutationEnumerator
+    {
+        DinucleotideRepeatMutationEnumerator(const std::string& tpl,
+                                             int minDinucRepeatElements = 3);
+    };
 
     template <typename T>
     std::vector<Mutation> UniqueNearbyMutations(const T& mutationEnumerator,
@@ -100,4 +108,4 @@ namespace ConsensusCore
                                                 int neighborhoodSize);
 }
 
-#include <ConsensusCore/Quiver/MutationEnumerator-inl.hpp>
+#include "MutationEnumerator-inl.hpp"

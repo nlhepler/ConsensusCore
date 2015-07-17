@@ -38,6 +38,7 @@
 #pragma once
 
 #include <ConsensusCore/Matrix/DenseMatrix.hpp>
+#include <ConsensusCore/Matrix/SparseMatrix.hpp>
 #include <ConsensusCore/Quiver/QvEvaluator.hpp>
 #include <ConsensusCore/Quiver/detail/Combiner.hpp>
 #include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
@@ -73,19 +74,19 @@ namespace ConsensusCore {
         SimpleRecursor(int movesAvailable, const BandingOptions& banding);
     };
 
-    typedef SimpleRecursor<DenseMatrix,
+    typedef SimpleRecursor<DenseMatrixF,
                            QvEvaluator,
                            detail::ViterbiCombiner> SimpleQvRecursor;
 
-    typedef SimpleRecursor<DenseMatrix,
+    typedef SimpleRecursor<DenseMatrixF,
                            QvEvaluator,
                            detail::SumProductCombiner> SimpleQvSumProductRecursor;
 
-    typedef SimpleRecursor<SparseMatrix,
+    typedef SimpleRecursor<SparseMatrixF,
                            QvEvaluator,
                            detail::ViterbiCombiner> SparseSimpleQvRecursor;
 
-    typedef SimpleRecursor<SparseMatrix,
+    typedef SimpleRecursor<SparseMatrixF,
                            QvEvaluator,
                            detail::SumProductCombiner> SparseSimpleQvSumProductRecursor;
 }

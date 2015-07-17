@@ -13,7 +13,8 @@ using namespace ConsensusCore;
  // abstract classes, so we have to tell it otherwise
 %feature("notabstract") AllSingleBaseMutationEnumerator;
 %feature("notabstract") UniqueSingleBaseMutationEnumerator;
-%feature("notabstract") DinucRepeatMutationEnumerator;
+%feature("notabstract") RepeatMutationEnumerator;
+%feature("notabstract") DinucleotideRepeatMutationEnumerator;
 
 %newobject *::Mutations();
 %newobject *::Mutations(int, int);

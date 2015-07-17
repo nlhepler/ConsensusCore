@@ -94,13 +94,13 @@ protected:
 #define params    (this->testingConfig_.QvParams)
 #define config    (this->testingConfig_)
 
-extern Read AnonymousRead(std::string seq);
+extern QvRead AnonymousRead(std::string seq);
 
 
 TYPED_TEST(MutationScorerTest, BasicTest)
 {
     std::string tpl = "GATTACA";
-    Read read = AnonymousRead("GATTACA");
+    QvRead read = AnonymousRead("GATTACA");
     E ev(read, tpl, params, true, true);
     MS ms(ev, recursor);
     Mutation mergeableInsertMutation(INSERTION, 4, 'A');
@@ -127,7 +127,7 @@ TYPED_TEST(MutationScorerTest, BasicTest)
 TYPED_TEST(MutationScorerTest, CopyTest)
 {
     std::string tpl = "GATTACA";
-    Read read = AnonymousRead("GATTACA");
+    QvRead read = AnonymousRead("GATTACA");
     E ev(read, tpl, params, true, true);
     MS ms(ev, recursor);
     MS msCopy(ms);
@@ -138,7 +138,7 @@ TYPED_TEST(MutationScorerTest, CopyTest)
 TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
 {
     std::string tpl = "GATTACA";
-    Read read = AnonymousRead("GATTACA");
+    QvRead read = AnonymousRead("GATTACA");
     E ev(read, tpl, params, true, true);
     MS ms(ev, recursor);
     Mutation insertBefore(INSERTION, 0, 'A');
@@ -160,7 +160,7 @@ TYPED_TEST(MutationScorerTest, MutationsAtBeginning)
 TYPED_TEST(MutationScorerTest, MutationsAtEnd)
 {
     std::string tpl = "GATTACA";
-    Read read = AnonymousRead("GATTACA");
+    QvRead read = AnonymousRead("GATTACA");
     E ev(read, tpl, params, true, true);
     MS ms(ev, recursor);
     Mutation mergeableInsertMutation(INSERTION, 7, 'A');
@@ -179,7 +179,7 @@ TYPED_TEST(MutationScorerTest, MutationsAtEnd)
 TYPED_TEST(MutationScorerTest, TinyTemplate)
 {
     std::string tpl = "GTGC";
-    Read read = AnonymousRead("GTGC");
+    QvRead read = AnonymousRead("GTGC");
     E ev(read, tpl, params, true, true);
     MS ms(ev, recursor);
 
@@ -205,7 +205,7 @@ TYPED_TEST(MutationScorerTest, TinyTemplate)
 TYPED_TEST(MutationScorerTest, TemplateMutationWorkflow)
 {
     std::string tpl = "GATTACA";
-    Read read = AnonymousRead("GATTACA");
+    QvRead read = AnonymousRead("GATTACA");
     E ev(read, tpl, params, true, true);
     MS ms(ev, recursor);
     Mutation insertMutation(INSERTION, 4, 'A');
@@ -232,7 +232,7 @@ TYPED_TEST(MutationScorerTest, DinucleotideInsertionTest)
     std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
     std::string tplAATT = "CCCCCGAAATTACACCCCC";
 
-    Read read = AnonymousRead("CCCCCGATTTTACACCCCC");
+    QvRead read = AnonymousRead("CCCCCGATTTTACACCCCC");
     ReadScorer ez(config);
     float scoreTTTT = ez.Score(tplTTTT, read);
     EXPECT_EQ(0, scoreTTTT);
@@ -257,7 +257,7 @@ TYPED_TEST(MutationScorerTest, DinucleotideDeletionTest)
     std::string tplTTTT = "CCCCCGATTTTACACCCCC";
     std::string tplGCTT = "CCCCCGAGCTTACACCCCC";
 
-    Read read = AnonymousRead("CCCCCGATTACACCCCC");
+    QvRead read = AnonymousRead("CCCCCGATTACACCCCC");
     ReadScorer ez(config);
     float scoreTT = ez.Score(tplTT, read);
     EXPECT_EQ(0, scoreTT);

@@ -43,7 +43,6 @@
 #include <cassert>
 
 #include <ConsensusCore/Interval.hpp>
-#include <ConsensusCore/Matrix/DenseMatrix.hpp>
 #include <ConsensusCore/Utils.hpp>
 
 
@@ -53,15 +52,17 @@ namespace ConsensusCore {
     //
     // Nullability
     //
-    inline const DenseMatrix&
-    DenseMatrix::Null()
+    template<typename F, typename Z>
+    inline const DenseMatrix<F, Z>&
+    DenseMatrix<F, Z>::Null()
     {
-        static DenseMatrix* nullObj = new DenseMatrix(0, 0);
+        static DenseMatrix<F, Z>* nullObj = new DenseMatrix<F, Z>(0, 0);
         return *nullObj;
     }
 
+    template<typename F, typename Z>
     inline bool
-    DenseMatrix::IsNull() const
+    DenseMatrix<F, Z>::IsNull() const
     {
         return (Rows() == 0 && Columns() == 0);
     }
@@ -69,31 +70,35 @@ namespace ConsensusCore {
     //
     // Size information
     //
+    template<typename F, typename Z>
     inline const int
-    DenseMatrix::Rows() const
+    DenseMatrix<F, Z>::Rows() const
     {
-        return size1();
+        return boost_dense_matrix::size1();
     }
 
+    template<typename F, typename Z>
     inline const  int
-    DenseMatrix::Columns() const
+    DenseMatrix<F, Z>::Columns() const
     {
-        return size2();
+        return boost_dense_matrix::size2();
     }
 
     //
     // Entry range queries per column
     //
+    template<typename F, typename Z>
     inline void
-    DenseMatrix::StartEditingColumn(int j, int hintBegin, int hintEnd)
+    DenseMatrix<F, Z>::StartEditingColumn(int j, int hintBegin, int hintEnd)
     {
         assert(columnBeingEdited_ == -1);
         columnBeingEdited_ = j;
         ClearColumn(j);
     }
 
+    template<typename F, typename Z>
     inline void
-    DenseMatrix::FinishEditingColumn(int j, int usedRowsBegin, int usedRowsEnd)
+    DenseMatrix<F, Z>::FinishEditingColumn(int j, int usedRowsBegin, int usedRowsEnd)
     {
         assert(columnBeingEdited_ == j);
         usedRanges_[j] = Interval(usedRowsBegin, usedRowsEnd);
@@ -101,15 +106,17 @@ namespace ConsensusCore {
         columnBeingEdited_ = -1;
     }
 
+    template<typename F, typename Z>
     inline Interval
-    DenseMatrix::UsedRowRange(int j) const
+    DenseMatrix<F, Z>::UsedRowRange(int j) const
     {
         assert(0 <= j && j < (int)usedRanges_.size());
         return usedRanges_[j];
     }
 
+    template<typename F, typename Z>
     inline bool
-    DenseMatrix::IsColumnEmpty(int j) const
+    DenseMatrix<F, Z>::IsColumnEmpty(int j) const
     {
         assert(0 <= j && j < (int)usedRanges_.size());
         return (usedRanges_[j].Begin >= usedRanges_[j].End);
@@ -118,43 +125,48 @@ namespace ConsensusCore {
     //
     // Accessors
     //
+    template<typename F, typename Z>
     inline void
-    DenseMatrix::Set(int i, int j, float v)
+    DenseMatrix<F, Z>::Set(int i, int j, F v)
     {
         assert(columnBeingEdited_ == j);
         boost_dense_matrix::operator()(i, j) = v;
     }
 
+    template<typename F, typename Z>
     inline bool
-    DenseMatrix::IsAllocated(int i, int j) const
+    DenseMatrix<F, Z>::IsAllocated(int i, int j) const
     {
         assert(0 <= i && i < Rows() && 0 <= j && j < Columns());
         return true;
     }
 
-    inline float
-    DenseMatrix::Get(int i, int j) const
+    template<typename F, typename Z>
+    inline F
+    DenseMatrix<F, Z>::Get(int i, int j) const
     {
         return (*this)(i, j);
     }
 
-    inline const float&
-    DenseMatrix::operator() (int i, int j) const
+    template<typename F, typename Z>
+    inline const F&
+    DenseMatrix<F, Z>::operator() (int i, int j) const
     {
         return boost_dense_matrix::operator()(i, j);
     }
 
+    template<typename F, typename Z>
     inline void
-    DenseMatrix::ClearColumn(int j)
+    DenseMatrix<F, Z>::ClearColumn(int j)
     {
         DEBUG_ONLY(CheckInvariants(j);)
         // (Rely on the fact that the underlying memory is stored
         // contiguously)
         int begin, end;
         boost::tie(begin, end) = usedRanges_[j];
-        std::fill_n((float*)&boost_dense_matrix::operator()(begin, j),  // NOLINT
+        std::fill_n((F*)&boost_dense_matrix::operator()(begin, j),  // NOLINT
                     end - begin,
-                    value_type());
+                    typename boost_dense_matrix::value_type());
         usedRanges_[j] = Interval(0, 0);
         DEBUG_ONLY(CheckInvariants(j);)
     }
@@ -162,18 +174,107 @@ namespace ConsensusCore {
     //
     // SSE
     //
+    template<>
     inline __m128
-    DenseMatrix::Get4(int i, int j) const
+    DenseMatrix<float, lvalue<float>>::Get4(int i, int j) const
     {
         assert(0 <= i && i <= Rows() - 4);
         return _mm_loadu_ps(&boost_dense_matrix::operator()(i, j).value);
     }
 
+    template<typename F, typename Z>
+    inline __m128
+    DenseMatrix<F, Z>::Get4(int i, int j) const
+    {
+        throw std::runtime_error("cannot use Get4 with non-f32 type!");
+    }
+
+    template<>
     inline void
-    DenseMatrix::Set4(int i, int j, __m128 v4)
+    DenseMatrix<float, lvalue<float>>::Set4(int i, int j, __m128 v4)
     {
         assert(columnBeingEdited_ == j);
         assert(0 <= i && i <= Rows() - 4);
         _mm_storeu_ps(&boost_dense_matrix::operator()(i, j).value, v4);
+    }
+
+    template<typename F, typename Z>
+    inline void
+    DenseMatrix<F, Z>::Set4(int i, int j, __m128 v4)
+    {
+        throw std::runtime_error("cannot use Set4 with non-f32 type!");
+    }
+
+    //
+    // Performance insensitive routines are not inlined
+    //
+    template<typename F, typename Z>
+    DenseMatrix<F, Z>::DenseMatrix(int rows, int cols)
+        : boost_dense_matrix(rows, cols),
+          usedRanges_(cols, Interval(0, 0)),
+          columnBeingEdited_(-1)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            CheckInvariants(j);
+        }
+    }
+
+    template<typename F, typename Z>
+    DenseMatrix<F, Z>::~DenseMatrix()
+    {}
+
+    template<typename F, typename Z>
+    int
+    DenseMatrix<F, Z>::UsedEntries() const
+    {
+        // use column ranges
+        int filledEntries = 0;
+        for (int col = 0; col < Columns(); ++col)
+        {
+            int start, end;
+            boost::tie(start, end) = UsedRowRange(col);
+            filledEntries += (end - start);
+        }
+        return filledEntries;
+    }
+
+    template<typename F, typename Z>
+    int
+    DenseMatrix<F, Z>::AllocatedEntries() const
+    {
+        return Rows() * Columns();
+    }
+
+    template<typename F, typename Z>
+    void
+    DenseMatrix<F, Z>::ToHostMatrix(F** mat, int* rows, int* cols) const
+    {
+        using boost::numeric::ublas::matrix;
+        using boost::numeric::ublas::row_major;
+
+        // TODO(dalexander): make sure SWIG client deallocates this memory -- use %newobject flag
+        matrix<Z, row_major> rowMajorPeer(*this);
+        *mat = new F[Rows() * Columns()];
+        std::copy(rowMajorPeer.data().begin(), rowMajorPeer.data().end(), *mat);
+        *rows = Rows();
+        *cols = Columns();
+    }
+
+    template<typename F, typename Z>
+    void
+    DenseMatrix<F, Z>::CheckInvariants(int column) const
+    {
+        // make sure no used entries are outside of the bands
+        int start, end;
+        boost::tie(start, end) = UsedRowRange(column);
+        assert(0 <= start && start <= end && end <= Rows());
+        for (int i = 0; i < Rows(); i++)
+        {
+            if (!(start <= i && i < end))
+            {
+                assert ((*this)(i, column) == typename boost_dense_matrix::value_type());
+            }
+        }
     }
 }

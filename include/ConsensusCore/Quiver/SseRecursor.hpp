@@ -79,23 +79,23 @@ namespace ConsensusCore {
         SimpleRecursor<M, E, C> simpleRecursor_;
     };
 
-    typedef SseRecursor<DenseMatrix,
+    typedef SseRecursor<DenseMatrixF,
                         QvEvaluator,
                         detail::ViterbiCombiner> SseQvRecursor;
 
-    typedef SseRecursor<DenseMatrix,
+    typedef SseRecursor<DenseMatrixF,
                         QvEvaluator,
                         detail::SumProductCombiner> SseQvSumProductRecursor;
 
-    typedef SseRecursor<SparseMatrix,
+    typedef SseRecursor<SparseMatrixF,
                         QvEvaluator,
                         detail::ViterbiCombiner> SparseSseQvRecursor;
 
-    typedef SseRecursor<SparseMatrix,
+    typedef SseRecursor<SparseMatrixF,
                         QvEvaluator,
                         detail::SumProductCombiner> SparseSseQvSumProductRecursor;
 
-    typedef SseRecursor<SparseMatrix,
+    typedef SseRecursor<SparseMatrixF,
                         EdnaEvaluator,
                         detail::SumProductCombiner> SparseSseEdnaRecursor;
 }

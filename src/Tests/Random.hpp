@@ -58,7 +58,7 @@ using ConsensusCore::MutationType;
 using ConsensusCore::QvEvaluator;
 using ConsensusCore::QvModelParams;
 using ConsensusCore::QvSequenceFeatures;
-using ConsensusCore::Read;
+using ConsensusCore::QvRead;
 
 template<typename RNG>
 std::string
@@ -132,7 +132,7 @@ RandomQvEvaluator(RNG& rng, int length)
     float* mergeQv = RandomQvArray(rng, readLength);
 
     QvSequenceFeatures f(seq, insQv, subsQv, delQv, delTag, mergeQv);
-    Read read(f, "anonymous", "unknown");
+    QvRead read(f, "anonymous", "unknown");
 
     delete[] insQv;
     delete[] subsQv;

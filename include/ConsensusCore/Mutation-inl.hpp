@@ -53,12 +53,26 @@ namespace ConsensusCore {
     {}
 
     inline
-    Mutation::Mutation(MutationType type, int start, int end, std::string newBases)
+    Mutation::Mutation(MutationType type, int start, int end, const std::string& newBases)
         : type_(type),
           start_(start),
           end_(end),
           newBases_(newBases)
     {
+        if (!CheckInvariants()) throw InvalidInputError();
+    }
+
+    inline
+    Mutation::Mutation(MutationType type, int position, const std::string& newBases)
+        : type_(type),
+          start_(position)
+    {
+        if (type == INSERTION) {
+            end_ = position;
+        } else {
+            end_ = position + newBases.size();
+        }
+        newBases_ = (type == DELETION ? "" : newBases);
         if (!CheckInvariants()) throw InvalidInputError();
     }
 

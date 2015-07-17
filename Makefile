@@ -10,6 +10,7 @@
 #  - debug build:
 #      % make DEBUG=1
 #
+include make/Config.mk
 include make/Defs.mk
 
 all: lib
@@ -68,6 +69,9 @@ test: lib
 check: test
 tests: test
 
+arrowcheck: lib
+	$(CXX) $(CXX_FLAGS) $(INCLUDES) src/Demos/MatrixTester.cpp $(OBJDIR)/libConsensusCore.a -o $(OBJDIR)/arrowcheck
+	$(OBJDIR)/arrowcheck
 
 #
 # Lint targets

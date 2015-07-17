@@ -44,12 +44,14 @@
 
 namespace ConsensusCore
 {
-    struct Read {
-        QvSequenceFeatures Features;
+    template<typename FeaturesType>
+    struct Read
+    {
+        FeaturesType Features;
         std::string Name;
         std::string Chemistry;
 
-        Read(QvSequenceFeatures features,
+        Read(FeaturesType features,
              std::string name,
              std::string chemistry);
 
@@ -67,7 +69,8 @@ namespace ConsensusCore
         REVERSE_STRAND = 1
     };
 
-    struct MappedRead : public Read
+    template<typename FeaturesType>
+    struct MappedRead : public Read<FeaturesType>
     {
         StrandEnum Strand;
         int TemplateStart;
@@ -75,15 +78,21 @@ namespace ConsensusCore
         bool PinStart;
         bool PinEnd;
 
-        MappedRead(const Read& read,
+        MappedRead(const Read<FeaturesType>& read,
                    StrandEnum strand,
                    int templateStart,
                    int templateEnd,
                    bool pinStart = true,
                    bool pinEnd = true);
 
-        MappedRead(const MappedRead& other);
+        MappedRead(const MappedRead<FeaturesType>& other);
 
         std::string ToString() const;
     };
+
+    typedef Read<QvSequenceFeatures>    QvRead;
+    typedef Read<ArrowSequenceFeatures> ArrowRead;
+
+    typedef MappedRead<QvSequenceFeatures>    MappedQvRead;
+    typedef MappedRead<ArrowSequenceFeatures> MappedArrowRead;
 }

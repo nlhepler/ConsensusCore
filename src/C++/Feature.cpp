@@ -59,10 +59,17 @@ namespace ConsensusCore {
     {
         return "<Int feature>";
     }
+
+    template<>
+    Feature<unsigned char>::operator std::string() const
+    {
+        return "<Byte feature>";
+    }
 #endif  // !SWIG
 
 
     template class ConsensusCore::Feature<char>;
     template class ConsensusCore::Feature<float>;
     template class ConsensusCore::Feature<int>;
+    template class ConsensusCore::Feature<unsigned char>;
 }

@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <ConsensusCore/Arrow/MultiReadMutationScorer.hpp>
 #include <ConsensusCore/Quiver/MultiReadMutationScorer.hpp>
 #include <ConsensusCore/Mutation.hpp>
 
@@ -59,13 +60,21 @@ namespace ConsensusCore
     };
 
 
-    bool RefineConsensus(AbstractMultiReadMutationScorer& mms,
+    template<typename MultiReadScorerType>
+    bool RefineConsensus(MultiReadScorerType& mms,
                          const RefineOptions& = DefaultRefineOptions);
 
-    void RefineDinucleotideRepeats(AbstractMultiReadMutationScorer& mms,
-                                   int minDinucleotideRepeatElements = 3);
+    template<typename MultiReadScorerType>
+    void RefineRepeats(MultiReadScorerType& mms,
+                       int repeatLength,
+                       int minRepeatElements = 3);
 
-    std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms);
+    template<typename MultiReadScorerType>
+    void RefineDinucleotideRepeats(MultiReadScorerType& mms,
+                                   int minDinucRepeatElements = 3);
+
+    template<typename MultiReadScorerType>
+    std::vector<int> ConsensusQVs(MultiReadScorerType& mms);
 
     //
     // Lower priority:
@@ -73,3 +82,5 @@ namespace ConsensusCore
     // Matrix<float> MutationScoresMatrix(mms);
     // Matrix<float> MutationScoresMatrix(mms, mutationsToScore);
 }
+
+#include "Consensus-inl.hpp"

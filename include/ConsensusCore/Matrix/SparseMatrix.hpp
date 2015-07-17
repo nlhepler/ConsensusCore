@@ -42,6 +42,7 @@
 #include <vector>
 
 #include <ConsensusCore/Interval.hpp>
+#include <ConsensusCore/LValue.hpp>
 #include <ConsensusCore/Matrix/AbstractMatrix.hpp>
 #include <ConsensusCore/Matrix/SparseVector.hpp>
 #include <ConsensusCore/Types.hpp>
@@ -49,7 +50,8 @@
 
 namespace ConsensusCore {
 
-    class SparseMatrix : public AbstractMatrix
+    template<typename F, typename Z = lvalue<F>>
+    class SparseMatrix : public AbstractMatrix<F>
     {
     public:  // Constructor, destructor
         SparseMatrix(int rows, int cols);
@@ -57,7 +59,7 @@ namespace ConsensusCore {
         ~SparseMatrix();
 
     public:  // Nullability
-        static const SparseMatrix& Null();
+        static const SparseMatrix<F, Z>& Null();
         bool IsNull() const;
 
     public:  // Size information
@@ -73,10 +75,10 @@ namespace ConsensusCore {
         int AllocatedEntries() const;  // an entry may be allocated but not used
 
     public:  // Accessors
-        const float& operator()(int i, int j) const;
+        const F& operator()(int i, int j) const;
         bool IsAllocated(int i, int j) const;
-        float Get(int i, int j) const;
-        void Set(int i, int j, float v);
+        F Get(int i, int j) const;
+        void Set(int i, int j, F v);
         void ClearColumn(int j);
 
     public:  // SSE accessors, which access 4 successive entries in a column
@@ -86,18 +88,27 @@ namespace ConsensusCore {
     public:
         // Method SWIG clients can use to get a native matrix (e.g. Numpy)
         // mat must be filled as a ROW major matrix
-        void ToHostMatrix(float** mat, int* rows, int* cols) const;
+        void ToHostMatrix(F** mat, int* rows, int* cols) const;
+
+    protected:
+        typedef F FloatType;
+
+    private:
+        static F* EmptyCell();
 
     private:
         void CheckInvariants(int column) const;
 
     private:
-        std::vector<SparseVector*> columns_;
+        std::vector<SparseVector<F, Z>*> columns_;
         int nCols_;
         int nRows_;
         int columnBeingEdited_;
         std::vector<Interval> usedRanges_;
     };
+
+    typedef SparseMatrix<float>  SparseMatrixF;
+    typedef SparseMatrix<double> SparseMatrixD;
 }
 
-#include <ConsensusCore/Matrix/SparseMatrix-inl.hpp>
+#include "SparseMatrix-inl.hpp"

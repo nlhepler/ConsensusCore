@@ -48,7 +48,7 @@ using namespace ConsensusCore; // NOLINT
 
 TEST(SparseVectorTest, BasicTest)
 {
-    SparseVector sv(100, 10, 20);
+    SparseVectorF sv(100, 10, 20);
     EXPECT_LE(10, sv.AllocatedEntries());
 
     for (int i = 0; i < 100; i++)
@@ -79,7 +79,7 @@ TEST(SparseVectorTest, BasicTest)
 
 TEST(SparseVectorTest, BasicTest2)
 {
-    SparseVector sv(100, 50, 60);
+    SparseVectorF sv(100, 50, 60);
 
     sv.Set(5, 5);
     for (int i = 0; i < 100; i++)
@@ -93,10 +93,10 @@ TEST(SparseVectorTest, BasicTest2)
 
 TEST(SparseVector, CopyTest)
 {
-    SparseVector sv(10, 3, 7);
+    SparseVectorF sv(10, 3, 7);
     sv.Set(4, 5);
 
-    SparseVector svCopy(sv);
+    SparseVectorF svCopy(sv);
     ASSERT_EQ(5, svCopy(4));
 
     for (int i = 0; i < 10; i++)

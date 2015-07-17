@@ -47,20 +47,18 @@
 namespace ConsensusCore {
     struct AlignConfig;
     struct BandingOptions;
-    class DenseMatrix;
     struct QuiverConfig;
     class PairwiseAlignment;
     class AnnotatedPairwiseAlignment;
     struct QvModelParams;
     struct EdnaModelParams;
+    struct ArrowSequenceFeatures;
     struct ChannelSequenceFeatures;
     struct QvSequenceFeatures;
     struct SequenceFeatures;
-    class SparseMatrix;
     class Mutation;
     class ScoredMutation;
     struct Interval;
-    struct Read;
     class PoaGraph;
     struct PoaConsensus;
 }
@@ -179,5 +177,25 @@ namespace ConsensusCore {
         {
             return "Alpha and beta could not be mated.";
         }
+    };
+
+    /// \brief An exeption for when templates are too small to use
+    class TooSmallTemplateException : public ExceptionBase
+    {
+        std::string Message() const throw()
+        {
+            return "Template was too small to test mutations.  Attempted to call FillAlpha for a virtual template, but FillAlpha does not work with virtual templates.";
+        }
+    
+    };
+    
+    /// \brief This is a temporary guard until I clean up the API
+    class BadExecutionOrderException : public ExceptionBase
+    {
+        std::string Message() const throw()
+        {
+            return "Cannot score a mutation until a virtual mutation has been applied to the underlying template";
+        }
+        
     };
 }

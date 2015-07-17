@@ -41,17 +41,19 @@
 #include <utility>
 #include <vector>
 
+#include <ConsensusCore/LValue.hpp>
 #include <ConsensusCore/Types.hpp>
 #include <ConsensusCore/Utils.hpp>
 
 namespace ConsensusCore {
 
+    template<typename F, typename Z = lvalue<F>>
     class SparseVector
     {
     public:  // Constructor, destructor
         SparseVector(int logicalLength, int beginRow, int endRow);
-        SparseVector(const SparseVector& other);
-        ~SparseVector();
+        SparseVector(const SparseVector<F, Z>& other);
+        ~SparseVector() = default;
 
         // Ensures there is enough allocated storage to
         // hold entries for at least [beginRow, endRow) (plus padding);
@@ -59,13 +61,15 @@ namespace ConsensusCore {
         void ResetForRange(int beginRow, int endRow);
 
     public:
-        const float& operator()(int i) const;
+        const F& operator()(int i) const;
         bool IsAllocated(int i) const;
-        float Get(int i) const;
-        void Set(int i, float v);
-        __m128 Get4(int i) const;
-        void Set4(int i, __m128 v);
+        F Get(int i) const;
+        void Set(int i, F v);
         void Clear();
+
+    public:  // SSE accessors, which access 4 successive entries in a column
+        __m128 Get4(int i) const;
+        void Set4(int i, __m128 v4);
 
     public:
         int AllocatedEntries() const;
@@ -79,8 +83,6 @@ namespace ConsensusCore {
         void ExpandAllocated(int newAllocatedBegin, int newAllocatedEnd);
 
     private:
-        std::vector<float>* storage_;
-
         // the "logical" length of the vector, of which only
         // a subset of entries are actually allocated
         int logicalLength_;
@@ -89,9 +91,15 @@ namespace ConsensusCore {
         int allocatedBeginRow_;
         int allocatedEndRow_;
 
+        // the storage
+        std::vector<F> storage_;
+
         // analytics
         int nReallocs_;
     };
+
+    typedef SparseVector<float>  SparseVectorF;
+    typedef SparseVector<double> SparseVectorD;
 }
 
-#include <ConsensusCore/Matrix/SparseVector-inl.hpp>
+#include "SparseVector-inl.hpp"

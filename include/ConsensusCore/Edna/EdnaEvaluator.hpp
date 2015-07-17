@@ -52,7 +52,7 @@
 
 #include <ConsensusCore/Features.hpp>
 #include <ConsensusCore/Read.hpp>
-#include <ConsensusCore/LFloat.hpp>
+#include <ConsensusCore/LValue.hpp>
 #include <ConsensusCore/Types.hpp>
 #include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Edna/EdnaConfig.hpp>

@@ -44,7 +44,7 @@
 #include <vector>
 
 #include <ConsensusCore/Interval.hpp>
-#include <ConsensusCore/LFloat.hpp>
+#include <ConsensusCore/LValue.hpp>
 #include <ConsensusCore/Matrix/AbstractMatrix.hpp>
 #include <ConsensusCore/Types.hpp>
 #include <ConsensusCore/Utils.hpp>
@@ -57,18 +57,20 @@ namespace ConsensusCore {
     using boost::numeric::ublas::column_major;
 #endif  // SWIG
 
-    typedef matrix<lfloat, column_major> boost_dense_matrix;
-
+    template<typename F, typename Z = lvalue<F>>
     class DenseMatrix
-        : public AbstractMatrix
-        , private boost_dense_matrix
+        : public AbstractMatrix<F>
+        , private matrix<Z, column_major>
     {
+    private:
+        typedef matrix<Z, column_major> boost_dense_matrix;
+
     public:  // Constructor, destructor
         DenseMatrix(int rows, int cols);
         ~DenseMatrix();
 
     public:  // Nullability
-        static const DenseMatrix& Null();
+        static const DenseMatrix<F, Z>& Null();
         bool IsNull() const;
 
     public:  // Size information
@@ -94,10 +96,10 @@ namespace ConsensusCore {
         // is a set or get.  To my knowledge, there is no way to do this in
         // C++.
         //
-        const float& operator()(int i, int j) const;
+        const F& operator()(int i, int j) const;
         bool IsAllocated(int i, int j) const;
-        float Get(int i, int j) const;
-        void Set(int i, int j, float v);
+        F Get(int i, int j) const;
+        void Set(int i, int j, F v);
         void ClearColumn(int j);
 
     public:  // SSE accessors, which access 4 successive entries in a column
@@ -107,13 +109,19 @@ namespace ConsensusCore {
     public:
         // Method SWIG clients can use to get a native matrix (e.g. Numpy)
         // mat must be filled as a ROW major matrix
-        void ToHostMatrix(float** mat, int* rows, int* cols) const;
+        void ToHostMatrix(F** mat, int* rows, int* cols) const;
+
+    protected:
+        typedef F FloatType;
 
     private:
         std::vector<Interval> usedRanges_;
         int columnBeingEdited_;
         void CheckInvariants(int column) const;
     };
+
+    typedef DenseMatrix<float>  DenseMatrixF;
+    typedef DenseMatrix<double> DenseMatrixD;
 }
 
-#include <ConsensusCore/Matrix/DenseMatrix-inl.hpp>
+#include "DenseMatrix-inl.hpp"

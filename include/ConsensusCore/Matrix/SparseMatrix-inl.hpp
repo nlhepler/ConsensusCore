@@ -42,25 +42,23 @@
 #include <cassert>
 
 #include <ConsensusCore/Interval.hpp>
-#include <ConsensusCore/Matrix/SparseMatrix.hpp>
-#include <ConsensusCore/LFloat.hpp>
-
-using std::min;
-using std::max;
+#include <ConsensusCore/LValue.hpp>
 
 namespace ConsensusCore {
     //
     // Nullability
     //
-    inline const SparseMatrix&
-    SparseMatrix::Null()
+    template<typename F, typename Z>
+    inline const SparseMatrix<F, Z>&
+    SparseMatrix<F, Z>::Null()
     {
-        static SparseMatrix* nullObj = new SparseMatrix(0, 0);
+        static SparseMatrix<F, Z>* nullObj = new SparseMatrix<F, Z>(0, 0);
         return *nullObj;
     }
 
+    template<typename F, typename Z>
     inline bool
-    SparseMatrix::IsNull() const
+    SparseMatrix<F, Z>::IsNull() const
     {
         return (Rows() == 0 && Columns() == 0);
     }
@@ -68,14 +66,16 @@ namespace ConsensusCore {
     //
     // Size information
     //
+    template<typename F, typename Z>
     inline const int
-    SparseMatrix::Rows() const
+    SparseMatrix<F, Z>::Rows() const
     {
         return nRows_;
     }
 
-    inline const  int
-    SparseMatrix::Columns() const
+    template<typename F, typename Z>
+    inline const int
+    SparseMatrix<F, Z>::Columns() const
     {
         return nCols_;
     }
@@ -83,8 +83,9 @@ namespace ConsensusCore {
     //
     // Entry range queries per column
     //
+    template<typename F, typename Z>
     inline void
-    SparseMatrix::StartEditingColumn(int j, int hintBegin, int hintEnd)
+    SparseMatrix<F, Z>::StartEditingColumn(int j, int hintBegin, int hintEnd)
     {
         assert(columnBeingEdited_ == -1);
         columnBeingEdited_ = j;
@@ -92,12 +93,13 @@ namespace ConsensusCore {
         {
             columns_[j]->ResetForRange(hintBegin, hintEnd);
         } else {
-            columns_[j] = new SparseVector(Rows(), hintBegin, hintEnd);
+            columns_[j] = new SparseVector<F, Z>(Rows(), hintBegin, hintEnd);
         }
     }
 
+    template<typename F, typename Z>
     inline void
-    SparseMatrix::FinishEditingColumn(int j, int usedRowsBegin, int usedRowsEnd)
+    SparseMatrix<F, Z>::FinishEditingColumn(int j, int usedRowsBegin, int usedRowsEnd)
     {
         assert(columnBeingEdited_ == j);
         usedRanges_[j] = Interval(usedRowsBegin, usedRowsEnd);
@@ -105,15 +107,17 @@ namespace ConsensusCore {
         columnBeingEdited_ = -1;
     }
 
+    template<typename F, typename Z>
     inline Interval
-    SparseMatrix::UsedRowRange(int j) const
+    SparseMatrix<F, Z>::UsedRowRange(int j) const
     {
         assert(0 <= j && j < (int)usedRanges_.size());
         return usedRanges_[j];
     }
 
+    template<typename F, typename Z>
     inline bool
-    SparseMatrix::IsColumnEmpty(int j) const
+    SparseMatrix<F, Z>::IsColumnEmpty(int j) const
     {
         assert(0 <= j && j < (int)usedRanges_.size());
         return (usedRanges_[j].Begin >= usedRanges_[j].End);
@@ -122,12 +126,13 @@ namespace ConsensusCore {
     //
     // Accessors
     //
-    inline const float&
-    SparseMatrix::operator() (int i, int j) const
+    template<typename F, typename Z>
+    inline const F&
+    SparseMatrix<F, Z>::operator() (int i, int j) const
     {
-        static const float emptyCell = Zero<lfloat>();
         if (columns_[j] == NULL)
         {
+            static const F emptyCell = Z();
             return emptyCell;
         }
         else
@@ -136,27 +141,31 @@ namespace ConsensusCore {
         }
     }
 
+    template<typename F, typename Z>
     inline bool
-    SparseMatrix::IsAllocated(int i, int j) const
+    SparseMatrix<F, Z>::IsAllocated(int i, int j) const
     {
         return columns_[j] != NULL && columns_[j]->IsAllocated(i);
     }
 
-    inline float
-    SparseMatrix::Get(int i, int j) const
+    template<typename F, typename Z>
+    inline F
+    SparseMatrix<F, Z>::Get(int i, int j) const
     {
         return (*this)(i, j);
     }
 
+    template<typename F, typename Z>
     inline void
-    SparseMatrix::Set(int i, int j, float v)
+    SparseMatrix<F, Z>::Set(int i, int j, F v)
     {
         assert(columnBeingEdited_ == j);
         columns_[j]->Set(i, v);
     }
 
+    template<typename F, typename Z>
     inline void
-    SparseMatrix::ClearColumn(int j)
+    SparseMatrix<F, Z>::ClearColumn(int j)
     {
         usedRanges_[j] = Interval(0, 0);
         columns_[j]->Clear();
@@ -166,12 +175,13 @@ namespace ConsensusCore {
     //
     // SSE
     //
+    template<>
     inline __m128
-    SparseMatrix::Get4(int i, int j) const
+    SparseMatrix<float, lvalue<float>>::Get4(int i, int j) const
     {
         if (columns_[j] == NULL)
         {
-            return Zero4<lfloat>();
+            return Zero4<lvalue<float>>();
         }
         else
         {
@@ -179,10 +189,122 @@ namespace ConsensusCore {
         }
     }
 
+    template<typename F, typename Z>
+    inline __m128
+    SparseMatrix<F, Z>::Get4(int i, int j) const
+    {
+        throw std::runtime_error("cannot perform Get4 with non-f32 type");
+    }
+
+    template<>
     inline void
-    SparseMatrix::Set4(int i, int j, __m128 v4)
+    SparseMatrix<float, lvalue<float>>::Set4(int i, int j, __m128 v4)
     {
         assert(columnBeingEdited_ == j);
         columns_[j]->Set4(i, v4);
+    }
+
+    template<typename F, typename Z>
+    inline void
+    SparseMatrix<F, Z>::Set4(int i, int j, __m128 v4)
+    {
+        throw std::runtime_error("cannot perform Get4 with non-f32 type");
+    }
+
+    //
+    // Performance insensitive routines are not inlined
+    //
+    template<typename F, typename Z>
+    SparseMatrix<F, Z>::SparseMatrix(int rows, int cols)
+        : columns_(cols),  nCols_(cols), nRows_(rows), columnBeingEdited_(-1),
+          usedRanges_(cols, Interval(0, 0))
+    {
+        for (int j = 0; j < nCols_; j++)
+        {
+            columns_[j] = NULL;
+        }
+    }
+
+    template<typename F, typename Z>
+    SparseMatrix<F, Z>::SparseMatrix(const SparseMatrix& other)
+        : columns_(other.nCols_),
+          nCols_(other.nCols_),
+          nRows_(other.nRows_),
+          columnBeingEdited_(other.columnBeingEdited_),
+          usedRanges_(other.usedRanges_)
+    {
+        for (int j = 0; j < nCols_; j++)
+        {
+            if (other.columns_[j] != NULL)
+            {
+                columns_[j] = new SparseVector<F, Z>(*other.columns_[j]);
+            }
+            else
+            {
+                columns_[j] = NULL;
+            }
+        }
+    }
+
+    template<typename F, typename Z>
+    SparseMatrix<F, Z>::~SparseMatrix()
+    {
+        for (int j = 0; j < nCols_; j++)
+        {
+            if (columns_[j] != NULL) delete columns_[j];
+        }
+    }
+
+    template<typename F, typename Z>
+    int
+    SparseMatrix<F, Z>::UsedEntries() const
+    {
+        // use column ranges
+        int filledEntries = 0;
+        for (int col = 0; col < Columns(); ++col)
+        {
+            int start, end;
+            boost::tie(start, end) = UsedRowRange(col);
+            filledEntries += (end - start);
+        }
+        return filledEntries;
+    }
+
+    template<typename F, typename Z>
+    int
+    SparseMatrix<F, Z>::AllocatedEntries() const
+    {
+        int sum = 0;
+        for (int j = 0; j < nCols_; j++)
+        {
+            sum += (columns_[j] != NULL ?
+                    columns_[j]->AllocatedEntries() : 0);
+        }
+        return sum;
+    }
+
+    template<typename F, typename Z>
+    void
+    SparseMatrix<F, Z>::ToHostMatrix(F** mat, int* rows, int* cols) const
+    {
+        const F nan = std::numeric_limits<F>::quiet_NaN();
+        *mat = new F[Rows() * Columns()];
+        *rows = Rows();
+        *cols = Columns();
+        for (int i = 0; i < Rows(); i++) {
+            for (int j = 0; j < Columns(); j++) {
+                (*mat)[i * Columns() + j] = IsAllocated(i, j) ? Get(i, j) : nan;
+            }
+        }
+    }
+
+    template<typename F, typename Z>
+    void
+    SparseMatrix<F, Z>::CheckInvariants(int column) const
+    {
+        for (int j = 0; j < nCols_; j++)
+         {
+             if (columns_[j] != NULL) columns_[j]->CheckInvariants();
+         }
     }
 }

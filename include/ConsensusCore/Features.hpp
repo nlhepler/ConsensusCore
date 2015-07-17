@@ -99,9 +99,22 @@ namespace ConsensusCore
                            const unsigned char* mergeQv);
     };
 
+    /// \brief A features object for the Arrow model (contains IQV data)
+    struct ArrowSequenceFeatures : public SequenceFeatures
+    {
+        Feature<unsigned char> InsQv;
+
+        explicit ArrowSequenceFeatures(const std::string& seq);
+
+        ArrowSequenceFeatures(const std::string& seq,
+                              const unsigned char* insQv);
+
+        ArrowSequenceFeatures(const std::string& seq,
+                              const std::vector<unsigned char>& insQv);
+    };
 
     /// \brief A features object that contains sequence in channel space.
-    struct ChannelSequenceFeatures : SequenceFeatures
+    struct ChannelSequenceFeatures : public SequenceFeatures
     {
         Feature<int> Channel;
 

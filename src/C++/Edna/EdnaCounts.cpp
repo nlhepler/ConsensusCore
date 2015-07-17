@@ -49,7 +49,6 @@
 #include <ConsensusCore/Edna/EdnaEvaluator.hpp>
 #include <ConsensusCore/Features.hpp>
 #include <ConsensusCore/Interval.hpp>
-#include <ConsensusCore/LFloat.hpp>
 #include <ConsensusCore/Matrix/SparseMatrix.hpp>
 #include <ConsensusCore/Quiver/detail/Combiner.hpp>
 #include <ConsensusCore/Quiver/detail/RecursorBase.hpp>
@@ -72,8 +71,8 @@ namespace ConsensusCore
                              MutationScorer<SparseSseEdnaRecursor>& scorer,
                              int j1, int j2, float *results)
     {
-        const SparseMatrix *alpha = scorer.Alpha();
-        const SparseMatrix *beta = scorer.Beta();
+        const SparseMatrixF *alpha = scorer.Alpha();
+        const SparseMatrixF *beta = scorer.Beta();
 
         int usedBegin, usedEnd;
         boost::tie(usedBegin, usedEnd) = RangeUnion(alpha->UsedRowRange(j1),

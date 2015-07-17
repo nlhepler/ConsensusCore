@@ -46,43 +46,49 @@
 
 namespace ConsensusCore {
 
-    Read::Read(QvSequenceFeatures features,
-               std::string name,
-               std::string chemistry)
-        : Features(features),
-          Name(name),
-          Chemistry(chemistry)
+    template<typename FeaturesType>
+    Read<FeaturesType>::Read(FeaturesType features,
+                             std::string name,
+                             std::string chemistry)
+        : Features(features)
+        , Name(name)
+        , Chemistry(chemistry)
     {}
 
-    Read::Read(const Read& other)
-        : Features(other.Features),
-          Name(other.Name),
-          Chemistry(other.Chemistry)
+    template<typename FeaturesType>
+    Read<FeaturesType>::Read(const Read& other)
+        : Features(other.Features)
+        , Name(other.Name)
+        , Chemistry(other.Chemistry)
     {}
 
-    int Read::Length() const
+    template<typename FeaturesType>
+    int Read<FeaturesType>::Length() const
     {
         return Features.Length();
     }
 
-    std::string Read::ToString() const
+    template<typename FeaturesType>
+    std::string Read<FeaturesType>::ToString() const
     {
         return (boost::format("%s (%s) Length=%d Data=%s")
                 % Name % Chemistry % Length() % Checksum::Of(Features)).str();
     }
 
-    Read Read::Null()
+    template<typename FeaturesType>
+    Read<FeaturesType> Read<FeaturesType>::Null()
     {
-        return Read(QvSequenceFeatures(""), "", "");
+        return Read(FeaturesType(""), "", "");
     }
 
-    MappedRead::MappedRead(const Read& read,
+    template<typename FeaturesType>
+    MappedRead<FeaturesType>::MappedRead(const Read<FeaturesType>& read,
                            StrandEnum strand,
                            int templateStart,
                            int templateEnd,
                            bool pinStart,
                            bool pinEnd)
-        : Read(read),
+        : Read<FeaturesType>(read),
           Strand(strand),
           TemplateStart(templateStart),
           TemplateEnd(templateEnd),
@@ -90,8 +96,9 @@ namespace ConsensusCore {
           PinEnd(pinEnd)
     {}
 
-    MappedRead::MappedRead(const MappedRead& other)
-        : Read(other),
+    template<typename FeaturesType>
+    MappedRead<FeaturesType>::MappedRead(const MappedRead& other)
+        : Read<FeaturesType>(other),
           Strand(other.Strand),
           TemplateStart(other.TemplateStart),
           TemplateEnd(other.TemplateEnd),
@@ -99,12 +106,19 @@ namespace ConsensusCore {
           PinEnd(other.PinEnd)
     {}
 
-    std::string MappedRead::ToString() const
+    template<typename FeaturesType>
+    std::string MappedRead<FeaturesType>::ToString() const
     {
         std::stringstream ss;
         ss << (PinStart ? "[" : "(");
         ss << TemplateStart << "," << TemplateEnd;
         ss << (PinEnd   ? "]" : ")");
-        return Read::ToString() + " @ " + ss.str();
+        return Read<FeaturesType>::ToString() + " @ " + ss.str();
     }
+
+    template struct Read<QvSequenceFeatures>;
+    template struct Read<ArrowSequenceFeatures>;
+
+    template struct MappedRead<QvSequenceFeatures>;
+    template struct MappedRead<ArrowSequenceFeatures>;
 }

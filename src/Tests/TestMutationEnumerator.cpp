@@ -49,7 +49,7 @@
 
 #include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Mutation.hpp>
-#include <ConsensusCore/Quiver/MutationEnumerator.hpp>
+#include <ConsensusCore/MutationEnumerator.hpp>
 
 using std::string;
 using std::vector;
@@ -116,5 +116,22 @@ TEST(MutationEnumerationTest, TestDinucleotideMutations)
     expected.push_back(Mutation(DELETION, 0, 2, std::string("")));
     expected.push_back(Mutation(INSERTION, 5, 5, std::string("CG")));
     expected.push_back(Mutation(DELETION, 5, 7, std::string("")));
+    EXPECT_THAT(result, UnorderedElementsAreArray(expected));
+}
+
+
+TEST(MutationEnumerationTest, TestTrinucleotideMutations)
+{
+
+    std::string tpl = "ACAACAACAGCAGCAGTAGTAG";
+    std::vector<Mutation> result = RepeatMutationEnumerator(tpl, 3, 3).Mutations();
+    // 4 extra mutations because of ACAACAACA, CAGCAGCAG, but not AGTAGTAG
+    EXPECT_EQ(4, result.size());
+
+    std::vector<Mutation> expected;
+    expected.push_back(Mutation(INSERTION, 0, 0, std::string("ACA")));
+    expected.push_back(Mutation(DELETION, 0, 3, std::string("")));
+    expected.push_back(Mutation(INSERTION, 7, 7, std::string("CAG")));
+    expected.push_back(Mutation(DELETION, 7, 10, std::string("")));
     EXPECT_THAT(result, UnorderedElementsAreArray(expected));
 }

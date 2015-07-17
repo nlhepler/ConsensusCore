@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CPP_ABI=c++98
+CPP_ABI=c++11
 
 usage ()
 {
@@ -10,7 +10,7 @@ usage ()
     echo "            [--swig=SWIG]                      # location of swig executable"
     echo "            [--swig-lib=SWIG_LIB]              # location of swig library"
     echo "            [--debug]                          # build debug library (1)"
-    echo "            [--c++11]                          # build using C++11 ABI"
+    echo "            [--c++98]                          # build using C++98 ABI"
     echo
     echo "    (Python only:)"
     echo "            [--python-include=PYTHON_INCLUDE]  # location of Python.h"
@@ -71,8 +71,8 @@ while test x$1 != x; do
         --debug)
             DEBUG=1
             ;;
-        --c++11)
-            CPP_ABI=c++11
+        --c++98)
+            CPP_ABI=c++98
             ;;
         --python-include=*)
             PYTHON_INCLUDE=`echo $1 | sed 's/--python-include=//'`

@@ -56,7 +56,7 @@ namespace ConsensusCore
         : _quiverConfig(config)
     {}
 
-    float ReadScorer::Score(const string& tpl, const Read& read) const
+    float ReadScorer::Score(const string& tpl, const QvRead& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
@@ -65,14 +65,14 @@ namespace ConsensusCore
 
         I = read.Length();
         J = tpl.length();
-        SparseMatrix alpha(I+1, J+1), beta(I+1, J+1);
+        SparseMatrixF alpha(I+1, J+1), beta(I+1, J+1);
         r.FillAlphaBeta(e, alpha, beta);
 
         return beta(0, 0);
     }
 
     const PairwiseAlignment*
-    ReadScorer::Align(const string& tpl, const Read& read) const
+    ReadScorer::Align(const string& tpl, const QvRead& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
@@ -81,13 +81,14 @@ namespace ConsensusCore
 
         I = read.Length();
         J = tpl.length();
-        SparseMatrix alpha(I+1, J+1), beta(I+1, J+1);
+        SparseMatrixF alpha(I+1, J+1), beta(I+1, J+1);
         r.FillAlphaBeta(e, alpha, beta);
+
         return r.Alignment(e, alpha);
     }
 
-    const SparseMatrix*
-    ReadScorer::Alpha(const string& tpl, const Read& read) const
+    const SparseMatrixF*
+    ReadScorer::Alpha(const string& tpl, const QvRead& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
@@ -96,14 +97,15 @@ namespace ConsensusCore
 
         I = read.Length();
         J = tpl.length();
-        SparseMatrix *alpha = new SparseMatrix(I+1, J+1);
-        SparseMatrix *beta  = new SparseMatrix(I+1, J+1);
+        SparseMatrixF *alpha = new SparseMatrixF(I+1, J+1);
+        SparseMatrixF *beta  = new SparseMatrixF(I+1, J+1);
         r.FillAlphaBeta(e, *alpha, *beta);
+        delete beta;
         return alpha;
     }
 
-    const SparseMatrix*
-    ReadScorer::Beta(const string& tpl, const Read& read) const
+    const SparseMatrixF*
+    ReadScorer::Beta(const string& tpl, const QvRead& read) const
         throw(AlphaBetaMismatchException)
     {
         int I, J;
@@ -112,9 +114,10 @@ namespace ConsensusCore
 
         I = read.Length();
         J = tpl.length();
-        SparseMatrix *alpha = new SparseMatrix(I+1, J+1);
-        SparseMatrix *beta  = new SparseMatrix(I+1, J+1);
+        SparseMatrixF *alpha = new SparseMatrixF(I+1, J+1);
+        SparseMatrixF *beta  = new SparseMatrixF(I+1, J+1);
         r.FillAlphaBeta(e, *alpha, *beta);
+        delete alpha;
         return beta;
     }
 }

@@ -39,6 +39,7 @@
 
 namespace ConsensusCore {
 
+    template<typename F>
     class AbstractMatrix
     {
     protected:
@@ -55,6 +56,9 @@ namespace ConsensusCore {
 
     public:  // Accessors
         virtual bool IsAllocated(int i, int j) const = 0;
-        virtual float Get(int i, int j) const = 0;
+        virtual F Get(int i, int j) const = 0;
     };
+
+    typedef AbstractMatrix<float>  AbstractMatrixF;
+    typedef AbstractMatrix<double> AbstractMatrixD;
 }

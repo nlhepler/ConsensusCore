@@ -45,15 +45,15 @@
 #include <typeinfo>
 #include <vector>
 
-#include <ConsensusCore/LFloat.hpp>
+#include <ConsensusCore/LValue.hpp>
 #include <ConsensusCore/Matrix/DenseMatrix.hpp>
 #include <ConsensusCore/Matrix/SparseMatrix.hpp>
 
 using std::cout;
 using std::endl;
 
-using ConsensusCore::DenseMatrix;
-using ConsensusCore::SparseMatrix;
+using ConsensusCore::DenseMatrixF;
+using ConsensusCore::SparseMatrixF;
 using ConsensusCore::lfloat;
 
 
@@ -66,7 +66,7 @@ public:
 
 using testing::Types;
 // typedef Types<DenseMatrix> Implementations;
-typedef Types<DenseMatrix, SparseMatrix> Implementations;
+typedef Types<DenseMatrixF, SparseMatrixF> Implementations;
 TYPED_TEST_CASE(MatrixTest, Implementations);
 
 

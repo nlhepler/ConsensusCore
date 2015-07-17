@@ -113,4 +113,4 @@ namespace ConsensusCore {
     };
 }}
 
-#include <ConsensusCore/Quiver/detail/RecursorBase-inl.hpp>
+#include "RecursorBase-inl.hpp"

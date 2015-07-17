@@ -35,10 +35,7 @@
 
 // Author: David Alexander, Lance Hepler
 
-#include <ConsensusCore/Quiver/QuiverConsensus.hpp>
-
-#include <ConsensusCore/Quiver/MultiReadMutationScorer.hpp>
-#include <ConsensusCore/Quiver/MutationEnumerator.hpp>
+#include <ConsensusCore/MutationEnumerator.hpp>
 #include <ConsensusCore/Mutation.hpp>
 #include <ConsensusCore/Utils.hpp>
 #include <ConsensusCore/Logging.hpp>
@@ -47,6 +44,7 @@
 #include <boost/functional/hash.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <cmath>
+#include <limits>
 #include <set>
 #include <string>
 #include <utility>
@@ -55,26 +53,24 @@
 
 namespace ConsensusCore
 {
-    using std::vector;
-
     namespace {  // PRIVATE
-    using std::max_element;
-
-    struct RefineDinucleotideRepeatOptions : RefineOptions
+    struct RefineRepeatOptions : RefineOptions
     {
-        explicit RefineDinucleotideRepeatOptions(int minDinucleotideRepeatElements)
-            : MinDinucleotideRepeatElements(minDinucleotideRepeatElements)
+        explicit RefineRepeatOptions(int repeatLength, int minRepeatElements)
+            : RepeatLength(repeatLength)
+            , MinRepeatElements(minRepeatElements)
         {
             MaximumIterations = 1;
         }
 
-        int MinDinucleotideRepeatElements;
+        int RepeatLength;
+        int MinRepeatElements;
     };
 
-    vector<ScoredMutation>
-    DeleteRange(vector<ScoredMutation> input, int rStart, int rEnd)
+    std::vector<ScoredMutation>
+    DeleteRange(std::vector<ScoredMutation> input, int rStart, int rEnd)
     {
-        vector<ScoredMutation> output;
+        std::vector<ScoredMutation> output;
         foreach (ScoredMutation s, input)
         {
             int pos = s.Start();
@@ -99,17 +95,17 @@ namespace ConsensusCore
     //    applying the mutations.
     //
     //    This is highly unoptimized.  It is not in the critical path.
-    vector<ScoredMutation>
-    BestSubset(vector<ScoredMutation> input, int mutationSeparation)
+    std::vector<ScoredMutation>
+    BestSubset(std::vector<ScoredMutation> input, int mutationSeparation)
     {
         if (mutationSeparation == 0)
             return input;
 
-        vector<ScoredMutation> output;
+        std::vector<ScoredMutation> output;
 
         while (!input.empty())
         {
-            ScoredMutation& best = *max_element(input.begin(), input.end(), ScoreComparer);
+            ScoredMutation& best = *std::max_element(input.begin(), input.end(), ScoreComparer);
             output.push_back(best);
             int nStart = best.Start() - mutationSeparation;
             int nEnd = best.Start() + mutationSeparation;
@@ -122,21 +118,21 @@ namespace ConsensusCore
 
     // Sadly and annoyingly there is no covariance on std::vector in C++, so we have
     // to explicitly project back down to the superclass type to use the APIs as written.
-    vector<Mutation>
-    ProjectDown(const vector<ScoredMutation>& smuts)
+    std::vector<Mutation>
+    ProjectDown(const std::vector<ScoredMutation>& smuts)
     {
-        return vector<Mutation>(smuts.begin(), smuts.end());
+        return std::vector<Mutation>(smuts.begin(), smuts.end());
     }
 
 
-    int ProbabilityToQV(double probability, int cap = 93)
+    int ProbabilityToQV(double probability)
     {
-        using std::min;
+        if (probability < 0.0 || probability > 1.0)
+            throw std::invalid_argument("invalid value: probability not in [0,1]");
+        else if (probability == 0.0)
+            probability = std::numeric_limits<double>::min();
 
-        if (probability <= 0.0)
-            return cap;
-
-        return min(cap, static_cast<int>(round(-10.0 * log10(probability))));
+        return static_cast<int>(round(-10.0 * log10(probability)));
     }
 
     template <typename E, typename O>
@@ -149,21 +145,24 @@ namespace ConsensusCore
     // this MUST go last to properly specialize the MutationEnumerator
     //
     template <>
-    DinucleotideRepeatMutationEnumerator
-    MutationEnumerator<>(const std::string& tpl, const RefineDinucleotideRepeatOptions& opts)
+    RepeatMutationEnumerator
+    MutationEnumerator<>(const std::string& tpl, const RefineRepeatOptions& opts)
     {
-        return DinucleotideRepeatMutationEnumerator(tpl, opts.MinDinucleotideRepeatElements);
+        return RepeatMutationEnumerator(
+            tpl,
+            opts.RepeatLength,
+            opts.MinRepeatElements);
     }
 
-    template <typename E, typename O>
-    bool AbstractRefineConsensus(AbstractMultiReadMutationScorer& mms, const O& opts)
+    template <typename E, typename M, typename O>
+    bool AbstractRefineConsensus(M& mms, const O& opts)
     {
         bool isConverged = false;
         float score = mms.BaselineScore();
         boost::hash<std::string> hash;
         std::set<size_t> tplHistory;
 
-        vector<ScoredMutation> favorableMutsAndScores;
+        std::vector<ScoredMutation> favorableMutsAndScores;
 
         for (int iter = 0; iter < opts.MaximumIterations; iter++)
         {
@@ -186,7 +185,7 @@ namespace ConsensusCore
             // nearby those used in previous iteration.
             //
             E mutationEnumerator = MutationEnumerator<E, O>(mms.Template(), opts);
-            vector<Mutation> mutationsToTry;
+            std::vector<Mutation> mutationsToTry;
             if (iter == 0) {
                 mutationsToTry = mutationEnumerator.Mutations();
             }
@@ -217,8 +216,8 @@ namespace ConsensusCore
             //
             // Go with the "best" subset of well-separated high scoring mutations
             //
-            vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores,
-                                                           opts.MutationSeparation);
+            std::vector<ScoredMutation> bestSubset = BestSubset(favorableMutsAndScores,
+                                                                opts.MutationSeparation);
 
             //
             // Attempt to avoid cycling.  We could do a better job here.
@@ -249,21 +248,24 @@ namespace ConsensusCore
     }  // PRIVATE
 
 
-    bool RefineConsensus(AbstractMultiReadMutationScorer& mms, const RefineOptions& opts)
+    template<typename MultiReadScorerType>
+    bool RefineConsensus(MultiReadScorerType& mms, const RefineOptions& opts)
     {
         return AbstractRefineConsensus<UniqueSingleBaseMutationEnumerator>(mms, opts);
     }
 
 
-    void RefineDinucleotideRepeats
-    (AbstractMultiReadMutationScorer& mms, int minDinucleotideRepeatElements)
+    template<typename MultiReadScorerType>
+    void RefineRepeats
+    (MultiReadScorerType& mms, int repeatLength, int minRepeatElements)
     {
-        RefineDinucleotideRepeatOptions opts(minDinucleotideRepeatElements);
-        AbstractRefineConsensus<DinucleotideRepeatMutationEnumerator>(mms, opts);
+        RefineRepeatOptions opts(repeatLength, minRepeatElements);
+        AbstractRefineConsensus<RepeatMutationEnumerator>(mms, opts);
     }
 
 
-    std::vector<int> ConsensusQVs(AbstractMultiReadMutationScorer& mms)
+    template<typename MultiReadScorerType>
+    std::vector<int> ConsensusQVs(MultiReadScorerType& mms)
     {
         std::vector<int> QVs;
         UniqueSingleBaseMutationEnumerator mutationEnumerator(mms.Template());
@@ -272,7 +274,13 @@ namespace ConsensusCore
             double scoreSum = 0.0;
             foreach (const Mutation& m, mutationEnumerator.Mutations(pos, pos + 1))
             {
-                scoreSum += exp(mms.FastScore(m));
+                // TODO (lhepler): this is dumb, but untestable mutations,
+                //   aka insertions at ends, cause all sorts of weird issues
+                double score = mms.Score(m);
+                if (score < 0.0)
+                {
+                    scoreSum += exp(score);
+                }
             }
             QVs.push_back(ProbabilityToQV(1.0 - 1.0 / (1.0 + scoreSum)));
         }

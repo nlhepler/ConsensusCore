@@ -62,4 +62,17 @@ namespace ConsensusCore {
 
         return (boost::format("0x%x") % checksum).str();
     }
+
+    std::string Checksum::Of(const ArrowSequenceFeatures& x)
+    {
+        boost::crc_32_type summer;
+
+        int len = x.Length();
+        summer.process_bytes(x.Sequence().get() , len * sizeof(char));
+        summer.process_bytes(x.InsQv.get()      , len * sizeof(unsigned char));
+
+        int checksum = summer.checksum();
+
+        return (boost::format("0x%x") % checksum).str();
+    }
 }

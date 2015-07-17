@@ -65,7 +65,7 @@ namespace ConsensusCore
             std::copy(inPtr, inPtr + length, get());
         }
 
-
+#if 0 // this is bogus
         // Our features are typically stored in unsigned char[] or short[].
         // Here are constructors to make it easier to stuff those guys into
         // a FloatFeature.
@@ -76,6 +76,7 @@ namespace ConsensusCore
             assert(length >= 0);
             std::copy(inPtr, inPtr + length, get());
         }
+#endif
 
         // \brief Allocate and zero-fill a new feature object of given length.
         explicit Feature(int length)
@@ -162,6 +163,7 @@ namespace ConsensusCore
     typedef Feature<float> FloatFeature;
     typedef Feature<char> CharFeature;
     typedef Feature<int> IntFeature;
+    typedef Feature<unsigned char> ByteFeature;
 }
 
 

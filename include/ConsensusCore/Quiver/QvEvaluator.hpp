@@ -94,7 +94,7 @@ namespace ConsensusCore
         typedef QvModelParams      ParamsType;
 
     public:
-        QvEvaluator(const Read& read,
+        QvEvaluator(const QvRead& read,
                     const std::string& tpl,
                     const QvModelParams& params,
                     bool pinStart = true,
@@ -309,7 +309,7 @@ namespace ConsensusCore
 
 
     protected:
-        Read read_;
+        QvRead read_;
         QvModelParams params_;
         std::string tpl_;
         bool pinStart_;
